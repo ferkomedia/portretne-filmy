@@ -1,11 +1,30 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout
+  title="Portrétny film | Osobnosť a Životný príbeh"
+  description="Portrétny film pre osobnosti a životné príbehy. Citlivé spracovanie, silný obraz, autentický odkaz."
+>
+  <h1>Portrétny film, ktorý zostane.</h1>
+  <p>Autentické portrétne príbehy v dvoch formátoch: <strong>Osobnosť</strong> a <strong>Životný príbeh</strong>.</p>
+
+  <p style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+    <a class="btn" href="/kontakt">Objednať portrétny film</a>
+    <a class="btn2" href="/sluzby">Pozrieť služby</a>
+  </p>
+
+  <div class="grid" style="margin-top:18px;">
+    <div class="card col6">
+      <h2>Portrétny film „Osobnosť“</h2>
+      <p>Zachytíme to, čo robí človeka jedinečným – tvorbu, hodnoty, energiu a charakter.</p>
+      <p><a class="btn2" href="/sluzby">Detail služby</a></p>
+    </div>
+
+    <div class="card col6">
+      <h2>Portrétny film „Životný príbeh“</h2>
+      <p>Uchováme životné skúsenosti a múdrosť ako dedičstvo pre ďalšie generácie.</p>
+      <p><a class="btn2" href="/sluzby">Detail služby</a></p>
+    </div>
+  </div>
+</BaseLayout>
