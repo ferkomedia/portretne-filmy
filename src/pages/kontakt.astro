@@ -2,99 +2,136 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Kontakt | Portrétny film" description="Objednávkový formulár pre portrétny film Osobnosť alebo Životný príbeh.">
-  <h1>Objednávka portrétneho filmu</h1>
-  <p>Napíš mi pár informácií a ozvem sa ti čo najskôr.</p>
+<BaseLayout title="Kontakt | Objednávka portrétneho filmu" description="Objednávka portrétneho filmu – rýchly dopyt.">
+  <section class="hero">
+    <h1>Objednávka portrétneho filmu</h1>
+    <p class="lead">
+      Napíš mi pár informácií a ozvem sa ti čo najskôr na email alebo telefón.
+    </p>
+  </section>
 
-  <div class="card">
-    <form name="dopyt" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/dakujem">
-      <input type="hidden" name="form-name" value="dopyt" />
-      <p style="display:none;">
-        <label>Nechaj prázdne: <input name="bot-field" /></label>
-      </p>
+  <section class="section">
+    <div class="card">
+      <form
+        class="form"
+        name="kontakt"
+        method="POST"
+        data-netlify="true"
+        action="/dakujem"
+      >
+        <input type="hidden" name="form-name" value="kontakt" />
 
-      <label>
-        Meno a priezvisko*
-        <input type="text" name="meno" required />
-      </label>
+        <div class="form-grid">
+          <div class="field">
+            <label for="name">Meno a priezvisko</label>
+            <input id="name" name="name" type="text" placeholder="Vyberte / doplňte údaje" required />
+          </div>
 
-      <label>
-        Email*
-        <input type="email" name="email" required />
-      </label>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="Vyberte / doplňte údaje" required />
+          </div>
 
-      <label>
-        Telefón
-        <input type="tel" name="telefon" />
-      </label>
+          <div class="field">
+            <label for="phone">Telefón</label>
+            <input id="phone" name="phone" type="tel" placeholder="Vyberte / doplňte údaje" />
+          </div>
 
-      <label>
-        Typ portrétneho filmu*
-        <select name="typ" required>
-          <option value="">Vyberte</option>
-          <option>Portrétny film „Osobnosť“</option>
-          <option>Portrétny film „Životný príbeh“</option>
-        </select>
-      </label>
+          <div class="field">
+            <label for="typ">Typ portrétneho filmu</label>
+            <select id="typ" name="typ" required>
+              <option value="" selected>Vyberte</option>
+              <option>Portrétny film „Osobnosť“</option>
+              <option>Portrétny film „Životný príbeh“</option>
+              <option>Neviem – poraďte mi</option>
+            </select>
+          </div>
 
-      <label>
-        Pre koho je film?
-        <select name="pre_koho">
-          <option value="">Vyberte</option>
-          <option>Pre mňa osobne</option>
-          <option>Pre člena rodiny</option>
-          <option>Pre klienta / firmu</option>
-        </select>
-      </label>
+          <div class="field">
+            <label for="prekoho">Pre koho je film?</label>
+            <select id="prekoho" name="prekoho" required>
+              <option value="" selected>Vyberte</option>
+              <option>Pre mňa osobne</option>
+              <option>Pre člena rodiny</option>
+              <option>Pre klienta / firmu</option>
+              <option>Iné</option>
+            </select>
+          </div>
 
-      <label>
-        Účel filmu
-        <select name="ucel">
-          <option value="">Vyberte</option>
-          <option>Osobná pamiatka pre rodinu</option>
-          <option>Profesijná prezentácia</option>
-          <option>Autentický portrét pre verejnosť</option>
-          <option>Životný odkaz pre ďalšie generácie</option>
-        </select>
-      </label>
+          <div class="field">
+            <label for="ucel">Účel filmu</label>
+            <select id="ucel" name="ucel" required>
+              <option value="" selected>Vyberte</option>
+              <option>Rodina / spomienka</option>
+              <option>Osobná značka / prezentácia</option>
+              <option>Darček</option>
+              <option>Firma / PR</option>
+              <option>Iné</option>
+            </select>
+          </div>
 
-      <label>
-        Časový horizont
-        <select name="termin_horizont">
-          <option value="">Vyberte</option>
-          <option>Čím skôr</option>
-          <option>Do 1 mesiaca</option>
-          <option>Do 3 mesiacov</option>
-          <option>Zatiaľ neviem</option>
-        </select>
-      </label>
+          <div class="field">
+            <label for="horizont">Časový horizont</label>
+            <select id="horizont" name="horizont" required>
+              <option value="" selected>Vyberte</option>
+              <option>1–2 týždne</option>
+              <option>Do mesiaca</option>
+              <option>2–3 mesiace</option>
+              <option>Nemám termín</option>
+            </select>
+          </div>
 
-      <label>
-        Orientačný rozpočet
-        <select name="rozpocet">
-          <option value="">Vyberte</option>
-          <option>do 1 000 €</option>
-          <option>1 000 – 2 000 €</option>
-          <option>2 000 € a viac</option>
-        </select>
-      </label>
+          <div class="field">
+            <label for="rozpocet">Orientačný rozpočet</label>
+            <select id="rozpocet" name="rozpocet" required>
+              <option value="" selected>Vyberte</option>
+              <option>Do 500 €</option>
+              <option>500–1000 €</option>
+              <option>1000–2000 €</option>
+              <option>2000 €+</option>
+              <option>Neviem</option>
+            </select>
+            <div class="help">Slúži len na nastavenie rozsahu.</div>
+          </div>
 
-      <label>
-        Mesto / lokalita
-        <input type="text" name="mesto" />
-      </label>
+          <div class="field">
+            <label for="mesto">Mesto / lokalita</label>
+            <input id="mesto" name="mesto" type="text" placeholder="Vyberte / doplňte údaje" />
+          </div>
 
-      <label>
-        Správa*
-        <textarea name="sprava" rows="6" required></textarea>
-      </label>
+          <div class="field">
+            <label for="ukazky">Link na ukážky (ak máte)</label>
+            <input id="ukazky" name="ukazky" type="url" placeholder="Vyberte / doplňte údaje" />
+          </div>
 
-      <label style="display:flex; gap:10px; align-items:flex-start;">
-        <input type="checkbox" name="gdpr" required />
-        <span>Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.</span>
-      </label>
+          <div class="field span-2">
+            <label for="termin">Preferovaný termín</label>
+            <input id="termin" name="termin" type="text" placeholder="Vyberte / doplňte údaje" />
+          </div>
 
-      <button type="submit">Odoslať dopyt</button>
-    </form>
-  </div>
+          <div class="field span-2">
+            <label for="message">Správa</label>
+            <textarea
+              id="message"
+              name="message"
+              placeholder="Vyberte / doplňte údaje"
+              required
+            ></textarea>
+
+            <div class="checkline">
+              <input id="gdpr" type="checkbox" name="gdpr" required />
+              <label for="gdpr" class="muted" style="font-weight:600;">
+                Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">Odoslať dopyt</button>
+              <a class="btn btn-ghost" href="/sluzby">Pozrieť služby</a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
 </BaseLayout>

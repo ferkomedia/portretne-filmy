@@ -2,32 +2,76 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Služby | Portrétny film" description="Portrétny film Osobnosť a Životný príbeh – pre koho sú a čo prinášajú.">
-  <h1>Služby</h1>
+<BaseLayout title="Služby | Portrétny film" description="Vyber si formát – Osobnosť alebo Životný príbeh.">
+  <section class="hero">
+    <h1>Služby</h1>
+    <p class="lead">
+      Vyber si formát, ktorý najlepšie sedí príbehu. Ak si nie si istý, napíš – poradím a nasmerujem ťa.
+    </p>
 
-  <div class="grid">
-    <div class="card col6">
-      <h2>Portrétny film „Osobnosť“</h2>
-      <p>Naša špecialita – zachytiť to, čo robí človeka jedinečným.</p>
-      <ul>
-        <li>Umelci a kreatívni profesionáli</li>
-        <li>Podnikatelia a lídri</li>
-        <li>Športovci a verejne činné osoby</li>
-        <li>Každý, kto chce zanechať odkaz</li>
-      </ul>
-      <p><a class="btn" href="/kontakt">Mám záujem</a></p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn btn-primary" href="/kontakt">Objednať film</a>
+      <a class="btn btn-ghost" href="/portfolio">Pozrieť ukážky</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid-2">
+      <div class="card">
+        <h2>Portrétny film „Osobnosť“</h2>
+        <p class="muted">Film o tom, kto človek je – čím žije, čo tvorí, prečo je výnimočný.</p>
+
+        <div class="grid-2" style="margin-top:14px;">
+          <div class="card" style="box-shadow:none; background:rgba(255,255,255,.04);">
+            <h3 style="margin:0 0 6px;">Vhodné pre</h3>
+            <p class="muted" style="margin:0;">tvorcov, lídrov, športovcov, profesionálov</p>
+          </div>
+          <div class="card" style="box-shadow:none; background:rgba(255,255,255,.04);">
+            <h3 style="margin:0 0 6px;">Výstup</h3>
+            <p class="muted" style="margin:0;">film + krátke verzie na sociálne siete</p>
+          </div>
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn btn-primary" href="/kontakt">Mám záujem</a>
+          <a class="btn btn-ghost" href="/kontakt">Neviem – poraď mi</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Portrétny film „Životný príbeh“</h2>
+        <p class="muted">Rodinný poklad – spomienky, hodnoty, skúsenosti a odkaz.</p>
+
+        <div class="grid-2" style="margin-top:14px;">
+          <div class="card" style="box-shadow:none; background:rgba(255,255,255,.04);">
+            <h3 style="margin:0 0 6px;">Vhodné pre</h3>
+            <p class="muted" style="margin:0;">rodiny, seniorov, silné životné príbehy</p>
+          </div>
+          <div class="card" style="box-shadow:none; background:rgba(255,255,255,.04);">
+            <h3 style="margin:0 0 6px;">Výstup</h3>
+            <p class="muted" style="margin:0;">film + zostrihy (podľa dohody)</p>
+          </div>
+        </div>
+
+        <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn btn-primary" href="/kontakt">Mám záujem</a>
+          <a class="btn btn-ghost" href="/kontakt">Neviem – poraď mi</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 style="margin:0 0 10px;">Ako to prebieha</h2>
+    <div class="grid-2">
+      <div class="card"><h3>1) Dopyt</h3><p class="muted">Napíšeš základné info a dohodneme si krátky call.</p></div>
+      <div class="card"><h3>2) Natáčanie</h3><p class="muted">Pripravíme otázky a natočíme rozhovor + atmosféru.</p></div>
+      <div class="card"><h3>3) Strih</h3><p class="muted">Vyberieme to najlepšie a spravíme film, ktorý drží emóciu.</p></div>
+      <div class="card"><h3>4) Odovzdanie</h3><p class="muted">Dostaneš finálne video + verzie podľa dohody.</p></div>
     </div>
 
-    <div class="card col6">
-      <h2>Portrétny film „Životný príbeh“</h2>
-      <p>Odpoveď na túžbu zachovať skúsenosti a múdrosť pre budúce generácie.</p>
-      <ul>
-        <li>Starší členovia rodiny</li>
-        <li>Ľudia so silným životným príbehom</li>
-        <li>Osobnosti s výnimočnými úspechmi</li>
-        <li>Príbeh pre deti a vnúčatá</li>
-      </ul>
-      <p><a class="btn" href="/kontakt">Mám záujem</a></p>
+    <div style="margin-top:16px;">
+      <a class="btn btn-primary" href="/kontakt">Chcem dopyt</a>
     </div>
-  </div>
+  </section>
 </BaseLayout>

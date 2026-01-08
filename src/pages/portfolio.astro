@@ -2,17 +2,30 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Portfólio | Portrétny film" description="Ukážky portrétnych filmov a fotografií.">
-  <h1>Portfólio</h1>
-  <p>Sem vložíme tvoje videá (YouTube/Vimeo) a galériu fotiek. Zatiaľ je tu pripravená šablóna.</p>
+<BaseLayout title="Portfólio | Portrétny film" description="Ukážky prác – videá a fotky.">
+  <section class="hero">
+    <h1>Ukážky prác</h1>
+    <p class="lead">
+      Sem vložíme tvoje videá (YouTube/Vimeo) a galériu fotiek. Zatiaľ je tu pripravená čistá šablóna.
+    </p>
 
-  <div class="card">
-    <h2>Videá</h2>
-    <p>Vložíš sem embed linky (odporúčam lazy-load neskôr).</p>
-  </div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn btn-primary" href="/kontakt">Objednať film</a>
+      <a class="btn btn-ghost" href="/sluzby">Pozrieť služby</a>
+    </div>
+  </section>
 
-  <div class="card" style="margin-top:14px;">
-    <h2>Fotky</h2>
-    <p>Sem pôjde mriežka fotiek (WebP/AVIF).</p>
-  </div>
+  <section class="section">
+    <div class="card">
+      <h2>Videá</h2>
+      <p class="muted">Vložíš sem embed linky. Keď budeš chcieť, spravíme aj lazy-load, aby to bolo rýchle.</p>
+    </div>
+
+    <div style="height:14px;"></div>
+
+    <div class="card">
+      <h2>Fotky</h2>
+      <p class="muted">Sem pôjde mriežka fotiek (WebP/AVIF). Rýchle načítanie, moderný vzhľad.</p>
+    </div>
+  </section>
 </BaseLayout>

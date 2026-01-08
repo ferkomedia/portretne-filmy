@@ -2,8 +2,39 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Ďakujem | Portrétny film" description="Dopyt bol odoslaný.">
-  <h1>Ďakujem</h1>
-  <p>Váš dopyt bol úspešne odoslaný. Ozvem sa vám čo najskôr.</p>
-  <p><a class="btn2" href="/">Späť na úvod</a></p>
+<BaseLayout title="Ďakujeme | Portrétny film" description="Ďakujeme za odoslanie dopytu.">
+  <section class="hero">
+    <h1>Ďakujeme za Váš dopyt.</h1>
+
+    <p class="lead">
+      Vašu správu sme prijali. Do <strong>24 hodín</strong> Vás kontaktujeme e-mailom alebo telefonicky,
+      aby sme si upresnili predstavu a odporučili najvhodnejší formát portrétneho filmu.
+    </p>
+
+    <div class="grid-2" style="margin-top:16px;">
+      <div class="card" style="box-shadow:none;">
+        <h2 style="margin:0 0 8px;">Čo bude nasledovať</h2>
+        <ul class="muted" style="margin:0; padding-left:18px;">
+          <li>ozveme sa Vám a krátko si prejdeme cieľ filmu</li>
+          <li>dohodneme si termín a lokalitu natáčania</li>
+          <li>pripravíme otázky tak, aby rozhovor pôsobil prirodzene</li>
+        </ul>
+      </div>
+
+      <div class="card" style="box-shadow:none;">
+        <h2 style="margin:0 0 8px;">Zatiaľ si môžete pozrieť</h2>
+        <p class="muted" style="margin:0 0 12px;">
+          Ukážky prác alebo prehľad služieb. Pomôže to rýchlejšie doladiť smer a očakávania.
+        </p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="btn btn-primary" href="/portfolio">Pozrieť ukážky</a>
+          <a class="btn btn-ghost" href="/sluzby">Prehľad služieb</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;">
+      <a class="btn btn-ghost" href="/">Späť na úvod</a>
+    </div>
+  </section>
 </BaseLayout>
