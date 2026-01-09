@@ -1,12 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import YouTubeVideo from "../components/YouTubeVideo.astro";
+import ImageGallery from "../components/ImageGallery.astro";
 ---
+
 <BaseLayout title="Portfólio | Portrétny film" description="Ukážky portrétnych filmov a galéria.">
   <section class="hero">
     <div class="eyebrow">Portfólio</div>
     <h1>Ukážky prác</h1>
     <p class="lead">
-      Sem vložíme videá (YouTube/Vimeo) a galériu fotiek. Zatiaľ sú tu pripravené placeholdery, aby layout vyzeral dobre.
+      Portrétne filmy a fotografie z našich projektov. Kvalitné zábery a profesionálny prístup.
     </p>
     <div class="actions">
       <a class="btn btn--primary" href="/kontakt#objednat">Objednať film</a>
@@ -17,36 +20,57 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <section class="section">
     <h2>Videá</h2>
     <div class="grid3">
-      <div class="card">
+      <div>
         <h3>Video 1</h3>
-        <p>Placeholder pre embed (YouTube/Vimeo). Sem pôjde konkrétne video.</p>
+        <YouTubeVideo videoId="dQw4w9WgXcQ" title="Portrétny film 1" height="250px" />
       </div>
-      <div class="card">
+      <div>
         <h3>Video 2</h3>
-        <p>Placeholder pre embed (YouTube/Vimeo). Sem pôjde konkrétne video.</p>
+        <YouTubeVideo videoId="jNQXAC9IVRw" title="Portrétny film 2" height="250px" />
       </div>
-      <div class="card">
+      <div>
         <h3>Video 3</h3>
-        <p>Placeholder pre embed (YouTube/Vimeo). Sem pôjde konkrétne video.</p>
+        <YouTubeVideo videoId="9bZkp7q19f0" title="Portrétny film 3" height="250px" />
       </div>
     </div>
   </section>
 
   <section class="section">
     <h2>Fotky</h2>
-    <div class="grid3">
-      <div class="card">
-        <h3>Foto 1</h3>
-        <p>Placeholder pre fotku (WebP/AVIF). Neskôr sem dáme reálne zábery.</p>
-      </div>
-      <div class="card">
-        <h3>Foto 2</h3>
-        <p>Placeholder pre fotku (WebP/AVIF). Neskôr sem dáme reálne zábery.</p>
-      </div>
-      <div class="card">
-        <h3>Foto 3</h3>
-        <p>Placeholder pre fotku (WebP/AVIF). Neskôr sem dáme reálne zábery.</p>
-      </div>
-    </div>
+    <ImageGallery
+      images={[
+        {
+          src: "/images/portfolio/foto-1.webp",
+          alt: "Portrétny záber 1",
+          title: "Projekt 1"
+        },
+        {
+          src: "/images/portfolio/foto-2.webp",
+          alt: "Portrétny záber 2",
+          title: "Projekt 2"
+        },
+        {
+          src: "/images/portfolio/foto-3.webp",
+          alt: "Portrétny záber 3",
+          title: "Projekt 3"
+        },
+        {
+          src: "/images/portfolio/foto-4.webp",
+          alt: "Portrétny záber 4",
+          title: "Projekt 4"
+        },
+        {
+          src: "/images/portfolio/foto-5.webp",
+          alt: "Portrétny záber 5",
+          title: "Projekt 5"
+        },
+        {
+          src: "/images/portfolio/foto-6.webp",
+          alt: "Portrétny záber 6",
+          title: "Projekt 6"
+        },
+      ]}
+      columns={3}
+    />
   </section>
 </BaseLayout>
