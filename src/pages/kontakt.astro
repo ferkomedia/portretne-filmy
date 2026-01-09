@@ -3,268 +3,78 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="Kontakt | Portrétny film" description="Objednávka portrétneho filmu.">
-  <section class="hero">
-    <p class="kicker">Kontakt</p>
-    <h1>Objednávka portrétneho filmu</h1>
-    <p class="lead">
-      Prosím, vyplňte pár informácií a ozvem sa vám čo najskôr (e-mail alebo telefón).
+  <h1>Objednávka portrétneho filmu</h1>
+
+  <form name="portretny-film" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/dakujem">
+    <input type="hidden" name="form-name" value="portretny-film" />
+    <p style="display:none">
+      <label>Nechaj prázdne: <input name="bot-field" /></label>
     </p>
-  </section>
 
-  <section class="panel">
-    <form
-      class="fmForm"
-      name="portret"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      action="/dakujem"
-    >
-      <input type="hidden" name="form-name" value="portret" />
-      <p class="srOnly">
-        <label>Nechaj prázdne: <input name="bot-field" /></label>
-      </p>
+    <div class="field">
+      <label for="ico">IČO</label>
+      <input id="ico" name="IČO" inputmode="numeric" placeholder="Zadajte IČO" />
+      <div id="icoStatus" class="help"></div>
+    </div>
 
-      <!-- IČO realtime -->
-      <div class="grid2">
-        <div class="field">
-          <label for="ico">IČO (ak ide o firmu)</label>
-          <input id="ico" name="IČO" type="text" inputmode="numeric" placeholder="napr. 12345678" />
-          <div class="hint" id="icoHint"></div>
-        </div>
+    <!-- Hidden company fields -->
+    <input type="hidden" name="Firma - názov" id="companyNameHidden" value="" />
+    <input type="hidden" name="Firma - adresa" id="companyAddrHidden" value="" />
+    <input type="hidden" name="Firma - DIČ" id="companyDicHidden" value="" />
+    <input type="hidden" name="Firma - IČ DPH" id="companyIcdphHidden" value="" />
+    <input type="hidden" name="Firma - ulica" id="companyStreetHidden" value="" />
+    <input type="hidden" name="Firma - PSČ" id="companyPscHidden" value="" />
+    <input type="hidden" name="Firma - mesto" id="companyCityHidden" value="" />
+    <input type="hidden" name="Firma - právna forma" id="companyLegalFormHidden" value="" />
+    <input type="hidden" name="Firma - SK NACE" id="companySkNaceHidden" value="" />
 
-        <div class="field">
-          <label for="fullName">Meno a priezvisko</label>
-          <input id="fullName" name="Meno a priezvisko" type="text" required placeholder="Napíšte svoje meno" />
-        </div>
-
-        <div class="field">
-          <label for="email">E-mail</label>
-          <input id="email" name="E-mail" type="email" required placeholder="napr. meno@firma.sk" />
-        </div>
-
-        <div class="field">
-          <label for="phone">Telefón</label>
-          <input id="phone" name="Telefón" type="tel" required placeholder="+421..." />
-        </div>
-
-        <div class="field">
-          <label for="filmType">Typ portrétneho filmu</label>
-          <select id="filmType" name="Typ portrétneho filmu" required>
-            <option value="" selected disabled hidden>–</option>
-            <option value="Portrétny film „Osobnosť“">Portrétny film „Osobnosť“</option>
-            <option value="Portrétny film „Životný príbeh“">Portrétny film „Životný príbeh“</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="forWho">Pre koho je film?</label>
-          <select id="forWho" name="Pre koho je film?" required>
-            <option value="" selected disabled hidden>–</option>
-            <option value="Pre mňa osobne">Pre mňa osobne</option>
-            <option value="Pre člena rodiny">Pre člena rodiny</option>
-            <option value="Pre klienta / firmu">Pre klienta / firmu</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="purpose">Účel filmu</label>
-          <select id="purpose" name="Účel filmu" required>
-            <option value="" selected disabled hidden>–</option>
-            <option value="Spomienka / rodina">Spomienka / rodina</option>
-            <option value="Osobný odkaz">Osobný odkaz</option>
-            <option value="Firemná prezentácia">Firemná prezentácia</option>
-            <option value="PR / médiá">PR / médiá</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="horizon">Časový horizont</label>
-          <select id="horizon" name="Časový horizont" required>
-            <option value="" selected disabled hidden>–</option>
-            <option value="1–2 týždne">1–2 týždne</option>
-            <option value="Do mesiaca">Do mesiaca</option>
-            <option value="2–3 mesiace">2–3 mesiace</option>
-            <option value="Nemám termín">Nemám termín</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="budget">Orientačný rozpočet</label>
-          <select id="budget" name="Orientačný rozpočet" required>
-            <option value="" selected disabled hidden>–</option>
-            <option value="Do 500 €">Do 500 €</option>
-            <option value="500–1000 €">500–1000 €</option>
-            <option value="1000–2000 €">1000–2000 €</option>
-            <option value="2000 € a viac">2000 € a viac</option>
-          </select>
-          <div class="hint">Slúži len na nastavenie rozsahu.</div>
-        </div>
-
-        <div class="field">
-          <label for="city">Mesto / lokalita</label>
-          <input id="city" name="Mesto / lokalita" type="text" placeholder="napr. Martin / Žilina / Bratislava" />
-        </div>
-
-        <div class="field">
-          <label for="refs">Link na ukážky (ak máte)</label>
-          <input id="refs" name="Link na ukážky" type="url" placeholder="YouTube / Google Drive / Vimeo" />
-        </div>
-
-        <div class="field">
-          <label for="preferredDate">Preferovaný termín</label>
-          <input id="preferredDate" name="Preferovaný termín" type="date" />
-        </div>
-
-        <div class="field full">
-          <label for="msg">Správa</label>
-          <textarea
-            id="msg"
-            name="Správa"
-            rows="6"
-            required
-            placeholder="Stručne: o koho ide, čo chcete zachytiť, prípadne link na ukážky…"
-          ></textarea>
-        </div>
+    <div class="grid2">
+      <div class="field">
+        <label>Meno a priezvisko</label>
+        <input name="Meno a priezvisko" required placeholder="Napíšte svoje meno" />
       </div>
-
-      <!-- Doména dole pred odoslaním -->
-      <div class="panelInner">
-        <h3>Doména (voliteľné)</h3>
-        <div class="grid2">
-          <div class="field">
-            <label for="domain">Doména na kontrolu (.sk)</label>
-            <input id="domain" name="Doména" type="text" placeholder="napr. mojafirma.sk" />
-            <div class="hint" id="domainHint"></div>
-          </div>
-          <div class="field">
-            <label>&nbsp;</label>
-            <div class="hint muted">Kontrola prebieha automaticky pri písaní (DNS overenie).</div>
-          </div>
-        </div>
+      <div class="field">
+        <label>Email</label>
+        <input name="Email" type="email" required placeholder="napr. meno@firma.sk" />
       </div>
+    </div>
 
-      <div class="checkRow">
-        <input id="gdpr" name="Súhlas GDPR" type="checkbox" required />
-        <label for="gdpr">Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.</label>
+    <div class="grid2">
+      <div class="field">
+        <label>Telefón</label>
+        <input name="Telefón" placeholder="+421…" />
       </div>
-
-      <div class="actions">
-        <button class="btn btnPrimary" type="submit">Odoslať dopyt</button>
+      <div class="field">
+        <label>Typ portrétneho filmu</label>
+        <select name="Typ portrétneho filmu" required>
+          <option value="" selected disabled>Vyber formát</option>
+          <option>Portrétny film „Osobnosť“</option>
+          <option>Portrétny film „Životný príbeh“</option>
+        </select>
       </div>
+    </div>
 
-      <!-- Hidden company fields (naplní JS len ak nájde IČO) -->
-      <input type="hidden" name="Firma - názov" id="c_name" value="" />
-      <input type="hidden" name="Firma - IČO" id="c_ico" value="" />
-      <input type="hidden" name="Firma - DIČ" id="c_dic" value="" />
-      <input type="hidden" name="Firma - IČ DPH" id="c_icdph" value="" />
-      <input type="hidden" name="Firma - ulica" id="c_street" value="" />
-      <input type="hidden" name="Firma - mesto" id="c_city" value="" />
-      <input type="hidden" name="Firma - PSČ" id="c_zip" value="" />
-      <input type="hidden" name="Firma - krajina" id="c_country" value="" />
-      <input type="hidden" name="Firma - právna forma" id="c_legal" value="" />
-      <input type="hidden" name="Firma - stav" id="c_status" value="" />
-      <input type="hidden" name="Firma - založená" id="c_established" value="" />
-    </form>
-  </section>
+    <div class="grid2">
+      <div class="field">
+        <label for="domain">Doména (.sk)</label>
+        <input id="domain" name="Doména" placeholder="napr. mojadomena.sk" />
+        <div id="domainStatus" class="help"></div>
+      </div>
+      <div class="field">
+        <label>Správa</label>
+        <textarea name="Správa" rows="5" required placeholder="Krátko opíšte dopyt…"></textarea>
+      </div>
+    </div>
 
-  <script>
-    const $ = (id) => document.getElementById(id);
+    <input type="hidden" name="Doména - voľná" id="domainAvailableHidden" value="" />
 
-    // --- ICO realtime ---
-    const icoInput = $("ico");
-    const icoHint = $("icoHint");
+    <label class="checkbox">
+      <input type="checkbox" name="GDPR" required />
+      Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.
+    </label>
 
-    const mapCompanyFields = (fields) => {
-      // Mapujeme presne podľa názvov z funkcie
-      $("c_name").value = fields["Firma - názov"] || "";
-      $("c_ico").value = fields["Firma - IČO"] || "";
-      $("c_dic").value = fields["Firma - DIČ"] || "";
-      $("c_icdph").value = fields["Firma - IČ DPH"] || "";
-      $("c_street").value = fields["Firma - ulica"] || "";
-      $("c_city").value = fields["Firma - mesto"] || "";
-      $("c_zip").value = fields["Firma - PSČ"] || "";
-      $("c_country").value = fields["Firma - krajina"] || "";
-      $("c_legal").value = fields["Firma - právna forma"] || "";
-      $("c_status").value = fields["Firma - stav"] || "";
-      $("c_established").value = fields["Firma - založená"] || "";
-    };
+    <button class="btn btn--primary" type="submit">Odoslať dopyt</button>
+  </form>
 
-    const clearCompanyFields = () => {
-      ["c_name","c_ico","c_dic","c_icdph","c_street","c_city","c_zip","c_country","c_legal","c_status","c_established"]
-        .forEach(id => $(id).value = "");
-    };
-
-    let icoTimer = null;
-    icoInput.addEventListener("input", () => {
-      const ico = icoInput.value.replace(/\s+/g, "");
-      icoHint.textContent = "";
-      clearTimeout(icoTimer);
-
-      if (!ico || ico.length < 6) {
-        clearCompanyFields();
-        return;
-      }
-
-      icoTimer = setTimeout(async () => {
-        try {
-          icoHint.textContent = "Overujem IČO…";
-          const res = await fetch(`/.netlify/functions/ico-lookup?ico=${encodeURIComponent(ico)}`);
-          const data = await res.json();
-
-          if (!data.ok) {
-            icoHint.textContent = data.error || "Nepodarilo sa overiť IČO.";
-            clearCompanyFields();
-            return;
-          }
-
-          if (!data.found) {
-            icoHint.textContent = "Firma sa nenašla alebo zdroj nevrátil údaje.";
-            clearCompanyFields();
-            return;
-          }
-
-          mapCompanyFields(data.fields || {});
-          const name = data.company?.name || "";
-          const addr = [data.company?.street, data.company?.city, data.company?.postalCode].filter(Boolean).join(", ");
-          icoHint.textContent = name ? `Nájdené: ${name}${addr ? " — " + addr : ""}` : "Nájdené údaje boli doplnené.";
-        } catch (e) {
-          icoHint.textContent = "Chyba pri overovaní IČO.";
-          clearCompanyFields();
-        }
-      }, 450);
-    });
-
-    // --- Domain realtime ---
-    const domainInput = $("domain");
-    const domainHint = $("domainHint");
-    let domainTimer = null;
-
-    domainInput.addEventListener("input", () => {
-      const domain = domainInput.value.trim();
-      domainHint.textContent = "";
-      clearTimeout(domainTimer);
-
-      if (!domain || domain.length < 4) return;
-
-      domainTimer = setTimeout(async () => {
-        try {
-          domainHint.textContent = "Kontrolujem doménu…";
-          const res = await fetch(`/.netlify/functions/domain-check?domain=${encodeURIComponent(domain)}`);
-          const data = await res.json();
-
-          if (!data.ok) {
-            domainHint.textContent = data.error || "Kontrola zlyhala.";
-            return;
-          }
-
-          domainHint.textContent = data.available
-            ? "Doména pravdepodobne nie je zaregistrovaná (DNS)."
-            : "Doména vyzerá ako zaregistrovaná (DNS existuje).";
-        } catch (e) {
-          domainHint.textContent = "Kontrola domény zlyhala.";
-        }
-      }, 450);
-    });
-  </script>
+  <script type="module" src="/src/scripts/enrich-forms.js"></script>
 </BaseLayout>

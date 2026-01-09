@@ -1,111 +1,78 @@
-/**
- * Netlify Function: /netlify/functions/ico-lookup?ico=12345678
- * Zdroj: registeruz.sk (CRUZ public API)
- *
- * 1) /cruz-public/api/uctovne-jednotky?...&ico=XXXX -> { id:[...], existujeDalsieId:false }
- * 2) /cruz-public/api/uctovna-jednotka?id=YYYY -> detaily
- */
-
-export default async (req) => {
+export async function handler(event) {
     try {
-        const url = new URL(req.url);
-        const icoRaw = (url.searchParams.get("ico") || "").trim();
+        const url = new URL(event.rawUrl);
+        const ico = (url.searchParams.get("ico") || "").trim();
 
-        const ico = icoRaw.replace(/\s+/g, "");
-        if (!/^\d{6,10}$/.test(ico)) {
-            return json(400, { ok: false, error: "Neplatné IČO. Zadaj iba čísla (6–10)." });
+        if (!ico || !/^\d{6,10}$/.test(ico)) {
+            return json(400, { ok: false, error: "Neplatné IČO." });
         }
 
-        const listUrl =
-            "https://www.registeruz.sk/cruz-public/api/uctovne-jednotky" +
-            "?zmenene-od=2000-01-01&pokracovat-za-id=1&max-zaznamov=1&ico=" +
-            encodeURIComponent(ico);
+        // RegisterUZ API – zoznam účtovných jednotiek podľa IČO
+        const apiUrl = `https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?ico=${encodeURIComponent(ico)}`;
 
-        const listRes = await fetch(listUrl, { headers: { "accept": "application/json" } });
-        if (!listRes.ok) {
-            return json(502, { ok: false, error: "RegisterUZ: chyba pri vyhľadaní ID." });
-        }
+        const r = await fetch(apiUrl, {
+            headers: { accept: "application/json", "user-agent": "netlify-function/ico-lookup" }
+        });
 
-        const listJson = await listRes.json();
-        const id = Array.isArray(listJson?.id) && listJson.id.length ? listJson.id[0] : null;
+        if (!r.ok) return json(502, { ok: false, error: `RegisterUZ vrátil ${r.status}.` });
 
-        if (!id) {
-            return json(200, { ok: true, found: false, ico, company: null });
-        }
+        const data = await r.json();
+        const d = Array.isArray(data) ? data[0] : data;
 
-        const detailUrl =
-            "https://www.registeruz.sk/cruz-public/api/uctovna-jednotka?id=" + encodeURIComponent(String(id));
+        if (!d || (!d.ico && !d.nazovUJ)) return json(200, { ok: true, found: false, ico });
 
-        const detRes = await fetch(detailUrl, { headers: { "accept": "application/json" } });
-        if (!detRes.ok) {
-            return json(502, { ok: false, error: "RegisterUZ: chyba pri načítaní detailov." });
-        }
+        // TEXTY iba ako string -> nikdy objekt
+        const name = s(d.nazovUJ);
+        const dic = s(d.dic);
+        const icDph = s(d.icDph || d.ic_dph || d.icDPH);
 
-        const d = await detRes.json();
+        const city = s(d.mesto);
+        const street = s(d.ulica);
+        const psc = s(d.psc);
+        const country = s(d.stat) || "Slovenská republika";
 
-        // Vždy vraciame ČISTÉ stringy (žiadne objekty) = koniec [object Object]
-        const company = {
-            // identifikácia
-            nazov: s(d?.nazovUJ),
-            ico: s(d?.ico) || ico,
-            dic: s(d?.dic),
+        const supisne = s(d.supisneCislo || d.cisloDomu || d.orientacneCislo);
+        const streetLine = [street, supisne].filter(Boolean).join(" ").trim();
 
-            // adresa
-            ulica: s(d?.ulica),
-            psc: s(d?.psc),
-            mesto: s(d?.mesto),
-            okres: s(d?.okres),
-            kraj: s(d?.kraj),
-            sidlo: s(d?.sidlo),
-            country: "Slovenská republika",
+        const addressLine = [streetLine, psc, city, country].filter(Boolean).join(", ");
 
-            // meta
-            pravnaForma: s(d?.pravnaForma),
-            skNace: s(d?.skNace),
-            velkostOrganizacie: s(d?.velkostOrganizacie),
-            datumZalozenia: s(d?.datumZalozenia),
-            datumPoslednejUpravy: s(d?.datumPoslednejUpravy),
-            zdrojDat: s(d?.zdrojDat),
-            konsolidovana: typeof d?.konsolidovana === "boolean" ? d.konsolidovana : null,
-        };
-
-        // Pekná skladaná adresa pre zobrazenie v UI
-        const addressLine = joinNonEmpty([company.ulica, company.psc, company.mesto]);
-        const addressFull = joinNonEmpty([addressLine, company.country]);
+        const legalForm = s(d.pravnaForma);
+        const skNace = s(d.skNace || d.nace);
 
         return json(200, {
             ok: true,
             found: true,
-            ico: company.ico,
-            id: String(id),
-            company,
-            addressLine,
-            addressFull,
+            ico: s(d.ico) || ico,
+            company: {
+                name,
+                ico: s(d.ico) || ico,
+                dic,
+                icDph,
+                street: streetLine,
+                psc,
+                city,
+                country,
+                legalForm,
+                skNace
+            },
+            addressLine
         });
     } catch (e) {
-        return json(500, { ok: false, error: "Server error", detail: String(e?.message || e) });
+        return json(500, { ok: false, error: "Chyba v ico-lookup.", detail: String(e?.message || e) });
     }
-};
+}
 
 function s(v) {
     if (v === null || v === undefined) return "";
     if (typeof v === "string") return v.trim();
     if (typeof v === "number") return String(v);
-    if (typeof v === "boolean") return v ? "true" : "false";
-    // objekt/array nechceme lepiť do stringu
     return "";
 }
 
-function joinNonEmpty(arr) {
-    return arr.map((x) => (x || "").trim()).filter(Boolean).join(", ");
-}
-
-function json(status, obj) {
-    return new Response(JSON.stringify(obj), {
-        status,
-        headers: {
-            "content-type": "application/json; charset=utf-8",
-            "cache-control": "no-store",
-        },
-    });
+function json(statusCode, body) {
+    return {
+        statusCode,
+        headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
+        body: JSON.stringify(body)
+    };
 }
