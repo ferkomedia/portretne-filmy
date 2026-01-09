@@ -7,10 +7,10 @@ export const handler = async (event) => {
             return json({ ok: false, found: false, error: "Neplatné IČO." }, 400);
         }
 
-        // 1. Skúsime RegisterUZ (primárny zdroj)
+        // 1. Skúsime RegisterUZ
         let result = await tryRegisterUZ(ico);
 
-        // 2. Ak RegisterUZ zlyhá, skúsime Slovensko.Digital DataHub
+        // 2. Ak RegisterUZ zlyhá, skúsime DataHub
         if (!result.ok || !result.found) {
             const fallbackResult = await tryDataHub(ico);
             if (fallbackResult.ok && fallbackResult.found) {
@@ -26,22 +26,23 @@ export const handler = async (event) => {
     }
 };
 
-// ========== RegisterUZ (primárny zdroj) ==========
+// ========== RegisterUZ (OPRAVENÉ - 2 kroky) ==========
 async function tryRegisterUZ(ico) {
     try {
-        const endpoint = `https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?ico=${encodeURIComponent(ico)}`;
+        // KROK 1: Získať ID účtovnej jednotky
+        const searchUrl = `https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?zmenene-od=2000-01-01&pokracovat-za-id=0&max-zaznamov=1&ico=${encodeURIComponent(ico)}`;
 
-        const r = await fetch(endpoint, {
+        const searchResponse = await fetch(searchUrl, {
             headers: {
                 accept: "application/json",
                 "user-agent": "Mozilla/5.0 (Netlify Function) FerkoMedia",
             },
         });
 
-        const ct = (r.headers.get("content-type") || "").toLowerCase();
-        const text = await r.text();
+        const searchCt = (searchResponse.headers.get("content-type") || "").toLowerCase();
+        const searchText = await searchResponse.text();
 
-        if (!ct.includes("application/json")) {
+        if (!searchCt.includes("application/json")) {
             return {
                 ok: false,
                 found: false,
@@ -50,20 +51,45 @@ async function tryRegisterUZ(ico) {
             };
         }
 
-        const data = JSON.parse(text);
+        const searchData = JSON.parse(searchText);
 
-        const arr =
-            Array.isArray(data) ? data :
-                Array.isArray(data?.data) ? data.data :
-                    Array.isArray(data?.items) ? data.items :
-                        Array.isArray(data?.result) ? data.result :
-                            [];
+        // Odpoveď je: {"id":[123456],"existujeDalsieId":false}
+        const ids = Array.isArray(searchData?.id) ? searchData.id : [];
 
-        const item = arr.find(x => String(x?.ico ?? x?.ICO ?? "").trim() === ico) ?? arr[0];
+        if (ids.length === 0) {
+            return { ok: true, found: false, ico, source: "registeruz" };
+        }
 
-        if (!item) return { ok: true, found: false, ico, source: "registeruz" };
+        const entityId = ids[0];
 
-        const d = item;
+        // KROK 2: Získať detail účtovnej jednotky
+        const detailUrl = `https://www.registeruz.sk/cruz-public/api/uctovna-jednotka?id=${entityId}`;
+
+        const detailResponse = await fetch(detailUrl, {
+            headers: {
+                accept: "application/json",
+                "user-agent": "Mozilla/5.0 (Netlify Function) FerkoMedia",
+            },
+        });
+
+        const detailCt = (detailResponse.headers.get("content-type") || "").toLowerCase();
+        const detailText = await detailResponse.text();
+
+        if (!detailCt.includes("application/json")) {
+            return {
+                ok: false,
+                found: false,
+                error: "RegisterUZ detail nedostupný.",
+                source: "registeruz",
+            };
+        }
+
+        const d = JSON.parse(detailText);
+
+        if (!d || !d.nazovUJ) {
+            return { ok: true, found: false, ico, source: "registeruz" };
+        }
+
         const company = extractRegisterUZ(d, ico);
 
         return { ok: true, found: true, ico, company, source: "registeruz" };
@@ -75,25 +101,35 @@ async function tryRegisterUZ(ico) {
 }
 
 function extractRegisterUZ(d, ico) {
-    const name = (d.nazovUJ ?? d.name ?? "").toString().trim();
-    const dic = (d.dic ?? d.DIC ?? "").toString().trim();
-    const icdph = (d.icDph ?? d.icdph ?? d.ICDPH ?? "").toString().trim();
+    const name = (d.nazovUJ ?? "").toString().trim();
+    const dic = (d.dic ?? "").toString().trim();
+    const icdph = (d.icDph ?? d.icdph ?? "").toString().trim();
 
-    const street = (d.ulica ?? d.street ?? "").toString().trim();
-    const number = (
-        d.supCislo ?? d.supcislo ?? d.orientacneCislo ?? d.orientacnecislo ?? d.number ?? ""
-    ).toString().trim();
-    const city = (d.mesto ?? d.city ?? "").toString().trim();
-    const psc = (d.psc ?? d.postalCode ?? "").toString().trim();
-    const country = (d.stat ?? d.country ?? "Slovenská republika").toString().trim();
+    const street = (d.ulica ?? "").toString().trim();
+    const city = (d.mesto ?? "").toString().trim();
+    const psc = (d.psc ?? "").toString().trim();
+    const country = "Slovenská republika";
 
-    const addressLine = [street, number].filter(Boolean).join(" ").trim();
-    const addressFull = [addressLine, [psc, city].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+    // RegisterUZ má ulicu aj s číslom v jednom poli
+    const addressLine = street;
+    const addressFull = [street, [psc, city].filter(Boolean).join(" ")].filter(Boolean).join(", ");
 
-    return { name, ico, dic, icdph, street, number, city, psc, country, addressLine, addressFull };
+    return {
+        name,
+        ico: d.ico ?? ico,
+        dic,
+        icdph,
+        street,
+        number: "", // RegisterUZ nemá oddelené číslo
+        city,
+        psc,
+        country,
+        addressLine,
+        addressFull
+    };
 }
 
-// ========== Slovensko.Digital DataHub (záložný zdroj) ==========
+// ========== DataHub (záložný zdroj) ==========
 async function tryDataHub(ico) {
     try {
         const endpoint = `https://datahub.ekosystem.slovensko.digital/api/datahub/corporate_bodies/search?q=cin:${encodeURIComponent(ico)}`;
@@ -110,8 +146,6 @@ async function tryDataHub(ico) {
         }
 
         const data = await r.json();
-
-        // DataHub vracia pole výsledkov
         const items = Array.isArray(data) ? data : (data?.results ?? data?.items ?? []);
         const item = items.find(x => String(x?.cin ?? "").trim() === ico) ?? items[0];
 
@@ -133,7 +167,7 @@ function extractDataHub(d, ico) {
     const icdph = (d.vatin ?? "").toString().trim();
 
     const street = (d.street ?? "").toString().trim();
-    const number = (d.reg_number ?? d.building_number ?? d.street_number ?? "").toString().trim();
+    const number = (d.building_number ?? d.street_number ?? "").toString().trim();
     const city = (d.municipality ?? "").toString().trim();
     const psc = (d.postal_code ?? "").toString().trim();
     const country = (d.country ?? "Slovenská republika").toString().trim();
