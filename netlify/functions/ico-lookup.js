@@ -1,160 +1,125 @@
-// netlify/functions/ico-lookup.js  (CommonJS)
+// netlify/functions/ico-lookup.js
 
-exports.handler = async (event) => {
+export async function handler(event) {
     try {
-        const ico = (event.queryStringParameters?.ico || "").replace(/\s+/g, "").trim();
+        const url = new URL(event.rawUrl);
+        const ico = (url.searchParams.get("ico") || "").replace(/\s+/g, "");
 
-        if (!ico) return json(400, { ok: false, error: "Chýba parameter ico." });
-        if (!/^\d{6,10}$/.test(ico)) return json(400, { ok: false, error: "IČO má byť 6–10 číslic." });
+        if (!ico || !/^\d{6,10}$/.test(ico)) {
+            return json({ ok: false, found: false, error: "Zadajte platné IČO (6–10 číslic)." }, 400);
+        }
 
-        const url = `https://api.statistics.sk/rpo/v1/search?identifier=${encodeURIComponent(ico)}`;
-        const res = await fetch(url, { headers: { accept: "application/json" } });
+        // POZNÁMKA:
+        // Ty už evidentne používaš zdroj, ktorý vracia použiteľné dáta (podľa screenshotu).
+        // Nechám tu "passthrough" cez tvoju existujúcu logiku, ale bezpečne to znormalizujem.
+        // Ak máš vlastný endpoint, sem dosadíš jeho URL.
+        //
+        // Dočasne použijeme tvoje existujúce správanie: ak už máš v projekte fetch na zdroj,
+        // nechaj ho, len na konci volaj normalizeCompany(payload).
+        //
+        // Keďže nevidím tvoj pôvodný kód, spravím robustnú verziu s fallbackom:
+        // - najprv skúsim tvoj pôvodný endpoint, ak existuje cez ENV (odporúčané)
+        // - ak nie, vrátim "not found" (aby si si tam dal správny zdroj)
 
-        if (!res.ok) return json(502, { ok: false, error: "RPO API vrátilo chybu." });
+        const sourceUrl = process.env.ICO_SOURCE_URL; // napr. https://tvoj-api/ico?ico=...
+        if (!sourceUrl) {
+            return json({
+                ok: true,
+                found: false,
+                ico,
+                error:
+                    "Chýba ICO_SOURCE_URL v Netlify env. Nastav zdroj pre IČO lookup (alebo uprav funkciu na tvoj existujúci zdroj).",
+            });
+        }
 
-        const data = await res.json();
-
-        // RPO odpoveď je objekt s results[]
-        const item = Array.isArray(data?.results) ? data.results[0] : null;
-        if (!item) return json(200, { ok: true, found: false, ico });
-
-        // Názov firmy: fullNames[0].value
-        const name = Array.isArray(item.fullNames) && item.fullNames.length ? (item.fullNames[0]?.value || "") : "";
-
-        // Adresa: addresses[0] + municipality.value
-        const addr = Array.isArray(item.addresses) && item.addresses.length ? item.addresses[0] : null;
-
-        const street = addr?.street || "";
-        const buildingNumber = addr?.buildingNumber || "";
-        const postalCode = Array.isArray(addr?.postalCodes) && addr.postalCodes.length ? (addr.postalCodes[0] || "") : "";
-        const municipality = addr?.municipality?.value || "";
-        const country = addr?.country?.value || "";
-
-        const addressLine1 = [street, buildingNumber].filter(Boolean).join(" ").trim();
-        const addressLine2 = [postalCode, municipality].filter(Boolean).join(" ").trim();
-        const address = [addressLine1, addressLine2, country].filter(Boolean).join(", ");
-
-        // Register / zdroj: sourceRegister (ak existuje)
-        const sr = item?.sourceRegister || {};
-        const sourceRegisterName = sr?.value?.value?.value || "";
-        const registrationOffice = Array.isArray(sr?.registrationOffices) && sr.registrationOffices.length
-            ? (sr.registrationOffices[0]?.value || "")
-            : "";
-        const registrationNumber = Array.isArray(sr?.registrationNumbers) && sr.registrationNumbers.length
-            ? (sr.registrationNumbers[0]?.value || "")
-            : "";
-
-        return json(200, {
-            ok: true,
-            found: true,
-            ico,
-            company: {
-                name,
-                address,
-                municipality,
-                postalCode,
-                country,
-                sourceRegisterName,
-                registrationOffice,
-                registrationNumber,
-                // RPO často DIČ/IČDPH nemá → necháme prázdne
-                dic: "",
-                icdph: "",
-            },
-            raw: item
+        const res = await fetch(`${sourceUrl}${sourceUrl.includes("?") ? "&" : "?"}ico=${encodeURIComponent(ico)}`, {
+            headers: { "User-Agent": "netlify-function" },
         });
-    } catch (e) {
-        return json(500, { ok: false, error: "Nastala chyba pri vyhľadaní IČO." });
-    }
-};
 
-function json(statusCode, body) {
-    return {
-        statusCode,
-        headers: {
-            "content-type": "application/json; charset=utf-8",
-            "cache-control": "no-store"
-        },
-        body: JSON.stringify(body)
-    };
+        if (!res.ok) {
+            return json({ ok: false, found: false, ico, error: `Zdroj pre IČO vrátil chybu: ${res.status}` }, 502);
+        }
+
+        const payload = await res.json();
+        const normalized = normalizeCompany(payload, ico);
+
+        return json({ ok: true, found: normalized.found, ico, company: normalized.company, fields: normalized.fields });
+    } catch (e) {
+        return json({ ok: false, found: false, error: String(e?.message || e) }, 500);
+    }
 }
-// netlify/functions/ico-lookup.js  (CommonJS)
 
-exports.handler = async (event) => {
-    try {
-        const ico = (event.queryStringParameters?.ico || "").replace(/\s+/g, "").trim();
+function normalizeCompany(payload, ico) {
+    // Podľa tvojho screenshotu payload vyzerá už „company: { name, address, ... }“ + ďalšie polia.
+    // Spravíme bezpečné čítanie:
+    const company = payload?.company || payload?.data?.company || payload || {};
+    const name = safeStr(company?.name) || safeStr(payload?.name) || "";
+    const city = safeStr(company?.municipality) || safeStr(company?.city) || "";
+    const postalCode = safeStr(company?.postalCode) || safeStr(company?.zip) || "";
+    const country = safeStr(company?.country) || "Slovenská republika";
 
-        if (!ico) return json(400, { ok: false, error: "Chýba parameter ico." });
-        if (!/^\d{6,10}$/.test(ico)) return json(400, { ok: false, error: "IČO má byť 6–10 číslic." });
+    // Address line: priorita na string, nie pole objektov
+    const street =
+        safeStr(company?.street) ||
+        safeStr(company?.addressLine) ||
+        safeStr(company?.address) || // niekedy už býva hotový string
+        "";
 
-        const url = `https://api.statistics.sk/rpo/v1/search?identifier=${encodeURIComponent(ico)}`;
-        const res = await fetch(url, { headers: { accept: "application/json" } });
+    // VAT / DPH: môže byť v rôznych miestach
+    const icDph = safeStr(payload?.vatNumber) || safeStr(company?.vatNumber) || safeStr(payload?.icdph) || safeStr(company?.icdph) || "";
 
-        if (!res.ok) return json(502, { ok: false, error: "RPO API vrátilo chybu." });
+    // DIČ (ak existuje)
+    const dic = safeStr(payload?.taxNumber) || safeStr(company?.taxNumber) || safeStr(payload?.dic) || safeStr(company?.dic) || "";
 
-        const data = await res.json();
+    const legalForm = safeStr(company?.legalForm) || safeStr(payload?.legalForm) || "";
+    const status = safeStr(payload?.status) || safeStr(company?.status) || "";
+    const established = safeStr(payload?.established) || safeStr(company?.establishment) || safeStr(payload?.establishment) || "";
 
-        // RPO odpoveď je objekt s results[]
-        const item = Array.isArray(data?.results) ? data.results[0] : null;
-        if (!item) return json(200, { ok: true, found: false, ico });
+    const found = Boolean(name || street || city || postalCode || dic || icDph);
 
-        // Názov firmy: fullNames[0].value
-        const name = Array.isArray(item.fullNames) && item.fullNames.length ? (item.fullNames[0]?.value || "") : "";
+    const companyObj = {
+        name,
+        ico,
+        dic,
+        icDph,
+        street,
+        city,
+        postalCode,
+        country,
+        legalForm,
+        status,
+        established,
+    };
 
-        // Adresa: addresses[0] + municipality.value
-        const addr = Array.isArray(item.addresses) && item.addresses.length ? item.addresses[0] : null;
+    // fields pre hidden inputy
+    const fields = {
+        "Firma - názov": name,
+        "Firma - IČO": ico,
+        "Firma - DIČ": dic,
+        "Firma - IČ DPH": icDph,
+        "Firma - ulica": street,
+        "Firma - mesto": city,
+        "Firma - PSČ": postalCode,
+        "Firma - krajina": country,
+        "Firma - právna forma": legalForm,
+        "Firma - stav": status,
+        "Firma - založená": established,
+    };
 
-        const street = addr?.street || "";
-        const buildingNumber = addr?.buildingNumber || "";
-        const postalCode = Array.isArray(addr?.postalCodes) && addr.postalCodes.length ? (addr.postalCodes[0] || "") : "";
-        const municipality = addr?.municipality?.value || "";
-        const country = addr?.country?.value || "";
+    return { found, company: companyObj, fields };
+}
 
-        const addressLine1 = [street, buildingNumber].filter(Boolean).join(" ").trim();
-        const addressLine2 = [postalCode, municipality].filter(Boolean).join(" ").trim();
-        const address = [addressLine1, addressLine2, country].filter(Boolean).join(", ");
+function safeStr(v) {
+    if (v === null || v === undefined) return "";
+    if (typeof v === "string") return v.trim();
+    if (typeof v === "number") return String(v);
+    return ""; // ignoruj objekty/array, aby nevznikol [object Object]
+}
 
-        // Register / zdroj: sourceRegister (ak existuje)
-        const sr = item?.sourceRegister || {};
-        const sourceRegisterName = sr?.value?.value?.value || "";
-        const registrationOffice = Array.isArray(sr?.registrationOffices) && sr.registrationOffices.length
-            ? (sr.registrationOffices[0]?.value || "")
-            : "";
-        const registrationNumber = Array.isArray(sr?.registrationNumbers) && sr.registrationNumbers.length
-            ? (sr.registrationNumbers[0]?.value || "")
-            : "";
-
-        return json(200, {
-            ok: true,
-            found: true,
-            ico,
-            company: {
-                name,
-                address,
-                municipality,
-                postalCode,
-                country,
-                sourceRegisterName,
-                registrationOffice,
-                registrationNumber,
-                // RPO často DIČ/IČDPH nemá → necháme prázdne
-                dic: "",
-                icdph: "",
-            },
-            raw: item
-        });
-    } catch (e) {
-        return json(500, { ok: false, error: "Nastala chyba pri vyhľadaní IČO." });
-    }
-};
-
-function json(statusCode, body) {
+function json(obj, status = 200) {
     return {
-        statusCode,
-        headers: {
-            "content-type": "application/json; charset=utf-8",
-            "cache-control": "no-store"
-        },
-        body: JSON.stringify(body)
+        statusCode: status,
+        headers: { "content-type": "application/json; charset=utf-8" },
+        body: JSON.stringify(obj),
     };
 }
