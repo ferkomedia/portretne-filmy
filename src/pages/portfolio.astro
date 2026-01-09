@@ -1,31 +1,52 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-
-<BaseLayout title="Portfólio | Portrétny film" description="Ukážky prác – videá a fotky.">
+<BaseLayout title="Portfólio | Portrétny film" description="Ukážky portrétnych filmov a galéria.">
   <section class="hero">
+    <div class="eyebrow">Portfólio</div>
     <h1>Ukážky prác</h1>
     <p class="lead">
-      Sem vložíme tvoje videá (YouTube/Vimeo) a galériu fotiek. Zatiaľ je tu pripravená čistá šablóna.
+      Sem vložíme videá (YouTube/Vimeo) a galériu fotiek. Zatiaľ sú tu pripravené placeholdery, aby layout vyzeral dobre.
     </p>
-
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="btn btn-primary" href="/kontakt">Objednať film</a>
-      <a class="btn btn-ghost" href="/sluzby">Pozrieť služby</a>
+    <div class="actions">
+      <a class="btn btn--primary" href="/kontakt#objednat">Objednať film</a>
+      <a class="btn btn--ghost" href="/sluzby">Služby</a>
     </div>
   </section>
 
   <section class="section">
-    <div class="card">
-      <h2>Videá</h2>
-      <p class="muted">Vložíš sem embed linky. Keď budeš chcieť, spravíme aj lazy-load, aby to bolo rýchle.</p>
+    <h2>Videá</h2>
+    <div class="grid3">
+      <div class="card">
+        <h3>Video 1</h3>
+        <p>Placeholder pre embed (YouTube/Vimeo). Sem pôjde konkrétne video.</p>
+      </div>
+      <div class="card">
+        <h3>Video 2</h3>
+        <p>Placeholder pre embed (YouTube/Vimeo). Sem pôjde konkrétne video.</p>
+      </div>
+      <div class="card">
+        <h3>Video 3</h3>
+        <p>Placeholder pre embed (YouTube/Vimeo). Sem pôjde konkrétne video.</p>
+      </div>
     </div>
+  </section>
 
-    <div style="height:14px;"></div>
-
-    <div class="card">
-      <h2>Fotky</h2>
-      <p class="muted">Sem pôjde mriežka fotiek (WebP/AVIF). Rýchle načítanie, moderný vzhľad.</p>
+  <section class="section">
+    <h2>Fotky</h2>
+    <div class="grid3">
+      <div class="card">
+        <h3>Foto 1</h3>
+        <p>Placeholder pre fotku (WebP/AVIF). Neskôr sem dáme reálne zábery.</p>
+      </div>
+      <div class="card">
+        <h3>Foto 2</h3>
+        <p>Placeholder pre fotku (WebP/AVIF). Neskôr sem dáme reálne zábery.</p>
+      </div>
+      <div class="card">
+        <h3>Foto 3</h3>
+        <p>Placeholder pre fotku (WebP/AVIF). Neskôr sem dáme reálne zábery.</p>
+      </div>
     </div>
   </section>
 </BaseLayout>
