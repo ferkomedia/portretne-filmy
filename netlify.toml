@@ -5,12 +5,3 @@
 [functions]
   directory = "netlify/functions"
 
-[[redirects]]
-  from = "/api/domain-check"
-  to = "/.netlify/functions/domain-check"
-  status = 200
-
-[[redirects]]
-  from = "/api/ico"
-  to = "/.netlify/functions/ico-lookup"
-  status = 200

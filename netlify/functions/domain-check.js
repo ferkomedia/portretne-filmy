@@ -1,54 +1,87 @@
-// netlify/functions/domain-check.js
+/**
+ * Netlify Function: /netlify/functions/domain-check?domain=mojadomena.sk
+ * WHOIS pre .sk: whois.sk-nic.sk (port 43)
+ */
 
-export async function handler(event) {
+import net from "node:net";
+
+export default async (req) => {
     try {
-        const url = new URL(event.rawUrl);
-        let domain = (url.searchParams.get("domain") || "").trim().toLowerCase();
+        const url = new URL(req.url);
+        const domainRaw = (url.searchParams.get("domain") || "").trim().toLowerCase();
 
-        if (!domain) return json({ ok: false, error: "Chýba parameter domain" }, 400);
-
-        domain = domain.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
-        if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)) {
-            return json({ ok: false, error: "Zadajte doménu v tvare napr. mojadomena.sk" }, 400);
+        const domain = normalizeDomain(domainRaw);
+        if (!domain) {
+            return json(400, { ok: false, error: "Neplatná doména. Použi napr. mojadomena.sk" });
+        }
+        if (!domain.endsWith(".sk")) {
+            return json(400, { ok: false, error: "Táto kontrola je určená len pre .sk domény." });
         }
 
-        // DNS overenie (SOA je najlepší indikátor existencie zóny)
-        const dohUrl = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=SOA`;
-        const res = await fetch(dohUrl, {
-            headers: { accept: "application/dns-json", "user-agent": "netlify-function" },
-        });
+        const whoisText = await whoisQuery(domain, "whois.sk-nic.sk", 43);
 
-        if (!res.ok) {
-            return json({ ok: false, error: `DNS overenie zlyhalo: ${res.status}` }, 502);
-        }
+        // Heuristika: pri voľnej doméne WHOIS často vráti "No match"/"NOT FOUND"/"No entries found".
+        // Pri obsadenej doméne zvykne byť "Domain:" + údaje.
+        const t = whoisText.toLowerCase();
 
-        const data = await res.json();
+        const available =
+            t.includes("no match") ||
+            t.includes("not found") ||
+            t.includes("no entries found") ||
+            t.includes("nenájden") ||
+            t.includes("not registered");
 
-        // Cloudflare DoH: Status 3 = NXDOMAIN
-        if (data?.Status === 3) {
-            return json({ ok: true, domain, available: true, reason: "NXDOMAIN (doména neexistuje v DNS)" });
-        }
+        const registered = !available && (t.includes("domain:") || t.includes("registrar") || t.includes("status:"));
 
-        // Ak sú Answer/Authority, je veľká šanca, že existuje
-        const hasAnswer = Array.isArray(data?.Answer) && data.Answer.length > 0;
-        const hasAuthority = Array.isArray(data?.Authority) && data.Authority.length > 0;
-
-        return json({
+        return json(200, {
             ok: true,
             domain,
-            available: false,
-            reason: hasAnswer || hasAuthority ? "DNS záznamy existujú" : "Nejasné (doména môže byť delegovaná inak)",
-            debug: { Status: data?.Status, Answer: data?.Answer || [], Authority: data?.Authority || [] },
+            available: Boolean(available) && !registered,
+            registered: Boolean(registered),
+            // Raw vraciame len keď chceš debugovať. Môžeš vypnúť.
+            raw: whoisText,
         });
     } catch (e) {
-        return json({ ok: false, error: String(e?.message || e) }, 500);
+        return json(500, { ok: false, error: "Server error", detail: String(e?.message || e) });
     }
+};
+
+function normalizeDomain(input) {
+    const d = input
+        .replace(/^https?:\/\//, "")
+        .replace(/^www\./, "")
+        .split("/")[0]
+        .trim();
+
+    // jednoduchá validácia (bez diakritiky, pomlčka ok, bodka)
+    if (!/^[a-z0-9][a-z0-9-]{0,61}[a-z0-9]\.sk$/.test(d) && !/^[a-z0-9]\.sk$/.test(d)) return "";
+    return d;
 }
 
-function json(obj, status = 200) {
-    return {
-        statusCode: status,
-        headers: { "content-type": "application/json; charset=utf-8" },
-        body: JSON.stringify(obj),
-    };
+function whoisQuery(q, host, port) {
+    return new Promise((resolve, reject) => {
+        const socket = net.createConnection({ host, port, timeout: 8000 }, () => {
+            socket.write(q + "\r\n");
+        });
+
+        let data = "";
+        socket.on("data", (chunk) => (data += chunk.toString("utf8")));
+        socket.on("timeout", () => {
+            socket.destroy();
+            reject(new Error("WHOIS timeout"));
+        });
+        socket.on("error", reject);
+        socket.on("end", () => resolve(data));
+        socket.on("close", () => resolve(data));
+    });
+}
+
+function json(status, obj) {
+    return new Response(JSON.stringify(obj), {
+        status,
+        headers: {
+            "content-type": "application/json; charset=utf-8",
+            "cache-control": "no-store",
+        },
+    });
 }
