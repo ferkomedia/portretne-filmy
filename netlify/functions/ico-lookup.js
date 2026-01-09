@@ -7,32 +7,26 @@ export const handler = async (event) => {
             return json({ ok: false, found: false, error: "Neplatné IČO." }, 400);
         }
 
-        // 1) Primárne: RegisterUZ
-        let res = await tryRegisterUZ(ico);
+        // 1. Skúsime RegisterUZ (primárny zdroj)
+        let result = await tryRegisterUZ(ico);
 
-        // 2) Fallback: Slovensko.Digital DataHub
-        if (!res.ok || !res.found) {
-            const fb = await tryDataHub(ico);
-            if (fb.ok && fb.found) res = fb;
+        // 2. Ak RegisterUZ zlyhá, skúsime Slovensko.Digital DataHub
+        if (!result.ok || !result.found) {
+            const fallbackResult = await tryDataHub(ico);
+            if (fallbackResult.ok && fallbackResult.found) {
+                result = fallbackResult;
+            }
         }
 
-        // Ak ani jeden zdroj nevrátil firmu, ale aspoň jeden zdroj bol dostupný:
-        // nech je ok:true, found:false (nie 502), aby UI nevyzeralo "rozbité"
-        if (!res.found && (res.source === "registeruz" || res.source === "datahub")) {
-            // ak res.ok je false a máme jasný blok / nedostupnosť, nech UI dostane správu
-            // ale HTTP necháme 200, aby to nespadlo ako "crash"
-            if (!res.ok) return json(res, 200);
-            return json(res, 200);
-        }
+        return json(result, result.ok ? 200 : 502);
 
-        return json(res, res.ok ? 200 : 502);
     } catch (e) {
-        console.error("ICO handler error:", e);
+        console.error("Handler error:", e);
         return json({ ok: false, found: false, error: "Chyba servera." }, 500);
     }
 };
 
-/* ================= RegisterUZ ================= */
+// ========== RegisterUZ (primárny zdroj) ==========
 async function tryRegisterUZ(ico) {
     try {
         const endpoint = `https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?ico=${encodeURIComponent(ico)}`;
@@ -47,15 +41,12 @@ async function tryRegisterUZ(ico) {
         const ct = (r.headers.get("content-type") || "").toLowerCase();
         const text = await r.text();
 
-        // WAF / HTML block
         if (!ct.includes("application/json")) {
             return {
                 ok: false,
                 found: false,
-                ico,
                 error: "RegisterUZ blokuje požiadavku (WAF).",
                 source: "registeruz",
-                status: r.status,
             };
         }
 
@@ -72,16 +63,14 @@ async function tryRegisterUZ(ico) {
 
         if (!item) return { ok: true, found: false, ico, source: "registeruz" };
 
-        return {
-            ok: true,
-            found: true,
-            ico,
-            company: extractRegisterUZ(item, ico),
-            source: "registeruz",
-        };
+        const d = item;
+        const company = extractRegisterUZ(d, ico);
+
+        return { ok: true, found: true, ico, company, source: "registeruz" };
+
     } catch (e) {
         console.error("RegisterUZ error:", e);
-        return { ok: false, found: false, ico, error: "RegisterUZ nedostupný.", source: "registeruz" };
+        return { ok: false, found: false, error: "RegisterUZ nedostupný.", source: "registeruz" };
     }
 }
 
@@ -104,13 +93,9 @@ function extractRegisterUZ(d, ico) {
     return { name, ico, dic, icdph, street, number, city, psc, country, addressLine, addressFull };
 }
 
-/* ================= Slovensko.Digital DataHub =================
-   Poznámka: DataHub vracia rôzne štruktúry podľa endpointu.
-   Zoberieme bezpečne najpravdepodobnejšie polia a urobíme fallbacky.
-*/
+// ========== Slovensko.Digital DataHub (záložný zdroj) ==========
 async function tryDataHub(ico) {
     try {
-        // Tento endpoint môže vrátiť results/items/array – ošetríme
         const endpoint = `https://datahub.ekosystem.slovensko.digital/api/datahub/corporate_bodies/search?q=cin:${encodeURIComponent(ico)}`;
 
         const r = await fetch(endpoint, {
@@ -121,59 +106,45 @@ async function tryDataHub(ico) {
         });
 
         if (!r.ok) {
-            return { ok: false, found: false, ico, error: "DataHub nedostupný.", source: "datahub", status: r.status };
+            return { ok: false, found: false, error: "DataHub nedostupný.", source: "datahub" };
         }
 
         const data = await r.json();
 
-        const items =
-            Array.isArray(data) ? data :
-                Array.isArray(data?.results) ? data.results :
-                    Array.isArray(data?.items) ? data.items :
-                        Array.isArray(data?.data) ? data.data :
-                            [];
-
-        // niekde to môže byť “cin”, niekde “ico”
-        const item =
-            items.find(x => String(x?.cin ?? x?.ico ?? x?.ICO ?? "").trim() === ico) ??
-            items[0];
+        // DataHub vracia pole výsledkov
+        const items = Array.isArray(data) ? data : (data?.results ?? data?.items ?? []);
+        const item = items.find(x => String(x?.cin ?? "").trim() === ico) ?? items[0];
 
         if (!item) return { ok: true, found: false, ico, source: "datahub" };
 
-        return {
-            ok: true,
-            found: true,
-            ico,
-            company: extractDataHub(item, ico),
-            source: "datahub",
-        };
+        const company = extractDataHub(item, ico);
+
+        return { ok: true, found: true, ico, company, source: "datahub" };
+
     } catch (e) {
         console.error("DataHub error:", e);
-        return { ok: false, found: false, ico, error: "DataHub chyba.", source: "datahub" };
+        return { ok: false, found: false, error: "DataHub chyba.", source: "datahub" };
     }
 }
 
 function extractDataHub(d, ico) {
-    const name = (d.name ?? d.full_name ?? d.business_name ?? "").toString().trim();
+    const name = (d.name ?? "").toString().trim();
+    const dic = (d.tin ?? "").toString().trim();
+    const icdph = (d.vatin ?? "").toString().trim();
 
-    // TIN / DIC / VATIN môžu byť rôzne názvy
-    const dic = (d.tin ?? d.dic ?? d.tax_id ?? "").toString().trim();
-    const icdph = (d.vatin ?? d.icdph ?? d.vat_id ?? "").toString().trim();
-
-    // adresa
-    const street = (d.street ?? d.address_street ?? d.ulica ?? "").toString().trim();
-    const number = (d.reg_number ?? d.building_number ?? d.street_number ?? d.number ?? "").toString().trim();
-    const city = (d.municipality ?? d.city ?? d.mesto ?? "").toString().trim();
-    const psc = (d.postal_code ?? d.zip ?? d.psc ?? "").toString().trim();
+    const street = (d.street ?? "").toString().trim();
+    const number = (d.reg_number ?? d.building_number ?? d.street_number ?? "").toString().trim();
+    const city = (d.municipality ?? "").toString().trim();
+    const psc = (d.postal_code ?? "").toString().trim();
     const country = (d.country ?? "Slovenská republika").toString().trim();
 
-    const addressLine = (d.formatted_street ?? [street, number].filter(Boolean).join(" ")).toString().trim();
-    const addressFull = (d.formatted_address ?? [addressLine, [psc, city].filter(Boolean).join(" ")].filter(Boolean).join(", ")).toString().trim();
+    const addressLine = (d.formatted_street ?? [street, number].filter(Boolean).join(" ")).trim();
+    const addressFull = (d.formatted_address ?? [addressLine, [psc, city].filter(Boolean).join(" ")].filter(Boolean).join(", ")).trim();
 
     return { name, ico, dic, icdph, street, number, city, psc, country, addressLine, addressFull };
 }
 
-/* ================= Helper ================= */
+// ========== Helper ==========
 function json(obj, statusCode = 200) {
     return {
         statusCode,
