@@ -1,78 +1,63 @@
-// netlify/functions/domain-check.js
+// netlify/functions/domain-check.js  (CommonJS WHOIS)
 
-export async function handler(event) {
+const net = require("net");
+
+exports.handler = async (event) => {
     try {
         const domainRaw = (event.queryStringParameters?.domain || "").trim().toLowerCase();
+        if (!domainRaw) return json(400, { ok: false, error: "Chýba parameter domain." });
 
-        if (!domainRaw) {
-            return json(400, { ok: false, error: "Chýba parameter domain." });
-        }
-
-        // Basic sanitize
         const domain = domainRaw.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
-        if (!/^[a-z0-9-]+\.(sk)$/i.test(domain)) {
-            return json(400, { ok: false, error: "Zadaj doménu vo formáte napr. mojadomena.sk" });
+        if (!/^[a-z0-9-]+\.sk$/.test(domain)) {
+            return json(400, { ok: false, error: "Zadajte doménu vo formáte napr. mojadomena.sk" });
         }
 
-        // 1) RDAP bootstrap - find RDAP base for .sk
-        const bootstrapUrl = "https://data.iana.org/rdap/dns.json";
-        const bootRes = await fetch(bootstrapUrl, { headers: { "accept": "application/json" } });
-        if (!bootRes.ok) {
-            return json(502, { ok: false, error: "Nepodarilo sa načítať RDAP bootstrap (IANA)." });
-        }
+        const text = await whoisQuery(domain);
 
-        const boot = await bootRes.json();
-        const services = Array.isArray(boot.services) ? boot.services : [];
-        const tld = "sk";
+        // Heuristika: keď nie je registrovaná, WHOIS vráti "NOT FOUND" / "No entries found" (závisí)
+        const lower = text.toLowerCase();
 
-        let rdapBase = null;
-        for (const entry of services) {
-            const tlds = entry?.[0];
-            const urls = entry?.[1];
-            if (Array.isArray(tlds) && tlds.includes(tld) && Array.isArray(urls) && urls.length) {
-                rdapBase = urls[0];
-                break;
-            }
-        }
-
-        if (!rdapBase) {
-            return json(502, { ok: false, error: "Nepodarilo sa nájsť RDAP server pre .sk." });
-        }
-
-        // Normalize base (ensure trailing slash)
-        if (!rdapBase.endsWith("/")) rdapBase += "/";
-
-        // 2) Query RDAP domain object
-        const rdapUrl = `${rdapBase}domain/${encodeURIComponent(domain)}`;
-        const rdapRes = await fetch(rdapUrl, { headers: { "accept": "application/rdap+json, application/json" } });
-
-        if (rdapRes.status === 404) {
-            return json(200, { ok: true, domain, available: true });
-        }
-
-        if (!rdapRes.ok) {
-            // Some RDAP servers return 400 for invalid queries, 401/403 for redacted info, etc.
-            return json(200, { ok: true, domain, available: false, note: `RDAP odpoveď: ${rdapRes.status}` });
-        }
-
-        const data = await rdapRes.json();
-
-        // We keep it minimal (avoid leaking contacts even if present)
-        const status = Array.isArray(data.status) ? data.status : [];
-        const nameservers = Array.isArray(data.nameservers)
-            ? data.nameservers.map(ns => ns?.ldhName).filter(Boolean).slice(0, 10)
-            : [];
+        const available =
+            lower.includes("not found") ||
+            lower.includes("no entries found") ||
+            lower.includes("no match") ||
+            lower.includes("domain not found");
 
         return json(200, {
             ok: true,
             domain,
-            available: false,
-            status,
-            nameservers
+            available,
+            sample: text.slice(0, 4000) // len pre debug, môžeš neskôr vyhodiť
         });
     } catch (e) {
-        return json(500, { ok: false, error: "Nastala chyba pri overení domény." });
+        return json(500, { ok: false, error: "Chyba pri overení domény." });
     }
+};
+
+function whoisQuery(query) {
+    return new Promise((resolve, reject) => {
+        const socket = new net.Socket();
+        let data = "";
+
+        socket.setTimeout(8000);
+
+        socket.connect(43, "whois.sk-nic.sk", () => {
+            socket.write(query + "\r\n");
+        });
+
+        socket.on("data", (chunk) => {
+            data += chunk.toString("utf8");
+        });
+
+        socket.on("timeout", () => {
+            socket.destroy();
+            reject(new Error("WHOIS timeout"));
+        });
+
+        socket.on("error", (err) => reject(err));
+
+        socket.on("close", () => resolve(data));
+    });
 }
 
 function json(statusCode, body) {

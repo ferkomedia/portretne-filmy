@@ -442,4 +442,65 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   domainInput?.addEventListener("input", domainCheckDebounced);
   domainInput?.addEventListener("blur", runDomainCheck);
+  function setRowVisibility(inputEl) {
+    const wrap = inputEl?.closest?.(".fmField");
+    if (!wrap) return;
+    wrap.style.display = inputEl.value ? "" : "none";
+  }
+
+  async function runIcoLookup() {
+    const ico = (icoInput.value || "").replace(/\s+/g, "").trim();
+    if (!/^\d{6,10}$/.test(ico)) {
+      setHint(icoHint, "Zadajte platné IČO (6–10 číslic).", "info");
+      companyFields.style.display = "none";
+      companyJsonHidden.value = "";
+      return;
+    }
+
+    setHint(icoHint, "Vyhľadávam firmu…", "info");
+
+    try {
+      const res = await fetch(`/api/ico?ico=${encodeURIComponent(ico)}`);
+      const data = await res.json();
+
+      if (!data.ok) {
+        setHint(icoHint, data.error || "Nepodarilo sa vyhľadať IČO.", "bad");
+        companyFields.style.display = "none";
+        return;
+      }
+      if (!data.found) {
+        setHint(icoHint, "Firma sa nenašla.", "bad");
+        companyFields.style.display = "none";
+        return;
+      }
+
+      companyJsonHidden.value = JSON.stringify(data.raw || {});
+      const c = data.company || {};
+
+      companyName.value = c.name || "";
+      companyAddress.value = c.address || "";
+      companyDic.value = c.dic || "";
+      companyIcDph.value = c.icdph || "";
+
+      // tieto dve polia sú legit, ale len keď sú dostupné:
+      companyStatus.value = "";  // vypni (RPO často nedáva)
+      companyReg.value = [c.sourceRegisterName, c.registrationOffice, c.registrationNumber].filter(Boolean).join(" • ");
+
+      companyFields.style.display = "grid";
+
+      // schovaj prázdne riadky
+      setRowVisibility(companyName);
+      setRowVisibility(companyAddress);
+      setRowVisibility(companyDic);
+      setRowVisibility(companyIcDph);
+      setRowVisibility(companyStatus);
+      setRowVisibility(companyReg);
+
+      setHint(icoHint, "Údaje firmy boli načítané.", "ok");
+    } catch (e) {
+      setHint(icoHint, "Chyba pri vyhľadaní IČO.", "bad");
+      companyFields.style.display = "none";
+    }
+  }
+
 </script>
