@@ -4,64 +4,72 @@ export async function handler(event) {
     try {
         const ico = (event.queryStringParameters?.ico || "").replace(/\s+/g, "").trim();
 
-        if (!ico) {
-            return json(400, { ok: false, error: "Chýba parameter ico." });
-        }
-        if (!/^\d{6,10}$/.test(ico)) {
-            return json(400, { ok: false, error: "IČO má byť číslo (6–10 číslic)." });
-        }
+        if (!ico) return json(400, { ok: false, error: "Chýba parameter ico." });
+        if (!/^\d{6,10}$/.test(ico)) return json(400, { ok: false, error: "IČO má byť 6–10 číslic." });
 
         const url = `https://api.statistics.sk/rpo/v1/search?identifier=${encodeURIComponent(ico)}`;
+        const res = await fetch(url, { headers: { accept: "application/json" } });
 
-        const res = await fetch(url, { headers: { "accept": "application/json" } });
-        if (!res.ok) {
-            return json(502, { ok: false, error: "RPO API neodpovedá alebo vrátilo chybu." });
-        }
+        if (!res.ok) return json(502, { ok: false, error: "RPO API vrátilo chybu." });
 
         const data = await res.json();
 
-        // RPO odpoveď býva pole výsledkov
-        const item = Array.isArray(data) ? data[0] : (Array.isArray(data?.results) ? data.results[0] : null);
+        const item = Array.isArray(data?.results) ? data.results[0] : null;
+        if (!item) return json(200, { ok: true, found: false, ico });
 
-        if (!item) {
-            return json(200, { ok: true, found: false, ico });
-        }
+        // --- Name (RPO: fullNames[])
+        const name = Array.isArray(item.fullNames) && item.fullNames.length ? (item.fullNames[0]?.value || "") : "";
 
-        // normalize a few useful fields (names in API sa môžu mierne líšiť)
-        const name =
-            item?.name ||
-            item?.businessName ||
-            item?.corporateBodyName ||
-            item?.formattedName ||
-            "";
+        // --- Address (RPO: addresses[])
+        const addr = Array.isArray(item.addresses) && item.addresses.length ? item.addresses[0] : null;
 
-        const addressObj =
-            item?.address ||
-            item?.addresses?.[0] ||
-            item?.residenceAddress ||
-            null;
+        const street = addr?.street || "";
+        const buildingNumber = addr?.buildingNumber || "";
+        const regNumber = (addr?.regNumber ?? "") === 0 ? "" : String(addr?.regNumber ?? "");
+        const postalCode = Array.isArray(addr?.postalCodes) && addr.postalCodes.length ? addr.postalCodes[0] : "";
+        const municipality = addr?.municipality?.value || "";
+        const country = addr?.country?.value || "";
 
-        const address = addressObj
-            ? [
-                addressObj?.street,
-                addressObj?.buildingNumber,
-                addressObj?.municipality,
-                addressObj?.postalCode
-            ].filter(Boolean).join(" ")
+        // Compose: "Ulica 1, 82109 Mesto, Slovenská republika"
+        const addressLine1 = [street, buildingNumber].filter(Boolean).join(" ").trim();
+        const addressLine2 = [postalCode, municipality].filter(Boolean).join(" ").trim();
+        const address = [addressLine1, addressLine2, country].filter(Boolean).join(", ");
+
+        // --- Source register (RPO: sourceRegister)
+        const sr = item?.sourceRegister || {};
+        const sourceRegisterName = sr?.value?.value?.value || ""; // yes, it is nested like in response
+        const registrationOffice = Array.isArray(sr?.registrationOffices) && sr.registrationOffices.length
+            ? (sr.registrationOffices[0]?.value || "")
+            : "";
+        const registrationNumber = Array.isArray(sr?.registrationNumbers) && sr.registrationNumbers.length
+            ? (sr.registrationNumbers[0]?.value || "")
             : "";
 
-        const dic =
-            item?.dic ||
-            item?.identifiers?.find(x => x?.type?.toLowerCase?.() === "dic")?.value ||
-            "";
+        // Some entities simply don't have DIC / ICDPH in RPO response
+        const dic = "";   // keep empty unless you have another source
+        const icdph = ""; // keep empty unless you have another source
 
         return json(200, {
             ok: true,
             found: true,
             ico,
-            name,
-            dic,
-            address,
+            // “Top fields” for the UI
+            company: {
+                rpoId: item?.id ?? "",
+                name,
+                address,
+                municipality,
+                postalCode,
+                country,
+                establishment: item?.establishment || "",
+                dbModificationDate: item?.dbModificationDate || "",
+                sourceRegisterName,
+                registrationOffice,
+                registrationNumber,
+                dic,
+                icdph
+            },
+            // full raw item for “všetko možné”
             raw: item
         });
     } catch (e) {
