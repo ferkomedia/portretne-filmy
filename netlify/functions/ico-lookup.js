@@ -16,14 +16,24 @@ export const handler = async (event) => {
 
         const data = await r.json();
 
+// 1) normalizuj na pole
+        const arr =
+            Array.isArray(data) ? data :
+                Array.isArray(data?.data) ? data.data :
+                    Array.isArray(data?.items) ? data.items :
+                        Array.isArray(data?.result) ? data.result :
+                            [];
+
+// 2) nájdi presne podľa IČO
         const item =
-            Array.isArray(data) ? data[0] : (data?.data?.[0] ?? data?.items?.[0] ?? data?.[0] ?? data);
+            arr.find(x => String(x?.ico ?? x?.ICO ?? "").trim() === ico) ?? arr[0];
 
         if (!item) {
             return json({ ok: true, found: false, ico }, 200);
         }
 
         const d = item;
+
 
         const name = (d.nazovUJ ?? d.name ?? "").toString().trim();
         const dic = (d.dic ?? d.DIC ?? "").toString().trim();
