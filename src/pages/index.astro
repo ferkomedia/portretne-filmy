@@ -1,105 +1,77 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-
-<BaseLayout title="Portrétny film | FerkoMedia" description="Portrétny film, ktorý zostane. Autentické portréty a životné príbehy.">
+<BaseLayout title="Portrétny film | FerkoMedia" description="Autentické portrétne filmy: Osobnosť a Životný príbeh.">
   <section class="hero">
-    <h1>Portrétny film, ktorý zostane.</h1>
+    <div class="eyebrow">FerkoMedia</div>
+    <h1>Portrétny film, ktorý má zmysel</h1>
     <p class="lead">
-      Autentické portrétne príbehy v dvoch formátoch: <strong>Osobnosť</strong> a <strong>Životný príbeh</strong>.
-      Krátko, ľudsky, vizuálne profesionálne – aby to malo hodnotu aj o 10 rokov.
+      Vytvárame dva formáty: <strong>Osobnosť</strong> a <strong>Životný príbeh</strong>.
+      Autenticky, citlivo a vizuálne profesionálne – aby výsledok mal hodnotu aj o roky.
     </p>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="btn btn-primary" href="/kontakt">Objednať film</a>
-      <a class="btn btn-ghost" href="/portfolio">Pozrieť ukážky</a>
+    <div class="badges">
+      <span class="badge">4K produkcia</span>
+      <span class="badge">Scenár + réžia</span>
+      <span class="badge">Strih + color</span>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--primary" href="/kontakt#objednat">Objednať film</a>
+      <a class="btn btn--ghost" href="/portfolio">Pozrieť ukážky</a>
     </div>
   </section>
 
   <section class="section">
-    <div class="grid-2">
+    <div class="grid3">
       <div class="card">
-        <h2>Portrétny film „Osobnosť“</h2>
-        <p class="muted">
-          Zachytíme to, čo robí človeka jedinečným – tvorbu, hodnoty, energiu a charakter.
-        </p>
-        <ul class="muted" style="margin:10px 0 0; padding-left:18px;">
-          <li>pre tvorcov, podnikateľov, športovcov, lídrov</li>
-          <li>silná osobná značka a emócia</li>
-          <li>výstup: film + krátke verzie na siete</li>
-        </ul>
-        <div style="margin-top:12px;">
-          <a class="btn btn-primary" href="/sluzby">Detail služby</a>
-        </div>
+        <h3>Osobnosť</h3>
+        <p>Pre tvorcov, podnikateľov, športovcov a ľudí, ktorí chcú ukázať, kým sú.</p>
+        <div class="actions"><a class="btn btn--ghost" href="/sluzby#osobnost">Zistiť viac</a></div>
       </div>
-
       <div class="card">
-        <h2>Portrétny film „Životný príbeh“</h2>
-        <p class="muted">
-          Uchováme skúsenosti a múdrosť ako dedičstvo pre ďalšie generácie.
-        </p>
-        <ul class="muted" style="margin:10px 0 0; padding-left:18px;">
-          <li>pre rodiny, seniorov, silné životné príbehy</li>
-          <li>pokojný rozhovor + atmosféra</li>
-          <li>výstup: film + zostrihy podľa dohody</li>
-        </ul>
-        <div style="margin-top:12px;">
-          <a class="btn btn-primary" href="/sluzby">Detail služby</a>
-        </div>
+        <h3>Životný príbeh</h3>
+        <p>Pre rodiny a osobnosti, ktoré chcú zachovať odkaz pre deti a vnukov.</p>
+        <div class="actions"><a class="btn btn--ghost" href="/sluzby#zivotnypribeh">Zistiť viac</a></div>
+      </div>
+      <div class="card">
+        <h3>Bez stresu</h3>
+        <p>Pomôžeme otázkami, prípravou a vedením natáčania. Vy sa sústredíte na príbeh.</p>
+        <div class="actions"><a class="btn btn--primary" href="/kontakt#objednat">Odoslať dopyt</a></div>
       </div>
     </div>
   </section>
 
   <section class="section">
-    <h2 style="margin:0 0 10px;">Prečo portrétny film</h2>
-    <p class="muted" style="margin:0 0 16px; max-width:70ch;">
-      Ľudia kupujú príbeh, nie techniku. Portrétny film robí dôveru rýchlejšie než text a fotky.
-    </p>
-
-    <div class="grid-3">
-      <div class="card">
-        <h3>Dôvera za pár minút</h3>
-        <p class="muted">Autentický hlas, mimika a emócia budujú vzťah rýchlo – bez „predajného tlaku“.</p>
-      </div>
-      <div class="card">
-        <h3>Hodnota aj o roky</h3>
-        <p class="muted">Nie je to trendový reels – je to dokument o človeku, ktorý má zmysel aj neskôr.</p>
-      </div>
-      <div class="card">
-        <h3>Obsah na siete</h3>
-        <p class="muted">Z jedného natáčania vieš mať film + krátke ukážky, ktoré sa ľahko publikujú.</p>
-      </div>
+    <h2>Prečo portrétny film</h2>
+    <div class="grid3">
+      <div class="card"><h3>Dôvera a emócia</h3><p>Ľudia si kupujú príbeh a vzťah. Portrét buduje dôveru rýchlejšie než text.</p></div>
+      <div class="card"><h3>Hodnota na roky</h3><p>Je to obsah, ktorý nestarne. Dáva zmysel dnes aj o veľa rokov.</p></div>
+      <div class="card"><h3>Viac použiteľných výstupov</h3><p>Hlavný film + krátke verzie na siete (podľa dohody).</p></div>
     </div>
   </section>
 
   <section class="section">
-    <h2 style="margin:0 0 10px;">Proces</h2>
-    <p class="muted" style="margin:0 0 16px; max-width:70ch;">
-      Jednoduché kroky. Bez chaosu. Ty len povieš „o kom je príbeh“ – my to zrežírujeme a spracujeme.
-    </p>
-
-    <div class="grid-2">
-      <div class="card">
-        <h3>1) Dopyt</h3>
-        <p class="muted">Vyplníš krátky formulár. Ozvem sa a upresníme si cieľ a formát.</p>
-      </div>
-      <div class="card">
-        <h3>2) Príprava</h3>
-        <p class="muted">Navrhneme otázky, lokality a štýl. Aby rozhovor pôsobil prirodzene.</p>
-      </div>
-      <div class="card">
-        <h3>3) Natáčanie</h3>
-        <p class="muted">Rozhovor + atmosféra. Všetko v tempe, ktoré sedí človeku pred kamerou.</p>
-      </div>
-      <div class="card">
-        <h3>4) Strih a odovzdanie</h3>
-        <p class="muted">Dodáme finálny film + krátke zostrihy (podľa dohody). Pripravené na použitie.</p>
-      </div>
+    <h2>Proces</h2>
+    <div class="grid2">
+      <div class="card"><h3>1) Dopyt</h3><p>Napíšete základné info a dohodneme krátky call.</p></div>
+      <div class="card"><h3>2) Natáčanie</h3><p>Pripravíme otázky a natočíme rozhovor + atmosféru.</p></div>
+      <div class="card"><h3>3) Strih</h3><p>Vyberieme to najlepšie a poskladáme film, ktorý drží emóciu.</p></div>
+      <div class="card"><h3>4) Odovzdanie</h3><p>Dostanete finálne video + dohodnuté verzie.</p></div>
     </div>
+    <div class="actions">
+      <a class="btn btn--primary" href="/kontakt#objednat">Chcem portrétny film</a>
+      <a class="btn btn--ghost" href="/portfolio">Pozrieť ukážky</a>
+    </div>
+  </section>
 
-    <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
-      <a class="btn btn-primary" href="/kontakt">Chcem dopyt</a>
-      <a class="btn btn-ghost" href="/sluzby">Pozrieť služby</a>
+  <section class="section">
+    <h2>Najčastejšie otázky</h2>
+    <div class="grid2">
+      <div class="card"><h3>Ako dlho trvá výroba?</h3><p>Závisí od rozsahu. Po dopyte navrhneme realistický harmonogram.</p></div>
+      <div class="card"><h3>Kde prebieha natáčanie?</h3><p>Podľa príbehu – u vás, v práci, v exteriéri alebo kombinácia.</p></div>
+      <div class="card"><h3>Pomôžete aj s otázkami?</h3><p>Áno. Pripravíme otázky a vedieme rozhovor tak, aby pôsobil prirodzene.</p></div>
+      <div class="card"><h3>Koľko výstupov dostanem?</h3><p>Štandardne hlavný film, plus krátke verzie podľa dohody.</p></div>
     </div>
   </section>
 </BaseLayout>

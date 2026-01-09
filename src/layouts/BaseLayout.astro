@@ -1,354 +1,123 @@
 ---
-const { title, description } = Astro.props;
----
+import "../styles/global.css";
 
+const { title = "Portrétny film", description = "" } = Astro.props;
+const path = Astro.url.pathname;
+
+const isActive = (href) => {
+  if (href === "/") return path === "/";
+  return path.startsWith(href);
+};
+
+const nav = [
+  { href: "/", label: "Domov" },
+  { href: "/sluzby", label: "Služby" },
+  { href: "/portfolio", label: "Portfólio" },
+  { href: "/workshopy", label: "Workshopy" },
+  { href: "/kontakt", label: "Kontakt" },
+];
+---
 <!doctype html>
 <html lang="sk">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content={description || "Portrétny film"} />
-    <title>{title || "Portrétny film"}</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-
-    <style>
-      :root{
-        --bg0:#07080b;
-        --bg1:#0b0d12;
-        --panel: rgba(255,255,255,.06);
-        --panel2: rgba(255,255,255,.08);
-        --stroke: rgba(255,255,255,.12);
-        --text:#ffffff;
-        --muted: rgba(255,255,255,.72);
-        --muted2: rgba(255,255,255,.55);
-        --accent:#ff4a1a;
-        --accent2:#ff6a3d;
-        --shadow: 0 18px 60px rgba(0,0,0,.55);
-        --r: 18px;
-      }
-
-      *{box-sizing:border-box}
-      html,body{margin:0;padding:0}
-      body{
-        font-family:'Rubik',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-        color:var(--text);
-        background:
-          radial-gradient(900px 600px at 12% -10%, rgba(255,77,46,.35), transparent 60%),
-          radial-gradient(700px 500px at 90% 10%, rgba(255,122,47,.22), transparent 55%),
-          radial-gradient(900px 700px at 50% 120%, rgba(120,110,255,.16), transparent 60%),
-          linear-gradient(180deg, var(--bg0), var(--bg1));
-        line-height:1.55;
-      }
-
-      a{color:var(--text); text-decoration:none}
-      a:hover{opacity:.9}
-
-      .wrap{max-width:1100px; margin:0 auto; padding:0 18px}
-
-      /* Header */
-      .topbar{
-        position:sticky; top:0; z-index:50;
-        backdrop-filter: blur(16px);
-        background: rgba(7,8,11,.60);
-        border-bottom:1px solid rgba(255,255,255,.06);
-      }
-      .topin{
-        height:66px;
-        display:flex; align-items:center; justify-content:space-between;
-        gap:16px;
-      }
-      .brand{
-        display:flex; align-items:center; gap:10px;
-        font-weight:800; letter-spacing:.2px;
-      }
-      .dot{
-        width:10px; height:10px; border-radius:999px;
-        background:var(--accent);
-        box-shadow:0 0 0 6px rgba(255,74,26,.10);
-      }
-
-      .nav{
-        display:flex; align-items:center; gap:10px;
-      }
-      .nav a{
-        padding:9px 12px;
-        border-radius:999px;
-        color:rgba(255,255,255,.88);
-        font-weight:600;
-        font-size:14px;
-      }
-      .nav a:hover{background:rgba(255,255,255,.06)}
-      .nav a.active{background:rgba(255,255,255,.10)}
-
-      .btn{
-        display:inline-flex; align-items:center; justify-content:center;
-        gap:10px;
-        padding:11px 14px;
-        border-radius:999px;
-        border:1px solid transparent;
-        font-weight:700;
-        cursor:pointer;
-        transition:.18s ease;
-        user-select:none;
-        white-space:nowrap;
-      }
-      .btnPrimary{
-        background: linear-gradient(180deg, var(--accent2), var(--accent));
-        color:#fff;
-        box-shadow: 0 10px 28px rgba(255,74,26,.22);
-      }
-      .btnPrimary:hover{transform: translateY(-1px)}
-      .btnGhost{
-        background: rgba(255,255,255,.06);
-        border-color: rgba(255,255,255,.14);
-        color:#fff;
-      }
-      .btnGhost:hover{background: rgba(255,255,255,.09)}
-
-      /* Mobile menu */
-      .burger{
-        display:none;
-        width:44px; height:44px;
-        border-radius:12px;
-        background: rgba(255,255,255,.06);
-        border:1px solid rgba(255,255,255,.12);
-        align-items:center; justify-content:center;
-      }
-      .burgerLines{
-        width:18px; height:14px; position:relative;
-      }
-      .burgerLines span{
-        position:absolute; left:0; right:0;
-        height:2px; border-radius:2px;
-        background:#fff;
-      }
-      .burgerLines span:nth-child(1){top:0}
-      .burgerLines span:nth-child(2){top:6px}
-      .burgerLines span:nth-child(3){top:12px}
-
-      .offcanvas{
-        position:fixed; inset:0;
-        display:none;
-        z-index:80;
-      }
-      .offcanvas.open{display:block}
-      .offBg{
-        position:absolute; inset:0;
-        background: rgba(0,0,0,.60);
-      }
-      .offPanel{
-        position:absolute; right:0; top:0; height:100%;
-        width:min(340px, 90vw);
-        background: rgba(9,10,14,.92);
-        border-left: 1px solid rgba(255,255,255,.10);
-        backdrop-filter: blur(18px);
-        padding:14px;
-        display:flex; flex-direction:column; gap:10px;
-      }
-      .offTop{
-        display:flex; align-items:center; justify-content:space-between;
-        gap:10px;
-      }
-      .offNav{
-        display:flex; flex-direction:column; gap:8px;
-        margin-top:6px;
-      }
-      .offNav a{
-        padding:12px 12px;
-        border-radius:12px;
-        background: rgba(255,255,255,.05);
-        border:1px solid rgba(255,255,255,.10);
-        color:#fff;
-        font-weight:700;
-      }
-      .offNav a:hover{
-        background: linear-gradient(180deg, rgba(255,106,61,.22), rgba(255,74,26,.18));
-        border-color: rgba(255,74,26,.35);
-      }
-
-      /* Content blocks */
-      main{padding:34px 0 54px}
-      .hero{padding:26px 0 14px}
-      .kicker{color:var(--muted2); font-weight:800; letter-spacing:.4px; margin:0 0 10px}
-      h1{font-size:44px; line-height:1.08; margin:0 0 10px}
-      .lead{max-width:760px; color:var(--muted); font-size:16px; margin:0 0 18px}
-      h2{margin:0 0 10px}
-      .panel{
-        background: var(--panel);
-        border:1px solid var(--stroke);
-        border-radius: var(--r);
-        box-shadow: var(--shadow);
-        padding:18px;
-        margin-top:14px;
-      }
-      .panelInner{
-        margin-top:18px;
-        padding-top:14px;
-        border-top:1px solid rgba(255,255,255,.10);
-      }
-      .muted{color:var(--muted)}
-      .srOnly{position:absolute; left:-9999px}
-
-      .cards{display:grid; grid-template-columns:1fr; gap:12px; margin-top:10px}
-      .card{
-        background: var(--panel2);
-        border:1px solid rgba(255,255,255,.10);
-        border-radius: 16px;
-        padding:14px;
-      }
-      .cardTitle{font-weight:800}
-      .cardMeta{display:flex; gap:10px; flex-wrap:wrap; color:var(--muted); font-weight:600; margin-top:6px}
-      .dash{margin-top:18px}
-      .code{
-        margin-top:10px;
-        background: rgba(0,0,0,.35);
-        border:1px solid rgba(255,255,255,.10);
-        border-radius: 14px;
-        padding:12px;
-        overflow:auto;
-        color: rgba(255,255,255,.85);
-      }
-
-      /* Forms */
-      .fmForm{margin-top:10px}
-      .grid2{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:14px;
-      }
-      .field{display:flex; flex-direction:column; gap:8px}
-      .field.full{grid-column:1 / -1}
-      label{font-weight:800; font-size:14px; color:rgba(255,255,255,.92)}
-      input, select, textarea{
-        width:100%;
-        padding:13px 14px;
-        border-radius:14px;
-        border:1px solid rgba(255,255,255,.14);
-        background: rgba(255,255,255,.06);
-        color:#fff;
-        outline:none;
-        font: inherit;
-      }
-      input::placeholder, textarea::placeholder{color:rgba(255,255,255,.45)}
-      input:focus, select:focus, textarea:focus{
-        border-color: rgba(255,74,26,.55);
-        box-shadow: 0 0 0 4px rgba(255,74,26,.14);
-      }
-      select{appearance:none; background-image: linear-gradient(45deg, transparent 50%, #fff 50%), linear-gradient(135deg, #fff 50%, transparent 50%); background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px); background-size:6px 6px,6px 6px; background-repeat:no-repeat; padding-right:38px}
-      .hint{font-size:13px; color:rgba(255,255,255,.55)}
-      .actions{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap}
-      .checkRow{
-        margin-top:14px;
-        display:flex; align-items:flex-start; gap:10px;
-      }
-      .checkRow input{width:18px; height:18px; margin-top:2px; accent-color: var(--accent);}
-      .checkRow label{font-weight:700; color:rgba(255,255,255,.85)}
-
-      /* Footer */
-      footer{
-        border-top:1px solid rgba(255,255,255,.08);
-        background: rgba(7,8,11,.55);
-      }
-      .footin{
-        padding:18px 0;
-        display:flex; align-items:center; justify-content:space-between;
-        gap:12px;
-        color:rgba(255,255,255,.75);
-        font-weight:700;
-        font-size:13px;
-      }
-      .footRight a{color:rgba(255,255,255,.80)}
-      .footRight a:hover{color:#fff}
-
-      /* Responsive */
-      @media (max-width: 920px){
-        h1{font-size:34px}
-        .nav{display:none}
-        .burger{display:inline-flex}
-        .grid2{grid-template-columns:1fr}
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
   </head>
-
   <body>
-    <header class="topbar">
-      <div class="wrap topin">
-        <a class="brand" href="/">
-          <span class="dot"></span>
-          <span>Portrétny film</span>
-        </a>
-
+    <header class="siteHeader">
+      <div class="container">
         <nav class="nav" aria-label="Hlavné menu">
-          <a href="/sluzby" class={Astro.url.pathname === "/sluzby" ? "active" : ""}>Služby</a>
-          <a href="/portfolio" class={Astro.url.pathname === "/portfolio" ? "active" : ""}>Portfólio</a>
-          <a href="/workshopy" class={Astro.url.pathname === "/workshopy" ? "active" : ""}>Workshopy</a>
-          <a href="/kontakt" class={Astro.url.pathname === "/kontakt" ? "active" : ""}>Kontakt</a>
-          <a class="btn btnPrimary" href="/kontakt">Objednať film</a>
-        </nav>
+          <a class="brand" href="/">
+            <span class="brandDot" aria-hidden="true"></span>
+            <span class="brandText">Portrétny film</span>
+          </a>
 
-        <button class="burger" id="burger" aria-label="Menu" type="button">
-          <span class="burgerLines"><span></span><span></span><span></span></span>
-        </button>
+          <div class="navLinks">
+            {nav.map((i) => (
+              <a
+                class={"navLink " + (isActive(i.href) ? "isActive" : "")}
+                href={i.href}
+                aria-current={isActive(i.href) ? "page" : undefined}
+              >
+                {i.label}
+              </a>
+            ))}
+          </div>
+
+          <div class="navCta">
+            <a class="btn btn--primary" href="/kontakt#objednat">Objednať film</a>
+          </div>
+
+          <button class="hamburger" type="button" aria-label="Otvoriť menu" data-drawer-open>
+            <span></span><span></span><span></span>
+          </button>
+        </nav>
       </div>
     </header>
 
-    <div class="offcanvas" id="offcanvas" aria-hidden="true">
-      <div class="offBg" id="offBg"></div>
-      <div class="offPanel">
-        <div class="offTop">
-          <div class="brand"><span class="dot"></span><span>Menu</span></div>
-          <button class="burger" id="offClose" aria-label="Zavrieť" type="button">
-            <span class="burgerLines"><span></span><span></span><span></span></span>
-          </button>
+    <!-- Mobile drawer -->
+    <div class="drawerBackdrop" data-drawer-backdrop></div>
+    <aside class="drawer" data-drawer aria-label="Mobilné menu">
+      <div class="drawerHeader">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="brandDot" aria-hidden="true"></span>
+          <strong style="color:rgba(255,255,255,.9)">Menu</strong>
         </div>
-        <div class="offNav">
-          <a href="/sluzby">Služby</a>
-          <a href="/portfolio">Portfólio</a>
-          <a href="/workshopy">Workshopy</a>
-          <a href="/kontakt">Kontakt</a>
-          <a class="btn btnPrimary" href="/kontakt" style="width:100%">Objednať film</a>
-        </div>
+        <button class="drawerClose" type="button" aria-label="Zavrieť menu" data-drawer-close>×</button>
       </div>
-    </div>
 
-    <main class="wrap">
+      <div class="drawerLinks">
+        {nav.map((i) => (
+          <a class={isActive(i.href) ? "isActive" : ""} href={i.href}>
+            {i.label}
+          </a>
+        ))}
+      </div>
+
+      <div class="drawerCtas">
+        <a class="btn btn--primary" href="/kontakt#objednat">Objednať film</a>
+        <a class="btn btn--ghost" href="/workshopy#rezervacia">Rezervovať workshop</a>
+      </div>
+    </aside>
+
+    <main class="container">
       <slot />
     </main>
 
-    <footer>
-      <div class="wrap footin">
-        <div>© 2026 FerkoMedia – Portrétny film</div>
-        <div class="footRight"><a href="mailto:info@ferkomedia.sk">info@ferkomedia.sk</a></div>
+    <footer class="footer">
+      <div class="container">
+        <div class="footerInner">
+          <div>© {new Date().getFullYear()} FerkoMedia</div>
+          <div><a class="link" href="mailto:info@ferkomedia.sk">info@ferkomedia.sk</a></div>
+        </div>
       </div>
     </footer>
 
     <script>
-      const burger = document.getElementById("burger");
-      const off = document.getElementById("offcanvas");
-      const offBg = document.getElementById("offBg");
-      const offClose = document.getElementById("offClose");
+      (() => {
+        const openBtn = document.querySelector("[data-drawer-open]");
+        const closeBtn = document.querySelector("[data-drawer-close]");
+        const drawer = document.querySelector("[data-drawer]");
+        const backdrop = document.querySelector("[data-drawer-backdrop]");
 
-      const open = () => {
-        off.classList.add("open");
-        off.setAttribute("aria-hidden", "false");
-        document.body.style.overflow = "hidden";
-      };
-      const close = () => {
-        off.classList.remove("open");
-        off.setAttribute("aria-hidden", "true");
-        document.body.style.overflow = "";
-      };
+        const open = () => {
+          backdrop.style.display = "block";
+          drawer.style.display = "block";
+        };
+        const close = () => {
+          backdrop.style.display = "none";
+          drawer.style.display = "none";
+        };
 
-      burger?.addEventListener("click", open);
-      offBg?.addEventListener("click", close);
-      offClose?.addEventListener("click", close);
-      window.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+        openBtn?.addEventListener("click", open);
+        closeBtn?.addEventListener("click", close);
+        backdrop?.addEventListener("click", close);
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") close();
+        });
+      })();
     </script>
   </body>
 </html>

@@ -1,80 +1,130 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
+<BaseLayout title="Kontakt | Portrétny film" description="Objednávka portrétneho filmu – dopyt.">
+  <section class="hero" id="objednat">
+    <div class="eyebrow">Kontakt</div>
+    <h1>Objednávka portrétneho filmu</h1>
+    <p class="lead">Napíšte pár informácií a ozveme sa vám čo najskôr e-mailom alebo telefonicky.</p>
 
-<BaseLayout title="Kontakt | Portrétny film" description="Objednávka portrétneho filmu.">
-  <h1>Objednávka portrétneho filmu</h1>
+    <div class="formCard">
+      <form
+        name="kontakt"
+        method="POST"
+        data-netlify="true"
+        action="/dakujem/"
+        data-ico-form
+      >
+        <input type="hidden" name="form-name" value="kontakt" />
 
-  <form name="portretny-film" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/dakujem">
-    <input type="hidden" name="form-name" value="portretny-film" />
-    <p style="display:none">
-      <label>Nechaj prázdne: <input name="bot-field" /></label>
-    </p>
+        <!-- Hidden company fields (Netlify submission) -->
+        <input type="hidden" name="Firma - názov" value="" />
+        <input type="hidden" name="Firma - DIČ" value="" />
+        <input type="hidden" name="Firma - IČ DPH" value="" />
+        <input type="hidden" name="Firma - Ulica" value="" />
+        <input type="hidden" name="Firma - Číslo" value="" />
+        <input type="hidden" name="Firma - Mesto" value="" />
+        <input type="hidden" name="Firma - PSČ" value="" />
+        <input type="hidden" name="Firma - Krajina" value="" />
+        <input type="hidden" name="Firma - Adresa (celá)" value="" />
 
-    <div class="field">
-      <label for="ico">IČO</label>
-      <input id="ico" name="IČO" inputmode="numeric" placeholder="Zadajte IČO" />
-      <div id="icoStatus" class="help"></div>
+        <div class="formGrid">
+          <div class="field">
+            <label for="ico">IČO (voliteľné)</label>
+            <input id="ico" name="IČO" inputmode="numeric" placeholder="napr. 12345678" />
+            <div class="help">Ak ste fyzická osoba alebo firmu neuvádzate, nechajte prázdne.</div>
+            <div class="statusLine" data-ico-status></div>
+          </div>
+
+          <div class="field">
+            <label for="type">Typ portrétneho filmu</label>
+            <select id="type" name="Typ portrétneho filmu" required>
+              <option value="" selected disabled>Vyber formát</option>
+              <option>Portrétny film „Osobnosť“</option>
+              <option>Portrétny film „Životný príbeh“</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="name">Meno a priezvisko</label>
+            <input id="name" name="Meno a priezvisko" placeholder="Vaše meno" required />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="Email" placeholder="napr. meno@firma.sk" required />
+          </div>
+
+          <div class="field">
+            <label for="phone">Telefón</label>
+            <input id="phone" name="Telefón" placeholder="+421…" />
+          </div>
+
+          <div class="field">
+            <label for="date">Preferovaný termín (ak už viete)</label>
+            <input id="date" type="date" name="Preferovaný termín" />
+          </div>
+
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="msg">Správa</label>
+            <textarea id="msg" name="Správa" placeholder=""></textarea>
+          </div>
+        </div>
+
+        <!-- Auto-filled (visible only when loaded) -->
+        <div class="autoFields" data-auto-fields style="margin-top:14px;">
+          <div class="grid2">
+            <div class="field">
+              <label for="companyName">Firma – názov</label>
+              <input id="companyName" readonly />
+            </div>
+            <div class="field">
+              <label for="companyAddressFull">Firma – adresa</label>
+              <input id="companyAddressFull" readonly />
+            </div>
+            <div class="field">
+              <label for="companyDic">DIČ</label>
+              <input id="companyDic" readonly />
+            </div>
+            <div class="field">
+              <label for="companyIcdph">IČ DPH</label>
+              <input id="companyIcdph" readonly />
+            </div>
+
+            <div class="field">
+              <label for="companyStreet">Ulica</label>
+              <input id="companyStreet" readonly />
+            </div>
+            <div class="field">
+              <label for="companyNumber">Číslo</label>
+              <input id="companyNumber" readonly />
+            </div>
+            <div class="field">
+              <label for="companyCity">Mesto</label>
+              <input id="companyCity" readonly />
+            </div>
+            <div class="field">
+              <label for="companyPsc">PSČ</label>
+              <input id="companyPsc" readonly />
+            </div>
+            <div class="field" style="grid-column: 1 / -1;">
+              <label for="companyCountry">Krajina</label>
+              <input id="companyCountry" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="formActions">
+          <label class="checkRow">
+            <input type="checkbox" name="GDPR súhlas" required />
+            Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.
+          </label>
+
+          <button class="btn btn--primary" type="submit">Odoslať dopyt</button>
+        </div>
+      </form>
     </div>
-
-    <!-- Hidden company fields -->
-    <input type="hidden" name="Firma - názov" id="companyNameHidden" value="" />
-    <input type="hidden" name="Firma - adresa" id="companyAddrHidden" value="" />
-    <input type="hidden" name="Firma - DIČ" id="companyDicHidden" value="" />
-    <input type="hidden" name="Firma - IČ DPH" id="companyIcdphHidden" value="" />
-    <input type="hidden" name="Firma - ulica" id="companyStreetHidden" value="" />
-    <input type="hidden" name="Firma - PSČ" id="companyPscHidden" value="" />
-    <input type="hidden" name="Firma - mesto" id="companyCityHidden" value="" />
-    <input type="hidden" name="Firma - právna forma" id="companyLegalFormHidden" value="" />
-    <input type="hidden" name="Firma - SK NACE" id="companySkNaceHidden" value="" />
-
-    <div class="grid2">
-      <div class="field">
-        <label>Meno a priezvisko</label>
-        <input name="Meno a priezvisko" required placeholder="Napíšte svoje meno" />
-      </div>
-      <div class="field">
-        <label>Email</label>
-        <input name="Email" type="email" required placeholder="napr. meno@firma.sk" />
-      </div>
-    </div>
-
-    <div class="grid2">
-      <div class="field">
-        <label>Telefón</label>
-        <input name="Telefón" placeholder="+421…" />
-      </div>
-      <div class="field">
-        <label>Typ portrétneho filmu</label>
-        <select name="Typ portrétneho filmu" required>
-          <option value="" selected disabled>Vyber formát</option>
-          <option>Portrétny film „Osobnosť“</option>
-          <option>Portrétny film „Životný príbeh“</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="grid2">
-      <div class="field">
-        <label for="domain">Doména (.sk)</label>
-        <input id="domain" name="Doména" placeholder="napr. mojadomena.sk" />
-        <div id="domainStatus" class="help"></div>
-      </div>
-      <div class="field">
-        <label>Správa</label>
-        <textarea name="Správa" rows="5" required placeholder="Krátko opíšte dopyt…"></textarea>
-      </div>
-    </div>
-
-    <input type="hidden" name="Doména - voľná" id="domainAvailableHidden" value="" />
-
-    <label class="checkbox">
-      <input type="checkbox" name="GDPR" required />
-      Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.
-    </label>
-
-    <button class="btn btn--primary" type="submit">Odoslať dopyt</button>
-  </form>
+  </section>
 
   <script type="module" src="/src/scripts/enrich-forms.js"></script>
 </BaseLayout>

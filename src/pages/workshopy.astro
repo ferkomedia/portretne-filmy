@@ -2,32 +2,42 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import terms from "../data/workshop-terms.json";
 
-const openTerms = (terms || []).filter(t => t.status === "open");
+const openTerms = (terms || []).filter(t => (t.status || "").toLowerCase() === "open");
+const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} €`;
 ---
-
-<BaseLayout title="Workshopy | FerkoMedia" description="Rezervuj si miesto na workshop.">
+<BaseLayout title="Workshopy | FerkoMedia" description="Rezervácia termínu workshopu.">
   <section class="hero">
-    <p class="kicker">Workshopy</p>
-    <h1>Rezervovať miesto na workshop</h1>
+    <div class="eyebrow">Workshopy</div>
+    <h1>Praktické workshopy s výsledkom</h1>
     <p class="lead">
-      Vyber si termín a pošli rezerváciu. Ozvem sa s potvrdením a detailmi.
+      Na workshopoch pracujete na vlastnom projekte. Odídete s konkrétnym výsledkom a jasným ďalším postupom.
     </p>
+    <div class="actions">
+      <a class="btn btn--primary" href="#terminy">Pozrieť termíny</a>
+      <a class="btn btn--ghost" href="#rezervacia">Rezervovať miesto</a>
+    </div>
   </section>
 
-  <section class="panel">
-    <h2>Aktuálne termíny</h2>
+  <section class="section" id="o">
+    <div class="grid3">
+      <div class="card"><h3>Pre koho</h3><p>Živnostníci, malé firmy, lokálne služby, freelanceri.</p></div>
+      <div class="card"><h3>Čo získate</h3><p>Hotový výsledok / nastavenie + kontrolný checklist + odporúčania na ďalšie kroky.</p></div>
+      <div class="card"><h3>Forma</h3><p>Prakticky, krok za krokom. Minimum teórie, maximum reálneho posunu.</p></div>
+    </div>
+  </section>
 
+  <section class="section" id="terminy">
+    <h2>Aktuálne termíny</h2>
     {openTerms.length === 0 ? (
-      <p class="muted">Momentálne nemáme vypísané termíny. Napíš mi a dám ti vedieť najbližší dostupný dátum.</p>
+      <div class="card"><p>Termíny doplníme čoskoro. Ak chcete, napíšte a dáme vám vedieť prvý voľný termín.</p></div>
     ) : (
-      <div class="cards">
+      <div class="grid2">
         {openTerms.map(t => (
           <div class="card">
-            <div class="cardTitle">{t.title}</div>
-            <div class="cardMeta">
-              <span>{t.date} • {t.time}</span>
-              <span>{t.city}</span>
-              <span>{t.price}</span>
+            <h3>{t.title}</h3>
+            <p><strong>{t.date}</strong> • {t.city} • {t.price} € • kapacita {t.capacity}</p>
+            <div class="actions">
+              <a class="btn btn--primary" href="#rezervacia">Rezervovať</a>
             </div>
           </div>
         ))}
@@ -35,67 +45,66 @@ const openTerms = (terms || []).filter(t => t.status === "open");
     )}
   </section>
 
-  <section class="panel">
+  <section class="section" id="rezervacia">
     <h2>Rezervačný formulár</h2>
 
-    <form
-      class="fmForm"
-      name="workshopy"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      action="/dakujem-workshopy"
-    >
-      <input type="hidden" name="form-name" value="workshopy" />
-      <p class="srOnly">
-        <label>Nechaj prázdne: <input name="bot-field" /></label>
-      </p>
+    <div class="formCard">
+      <form
+        name="workshopy"
+        method="POST"
+        data-netlify="true"
+        action="/dakujem-workshopy/"
+        data-domain-form
+      >
+        <input type="hidden" name="form-name" value="workshopy" />
 
-      <div class="grid2">
-        <div class="field">
-          <label for="wsName">Meno a priezvisko</label>
-          <input id="wsName" name="Meno a priezvisko" type="text" required placeholder="Napíš svoje meno" />
+        <div class="formGrid">
+          <div class="field">
+            <label for="wsName">Meno a priezvisko</label>
+            <input id="wsName" name="Meno a priezvisko" placeholder="Vaše meno" required />
+          </div>
+
+          <div class="field">
+            <label for="wsEmail">E-mail</label>
+            <input id="wsEmail" type="email" name="E-mail" placeholder="napr. meno@firma.sk" required />
+          </div>
+
+          <div class="field">
+            <label for="wsPhone">Telefón</label>
+            <input id="wsPhone" name="Telefón" placeholder="+421…" />
+          </div>
+
+          <div class="field">
+            <label for="wsTerm">Termín workshopu</label>
+            <select id="wsTerm" name="Termín workshopu" required>
+              <option value="" selected disabled>Vyberte termín</option>
+              {openTerms.map(t => <option value={formatTerm(t)}>{formatTerm(t)}</option>)}
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="wsDomain">Doména (.sk) (voliteľné)</label>
+            <input id="wsDomain" name="Doména (.sk)" placeholder="napr. mojadomena.sk" />
+            <div class="statusLine" data-domain-status></div>
+          </div>
+
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="wsNote">Poznámka (voliteľné)</label>
+            <textarea id="wsNote" name="Poznámka" placeholder="Ak máte otázku alebo špeciálnu požiadavku, napíšte sem."></textarea>
+          </div>
         </div>
 
-        <div class="field">
-          <label for="wsEmail">E-mail</label>
-          <input id="wsEmail" name="E-mail" type="email" required placeholder="napr. meno@firma.sk" />
+        <div class="formActions">
+          <label class="checkRow">
+            <input type="checkbox" name="GDPR súhlas" required />
+            Súhlasím so spracovaním osobných údajov za účelom vybavenia rezervácie.
+          </label>
+
+          <button class="btn btn--primary" type="submit">Rezervovať miesto</button>
         </div>
-
-        <div class="field">
-          <label for="wsPhone">Telefón</label>
-          <input id="wsPhone" name="Telefón" type="tel" required placeholder="+421..." />
-        </div>
-
-        <div class="field">
-          <label for="wsTerm">Termín workshopu</label>
-          <select id="wsTerm" name="Termín workshopu" required>
-            <option value="" selected disabled hidden>–</option>
-            {openTerms.map(t => (
-              <option value={`${t.date} ${t.time} — ${t.title} (${t.city})`}>
-                {t.date} {t.time} — {t.title} ({t.city})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div class="field full">
-          <label for="wsNote">Poznámka (voliteľné)</label>
-          <textarea id="wsNote" name="Poznámka" rows="4" placeholder="Ak máš otázku alebo špeciálnu požiadavku, napíš sem."></textarea>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="btn btnPrimary" type="submit">Rezervovať miesto</button>
-      </div>
-    </form>
-
-    <div class="dash">
-      <h3>Správa termínov (malý dashboard)</h3>
-      <p class="muted">
-        Termíny sa upravujú v súbore <code>src/data/workshop-terms.json</code>. Po push do GitHubu sa Netlify samo deployne.
-      </p>
-      <pre class="code">{JSON.stringify(openTerms, null, 2)}</pre>
+      </form>
     </div>
   </section>
+
+  <script type="module" src="/src/scripts/enrich-forms.js"></script>
 </BaseLayout>

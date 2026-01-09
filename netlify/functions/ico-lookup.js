@@ -1,105 +1,81 @@
-export async function handler(event) {
+export default async (req) => {
     try {
-        const url = new URL(event.rawUrl);
-        const ico = (url.searchParams.get("ico") || "").trim();
+        const url = new URL(req.url);
+        const icoRaw = (url.searchParams.get("ico") || "").trim();
+        const ico = icoRaw.replace(/\s+/g, "");
 
-        if (!ico || !/^\d{6,10}$/.test(ico)) {
-            return json(400, { ok: false, error: "Neplatné IČO." });
+        if (!/^\d{6,8}$/.test(ico)) {
+            return json({ ok: false, found: false, error: "Neplatné IČO." }, 400);
         }
 
-        // PRESNE tento zdroj, ktorý chceš:
-        const apiUrl = `https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?ico=${encodeURIComponent(ico)}`;
-
-        const r = await fetch(apiUrl, {
-            headers: {
-                accept: "application/json",
-                "user-agent": "netlify-function/ico-lookup"
-            }
+        const endpoint = `https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?ico=${encodeURIComponent(ico)}`;
+        const r = await fetch(endpoint, {
+            headers: { "accept": "application/json" },
         });
 
         if (!r.ok) {
-            return json(502, { ok: false, error: `RegisterUZ vrátil ${r.status}.` });
+            return json({ ok: false, found: false, error: "RegisterUZ odpovedal chybou." }, 502);
         }
 
-        const payload = await r.json();
+        const data = await r.json();
 
-        // API môže vrátiť array alebo objekt; berieme prvý záznam, ak je array
-        const d = Array.isArray(payload) ? payload[0] : payload;
+        // API môže vrátiť pole alebo objekt – ošetríme obe
+        const item = Array.isArray(data) ? data[0] : (data?.data?.[0] ?? data?.items?.[0] ?? data?.[0] ?? data);
 
-        if (!d) {
-            return json(200, { ok: true, found: false, ico });
+        if (!item) {
+            return json({ ok: true, found: false, ico }, 200);
         }
 
-        // Pomocné bezpečné čítanie – vždy vráti string (nikdy objekt)
-        const pick = (v) => {
-            if (v === null || v === undefined) return "";
-            if (typeof v === "string") return v.trim();
-            if (typeof v === "number") return String(v);
-            // častý prípad: { value: "Banská Bystrica", ... }
-            if (typeof v === "object" && typeof v.value === "string") return v.value.trim();
-            return "";
-        };
+        // Namapovanie polí (podľa tvojej PHP logiky)
+        // kľúče sa môžu líšiť – berieme najpravdepodobnejšie
+        const d = item;
 
-        // === Namapovanie polí presne ako chceš ty ===
-        const company_data = {
-            name: pick(d.nazovUJ),
-            ico: pick(d.ico) || ico,
-            dic: pick(d.dic),
-            city: pick(d.mesto),
-            street: pick(d.ulica),
-            psc: pick(d.psc)
-        };
+        const name = d.nazovUJ ?? d.name ?? "";
+        const dic = d.dic ?? d.DIC ?? "";
+        const icdph = d.icDph ?? d.icdph ?? d.ICDPH ?? "";
 
-        // Fallbacky (len ak hore nič nie je) – lebo v tvojom JSONe je mesto v raw.addresses[0].municipality.value
-        // ALE stále vrátime len string.
-        if (!company_data.city) {
-            const addr0 = Array.isArray(d.addresses) ? d.addresses[0] : null;
-            company_data.city = pick(addr0?.municipality);
-        }
-        if (!company_data.street) {
-            // niekedy ulica býva v addr0.street.value alebo addr0.street
-            const addr0 = Array.isArray(d.addresses) ? d.addresses[0] : null;
-            company_data.street = pick(addr0?.street);
-        }
-        if (!company_data.psc) {
-            const addr0 = Array.isArray(d.addresses) ? d.addresses[0] : null;
-            company_data.psc = pick(addr0?.postalCode) || pick(addr0?.psc);
-        }
+        // Adresa – skladáme LEN z reťazcov, aby nikdy nevzniklo [object Object]
+        const street = (d.ulica ?? d.street ?? "").toString().trim();
+        const number =
+            (d.supCislo ?? d.supcislo ?? d.orientacneCislo ?? d.orientacnecislo ?? d.number ?? "").toString().trim();
+        const city = (d.mesto ?? d.city ?? "").toString().trim();
+        const psc = (d.psc ?? d.postalCode ?? "").toString().trim();
+        const country = (d.stat ?? d.country ?? "Slovenská republika").toString().trim();
 
-        // Ak nemáme ani názov ani mesto ani dic -> berieme to ako not found
-        if (!company_data.name && !company_data.city && !company_data.dic) {
-            return json(200, { ok: true, found: false, ico });
-        }
+        const addressLine =
+            [street, number].filter(Boolean).join(" ").trim();
 
-        // pekná adresa ako čistý text
-        const addressLine = [company_data.street, company_data.psc, company_data.city]
-            .map((x) => (x || "").trim())
-            .filter(Boolean)
-            .join(", ");
-
-        return json(200, {
+        return json({
             ok: true,
             found: true,
-            ico: company_data.ico,
-            company: company_data,
-            addressLine
-        });
-    } catch (e) {
-        return json(500, {
-            ok: false,
-            error: "Chyba v ico-lookup.",
-            detail: String(e?.message || e)
-        });
-    }
-}
+            ico,
+            company: {
+                name,
+                ico,
+                dic,
+                icdph,
+                street,
+                number,
+                city,
+                psc,
+                country,
+                addressLine,                    // "Červenej armády 1"
+                addressFull: [addressLine, [psc, city].filter(Boolean).join(" ")].filter(Boolean).join(", "),
+            },
+            raw: d,
+        }, 200);
 
-function json(statusCode, body) {
-    return {
-        statusCode,
+    } catch (e) {
+        return json({ ok: false, found: false, error: "Chyba servera." }, 500);
+    }
+};
+
+function json(obj, status = 200) {
+    return new Response(JSON.stringify(obj), {
+        status,
         headers: {
             "content-type": "application/json; charset=utf-8",
-            "cache-control": "no-store"
+            "cache-control": "no-store",
         },
-        body: JSON.stringify(body)
-    };
+    });
 }
