@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/api/domain-check"
+  to = "/.netlify/functions/domain-check"
+  status = 200
+
+[[redirects]]
+  from = "/api/ico"
+  to = "/.netlify/functions/ico-lookup"
+  status = 200

@@ -460,6 +460,69 @@ const isActive = (href) => currentPath === href || (href !== "/" && currentPath.
         .container{ width: calc(100% - 28px); }
         .footer-inner{ flex-direction:column; align-items:flex-start; }
       }
+      /* === FORM: Firma / IČO / Doména helpery === */
+
+      .fmBlock{
+        margin-bottom: 16px;
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,.10);
+        background: rgba(255,255,255,.04);
+      }
+
+      .fmH2{
+        margin: 0 0 10px;
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .fmGrid2{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 860px){
+        .fmGrid2{ grid-template-columns: 1fr; }
+      }
+
+      .fmInline{
+        display:flex;
+        gap:10px;
+        align-items:center;
+      }
+
+      .fmInline input{
+        flex:1;
+        min-width:0;
+      }
+
+      .fmHint{
+        margin-top:8px;
+        font-size:14px;
+        line-height:1.35;
+      }
+
+      .fmHint.is-info{ color: rgba(255,255,255,.72); }
+      .fmHint.is-ok{ color: #fff; }
+      .fmHint.is-bad{ color: #fff; }
+
+      .fmBtn--ghost{
+        background: transparent;
+        border: 1px solid rgba(255,255,255,.25);
+        color:#fff;
+        padding:12px 14px;
+        border-radius:12px;
+        font-weight:800;
+        white-space:nowrap;
+      }
+
+      .fmBtn--ghost:hover{
+        border-color: rgba(255,255,255,.55);
+        background: rgba(255,255,255,.06);
+      }
+
     </style>
   </head>
 
@@ -474,6 +537,7 @@ const isActive = (href) => currentPath === href || (href !== "/" && currentPath.
 
           <!-- desktop -->
           <nav class="nav" aria-label="Hlavné menu">
+            <a class={isActive("/workshopy") ? "active" : ""} href="/workshopy">Workshopy</a>
             <a class={isActive("/sluzby") ? "active" : ""} href="/sluzby">Služby</a>
             <a class={isActive("/portfolio") ? "active" : ""} href="/portfolio">Portfólio</a>
             <a class={isActive("/kontakt") ? "active" : ""} href="/kontakt">Kontakt</a>
@@ -502,6 +566,7 @@ const isActive = (href) => currentPath === href || (href !== "/" && currentPath.
       </div>
 
       <nav class="drawer-nav">
+        <a class={isActive("/workshopy") ? "active" : ""} href="/workshopy">Workshopy</a>
         <a class={isActive("/sluzby") ? "active" : ""} href="/sluzby">Služby</a>
         <a class={isActive("/portfolio") ? "active" : ""} href="/portfolio">Portfólio</a>
         <a class={isActive("/kontakt") ? "active" : ""} href="/kontakt">Kontakt</a>

@@ -6,9 +6,58 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <section class="hero">
     <h1>Objednávka portrétneho filmu</h1>
     <p class="lead">
-      Napíš mi pár informácií a ozvem sa ti čo najskôr na email alebo telefón.
+
     </p>
   </section>
+<!-- FIRMA PODĽA IČO (PRVÉ POLE) -->
+<div class="fmBlock">
+  <h2 class="fmH2">Firma (ak ste podnikateľ alebo firma)</h2>
+
+  <div class="fmField">
+    <label for="ico">IČO</label>
+<div class="fmInline">
+  <input id="ico" name="IČO" type="text" inputmode="numeric" autocomplete="off" placeholder="napr. 12345678" />
+</div>
+<div class="fmHint" id="icoHint"></div>
+    <div class="fmHint" id="icoHint"></div>
+  </div>
+
+  <!-- VIDITEĽNÉ DOPLNENÉ ÚDAJE (readonly) -->
+  <div class="fmGrid2" id="companyFields" style="display:none;">
+    <div class="fmField">
+      <label for="companyName">Názov firmy</label>
+      <input id="companyName" name="Firma - názov" type="text" readonly />
+    </div>
+
+    <div class="fmField">
+      <label for="companyAddress">Adresa</label>
+      <input id="companyAddress" name="Firma - adresa" type="text" readonly />
+    </div>
+
+    <div class="fmField">
+      <label for="companyDic">DIČ (ak je dostupné)</label>
+      <input id="companyDic" name="Firma - DIČ" type="text" readonly />
+    </div>
+
+    <div class="fmField">
+      <label for="companyIcDph">IČ DPH (ak je dostupné)</label>
+      <input id="companyIcDph" name="Firma - IČ DPH" type="text" readonly />
+    </div>
+
+    <div class="fmField">
+      <label for="companyStatus">Stav / status (ak je dostupné)</label>
+      <input id="companyStatus" name="Firma - status" type="text" readonly />
+    </div>
+
+    <div class="fmField">
+      <label for="companyReg">Register / zdroj (ak je dostupné)</label>
+      <input id="companyReg" name="Firma - register" type="text" readonly />
+    </div>
+  </div>
+
+  <!-- ULOŽÍME ÚPLNE VŠETKO, ČO API VRÁTI -->
+  <input type="hidden" name="Firma - JSON" id="companyJsonHidden" value="" />
+</div>
 
   <section class="section">
     <div class="card">
@@ -124,6 +173,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
                 Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.
               </label>
             </div>
+<!-- DOMÉNA (DOLU PRED ODOSLANÍM) -->
+<div class="fmField" style="margin-top:14px;">
+  <label for="domena">Doména .sk (ak riešime aj web)</label>
+  <div class="fmInline">
+    <input id="domena" name="Doména" type="text" autocomplete="off" placeholder="napr. mojadomena.sk" />
+  </div>
+  <div class="fmHint" id="domainHint"></div>
+  <input type="hidden" name="Doména - výsledok" id="domainResultHidden" value="" />
+
+  <input type="hidden" name="Doména - výsledok" id="domainResultHidden" value="" />
+  <div class="fmHint" id="domainHint"></div>
+</div>
 
             <div class="form-actions">
               <button class="btn btn-primary" type="submit">Odoslať dopyt</button>
@@ -135,3 +196,250 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
   </section>
 </BaseLayout>
+<script>
+  const $ = (sel) => document.querySelector(sel);
+
+  // --- Elements
+  const icoInput = $("#ico");
+  const icoHint = $("#icoHint");
+
+  const companyFields = $("#companyFields");
+  const companyName = $("#companyName");
+  const companyAddress = $("#companyAddress");
+  const companyDic = $("#companyDic");
+  const companyIcDph = $("#companyIcDph");
+  const companyStatus = $("#companyStatus");
+  const companyReg = $("#companyReg");
+  const companyJsonHidden = $("#companyJsonHidden");
+
+  const domainInput = $("#domena");
+  const domainHint = $("#domainHint");
+  const domainHidden = $("#domainResultHidden");
+
+  // --- Helpers
+  function setHint(el, msg, type = "info") {
+    if (!el) return;
+    el.textContent = msg || "";
+    el.classList.remove("is-ok", "is-bad", "is-info");
+    el.classList.add(type === "ok" ? "is-ok" : type === "bad" ? "is-bad" : "is-info");
+  }
+
+  function safeJoin(parts) {
+    return parts.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+  }
+
+  function extractCompany(data) {
+    const r = data?.raw || {};
+
+    const name =
+      data?.name ||
+      r?.name ||
+      r?.businessName ||
+      r?.corporateBodyName ||
+      r?.formattedName ||
+      "";
+
+    const a =
+      r?.address ||
+      r?.addresses?.[0] ||
+      r?.residenceAddress ||
+      r?.seatAddress ||
+      null;
+
+    const address = a
+      ? safeJoin([a?.street, a?.buildingNumber, a?.orientationNumber, a?.municipality, a?.postalCode])
+      : (data?.address || "");
+
+    const identifiers = Array.isArray(r?.identifiers) ? r.identifiers : [];
+
+    const dic =
+      data?.dic ||
+      r?.dic ||
+      identifiers.find(x => (x?.type || "").toLowerCase() === "dic")?.value ||
+      "";
+
+    const icdph =
+      r?.icDph ||
+      r?.vatNumber ||
+      identifiers.find(x => (x?.type || "").toLowerCase().includes("vat"))?.value ||
+      identifiers.find(x => (x?.type || "").toLowerCase().includes("icdph"))?.value ||
+      "";
+
+    const status =
+      r?.status ||
+      r?.state ||
+      r?.activityStatus ||
+      r?.validityStatus ||
+      "";
+
+    const register =
+      r?.register ||
+      r?.source ||
+      r?.origin ||
+      r?.registry ||
+      "";
+
+    return { name, address, dic, icdph, status, register };
+  }
+
+  // --- Debounce utility
+  function debounce(fn, wait) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), wait);
+    };
+  }
+
+  // --- Abort controllers (cancel old requests)
+  let icoAbort = null;
+  let domainAbort = null;
+
+  // --- Basic state to avoid re-checking same value
+  let lastIcoChecked = "";
+  let lastDomainChecked = "";
+
+  // --- IČO realtime lookup
+  async function runIcoLookup() {
+    if (!icoInput) return;
+
+    const ico = (icoInput.value || "").replace(/\s+/g, "").trim();
+
+    // Reset UI when empty
+    if (!ico) {
+      setHint(icoHint, "", "info");
+      companyFields && (companyFields.style.display = "none");
+      companyJsonHidden && (companyJsonHidden.value = "");
+      lastIcoChecked = "";
+      return;
+    }
+
+    // Only digits, typical length 6-10
+    if (!/^\d{6,10}$/.test(ico)) {
+      setHint(icoHint, "Zadajte platné IČO (6–10 číslic).", "info");
+      companyFields && (companyFields.style.display = "none");
+      companyJsonHidden && (companyJsonHidden.value = "");
+      return;
+    }
+
+    if (ico === lastIcoChecked) return;
+
+    setHint(icoHint, "Vyhľadávam firmu…", "info");
+
+    // cancel previous
+    if (icoAbort) icoAbort.abort();
+    icoAbort = new AbortController();
+
+    // reset fields
+    companyJsonHidden.value = "";
+    companyFields.style.display = "none";
+    companyName.value = "";
+    companyAddress.value = "";
+    companyDic.value = "";
+    companyIcDph.value = "";
+    companyStatus.value = "";
+    companyReg.value = "";
+
+    try {
+      const res = await fetch(`/api/ico?ico=${encodeURIComponent(ico)}`, { signal: icoAbort.signal });
+      const data = await res.json();
+
+      if (!data.ok) {
+        setHint(icoHint, data.error || "Nepodarilo sa vyhľadať IČO.", "bad");
+        return;
+      }
+
+      if (!data.found) {
+        setHint(icoHint, "Firma sa nenašla.", "bad");
+        lastIcoChecked = ico;
+        return;
+      }
+
+      companyJsonHidden.value = JSON.stringify(data.raw || {});
+      const c = extractCompany(data);
+
+      companyName.value = c.name || "";
+      companyAddress.value = c.address || "";
+      companyDic.value = c.dic || "";
+      companyIcDph.value = c.icdph || "";
+      companyStatus.value = c.status || "";
+      companyReg.value = c.register || "";
+
+      companyFields.style.display = "grid";
+      setHint(icoHint, "Údaje firmy boli načítané.", "ok");
+      lastIcoChecked = ico;
+    } catch (e) {
+      if (e.name === "AbortError") return; // expected
+      setHint(icoHint, "Chyba pri vyhľadaní IČO.", "bad");
+    }
+  }
+
+  const icoLookupDebounced = debounce(runIcoLookup, 650);
+
+  // --- Domain realtime check
+  function normalizeDomain(input) {
+    let d = (input || "").trim().toLowerCase();
+    d = d.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+    return d;
+  }
+
+  async function runDomainCheck() {
+    if (!domainInput) return;
+
+    const domain = normalizeDomain(domainInput.value);
+
+    if (!domain) {
+      setHint(domainHint, "", "info");
+      domainHidden.value = "";
+      lastDomainChecked = "";
+      return;
+    }
+
+    // Only check if it ends with .sk and looks plausible
+    if (!/^[a-z0-9-]+\.(sk)$/.test(domain)) {
+      setHint(domainHint, "Zadajte doménu vo formáte napr. mojadomena.sk", "info");
+      domainHidden.value = "";
+      return;
+    }
+
+    if (domain === lastDomainChecked) return;
+
+    setHint(domainHint, "Overujem doménu…", "info");
+    domainHidden.value = "";
+
+    if (domainAbort) domainAbort.abort();
+    domainAbort = new AbortController();
+
+    try {
+      const res = await fetch(`/api/domain-check?domain=${encodeURIComponent(domain)}`, { signal: domainAbort.signal });
+      const data = await res.json();
+
+      if (!data.ok) {
+        setHint(domainHint, data.error || "Nepodarilo sa overiť doménu.", "bad");
+        return;
+      }
+
+      if (data.available === true) {
+        setHint(domainHint, "Doména vyzerá ako voľná.", "ok");
+        domainHidden.value = `VOĽNÁ: ${data.domain}`;
+      } else {
+        setHint(domainHint, "Doména je zrejme registrovaná.", "bad");
+        domainHidden.value = `OBSADENÁ: ${data.domain}`;
+      }
+
+      lastDomainChecked = domain;
+    } catch (e) {
+      if (e.name === "AbortError") return;
+      setHint(domainHint, "Chyba pri overení domény.", "bad");
+    }
+  }
+
+  const domainCheckDebounced = debounce(runDomainCheck, 650);
+
+  // --- Bind realtime events
+  icoInput?.addEventListener("input", icoLookupDebounced);
+  icoInput?.addEventListener("blur", runIcoLookup);
+
+  domainInput?.addEventListener("input", domainCheckDebounced);
+  domainInput?.addEventListener("blur", runDomainCheck);
+</script>
