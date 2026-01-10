@@ -24,15 +24,42 @@ function showAutoFields(form, show) {
     box.classList.toggle("isVisible", !!show);
 }
 
+/* ========= SAFE FETCH (NEZASEKNE SA) ========= */
+
+async function safeFetchJson(url, timeout = 5000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+
+    try {
+        const r = await fetch(url, { signal: controller.signal });
+        if (!r.ok) return { ok: false };
+
+        const text = await r.text();
+        try {
+            return JSON.parse(text);
+        } catch {
+            return { ok: false };
+        }
+    } catch {
+        return { ok: false };
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
 async function icoLookup(ico) {
-    const r = await fetch(`/.netlify/functions/ico-lookup?ico=${encodeURIComponent(ico)}`);
-    return await r.json();
+    return safeFetchJson(
+        `/.netlify/functions/ico-lookup?ico=${encodeURIComponent(ico)}`
+    );
 }
 
 async function domainCheck(domain) {
-    const r = await fetch(`/.netlify/functions/domain-check?domain=${encodeURIComponent(domain)}`);
-    return await r.json();
+    return safeFetchJson(
+        `/.netlify/functions/domain-check?domain=${encodeURIComponent(domain)}`
+    );
 }
+
+/* ========= IČO FORM ========= */
 
 function wireIcoForm(form) {
     const icoInput = form.querySelector('input[name="IČO"]');
@@ -41,55 +68,44 @@ function wireIcoForm(form) {
 
     const run = debounce(async () => {
         const ico = (icoInput.value || "").replace(/\s+/g, "");
+
         if (!ico) {
-            if (status) status.textContent = "";
+            status && (status.textContent = "");
             showAutoFields(form, false);
-            // vyčisti hidden
-            [
-                "Firma - názov","Firma - DIČ","Firma - IČ DPH","Firma - Ulica","Firma - Číslo",
-                "Firma - Mesto","Firma - PSČ","Firma - Krajina","Firma - Adresa (celá)"
-            ].forEach((k) => setHidden(k, ""));
             return;
         }
 
         if (!/^\d{6,8}$/.test(ico)) {
-            if (status) {
-                status.textContent = "Zadajte platné IČO (6–8 číslic).";
-                status.className = "statusLine statusBad";
-            }
+            status && (status.textContent = "Zadajte platné IČO (6–8 číslic).");
+            status && (status.className = "statusLine statusBad");
             showAutoFields(form, false);
             return;
         }
 
-        if (status) {
-            status.textContent = "Overujem IČO…";
-            status.className = "statusLine";
-        }
+        status && (status.textContent = "Overujem IČO…");
+        status && (status.className = "statusLine");
 
         const res = await icoLookup(ico);
 
-        if (!res.ok || !res.found) {
-            if (status) {
-                status.textContent = "Firma sa nenašla v registri.";
-                status.className = "statusLine statusBad";
-            }
+        if (!res || !res.ok || !res.found) {
+            status && (status.textContent = "IČO sa nepodarilo overiť automaticky.");
+            status && (status.className = "statusLine statusBad");
             showAutoFields(form, false);
             return;
         }
 
         const c = res.company || {};
-        // visible
-        setValue('#companyName', c.name);
-        setValue('#companyDic', c.dic);
-        setValue('#companyIcdph', c.icdph);
-        setValue('#companyStreet', c.street);
-        setValue('#companyNumber', c.number);
-        setValue('#companyCity', c.city);
-        setValue('#companyPsc', c.psc);
-        setValue('#companyCountry', c.country);
-        setValue('#companyAddressFull', c.addressFull);
 
-        // hidden for Netlify
+        setValue("#companyName", c.name);
+        setValue("#companyDic", c.dic);
+        setValue("#companyIcdph", c.icdph);
+        setValue("#companyStreet", c.street);
+        setValue("#companyNumber", c.number);
+        setValue("#companyCity", c.city);
+        setValue("#companyPsc", c.psc);
+        setValue("#companyCountry", c.country);
+        setValue("#companyAddressFull", c.addressFull);
+
         setHidden("Firma - názov", c.name);
         setHidden("Firma - DIČ", c.dic);
         setHidden("Firma - IČ DPH", c.icdph);
@@ -101,15 +117,14 @@ function wireIcoForm(form) {
         setHidden("Firma - Adresa (celá)", c.addressFull);
 
         showAutoFields(form, true);
-
-        if (status) {
-            status.textContent = "Firma načítaná.";
-            status.className = "statusLine statusOk";
-        }
+        status && (status.textContent = "Firma načítaná.");
+        status && (status.className = "statusLine statusOk");
     }, 500);
 
     icoInput.addEventListener("input", run);
 }
+
+/* ========= DOMÉNA ========= */
 
 function wireDomainForm(form) {
     const domainInput = form.querySelector('input[name="Doména (.sk)"]');
@@ -118,42 +133,37 @@ function wireDomainForm(form) {
 
     const run = debounce(async () => {
         const domain = (domainInput.value || "").trim().toLowerCase();
+
         if (!domain) {
-            if (status) status.textContent = "";
+            status && (status.textContent = "");
             return;
         }
 
         if (!/^[a-z0-9-]{1,63}\.sk$/.test(domain)) {
-            if (status) {
-                status.textContent = "Zadajte doménu v tvare nieco.sk";
-                status.className = "statusLine statusBad";
-            }
+            status && (status.textContent = "Zadajte doménu v tvare nieco.sk");
+            status && (status.className = "statusLine statusBad");
             return;
         }
 
-        if (status) {
-            status.textContent = "Overujem doménu…";
-            status.className = "statusLine";
-        }
+        status && (status.textContent = "Overujem doménu…");
+        status && (status.className = "statusLine");
 
         const res = await domainCheck(domain);
 
-        if (!res.ok) {
-            if (status) {
-                status.textContent = "Overenie domény zlyhalo.";
-                status.className = "statusLine statusBad";
-            }
+        if (!res || !res.ok) {
+            status && (status.textContent = "Overenie domény zlyhalo.");
+            status && (status.className = "statusLine statusBad");
             return;
         }
 
-        if (status) {
-            status.textContent = res.available ? "Doména je voľná." : "Doména už existuje.";
-            status.className = "statusLine " + (res.available ? "statusOk" : "statusBad");
-        }
+        status && (status.textContent = res.available ? "Doména je voľná." : "Doména už existuje.");
+        status && (status.className = "statusLine " + (res.available ? "statusOk" : "statusBad"));
     }, 500);
 
     domainInput.addEventListener("input", run);
 }
+
+/* ========= INIT ========= */
 
 window.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("form[data-ico-form]").forEach(wireIcoForm);
