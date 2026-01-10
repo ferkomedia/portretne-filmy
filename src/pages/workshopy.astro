@@ -5,31 +5,91 @@ import terms from "../data/workshop-terms.json";
 const openTerms = (terms || []).filter(t => (t.status || "").toLowerCase() === "open");
 const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} €`;
 ---
-<BaseLayout title="Workshopy | FerkoMedia" description="Rezervácia termínu workshopu.">
+
+<BaseLayout title="Workshopy | FerkoMedia" description="Praktické workshopy s výsledkom – Web, E-shop, Google reklama, Sociálne siete, AI nástroje.">
   <section class="hero">
     <div class="eyebrow">Workshopy</div>
-    <h1>Praktické workshopy s výsledkom</h1>
+    <h1>Workshopy za 1 deň, kde odchádzaš s výsledkom</h1>
     <p class="lead">
-      Na workshopoch pracujete na vlastnom projekte. Odídete s konkrétnym výsledkom a jasným ďalším postupom.
+      Toto nie je prednáška. Pracuješ na vlastnom projekte, krok za krokom, s pomocou lektora.
+      Na konci dňa máš nastavené základy a jasný ďalší postup.
     </p>
+
     <div class="actions">
       <a class="btn btn--primary" href="#terminy">Pozrieť termíny</a>
       <a class="btn btn--ghost" href="#rezervacia">Rezervovať miesto</a>
     </div>
   </section>
 
-  <section class="section" id="o">
+  <section class="section" id="typy">
+    <h2>Aké workshopy robíme</h2>
     <div class="grid3">
-      <div class="card"><h3>Pre koho</h3><p>Živnostníci, malé firmy, lokálne služby, freelanceri.</p></div>
-      <div class="card"><h3>Čo získate</h3><p>Hotový výsledok / nastavenie + kontrolný checklist + odporúčania na ďalšie kroky.</p></div>
-      <div class="card"><h3>Forma</h3><p>Prakticky, krok za krokom. Minimum teórie, maximum reálneho posunu.</p></div>
+      <div class="card">
+        <h3>Web za 1 deň</h3>
+        <p>Základ webu, štruktúra, texty, SEO minimum, publikovanie.</p>
+        <div class="actions"><a class="btn btn--ghost" href="#rezervacia">Chcem miesto</a></div>
+      </div>
+      <div class="card">
+        <h3>E-shop za 1 deň</h3>
+        <p>Produkt, platby/doprava, základné nastavenia a prvá objednávka.</p>
+        <div class="actions"><a class="btn btn--ghost" href="#rezervacia">Chcem miesto</a></div>
+      </div>
+      <div class="card">
+        <h3>Google reklama za 1 deň</h3>
+        <p>Účet, konverzie, kampane, kľúčové slová a prvé reklamy bez chaosu.</p>
+        <div class="actions"><a class="btn btn--ghost" href="#rezervacia">Chcem miesto</a></div>
+      </div>
+      <div class="card">
+        <h3>Sociálne siete za 1 deň</h3>
+        <p>Obsahový plán, šablóny, natáčanie na mobil a konzistentný výstup.</p>
+        <div class="actions"><a class="btn btn--ghost" href="#rezervacia">Chcem miesto</a></div>
+      </div>
+      <div class="card">
+        <h3>AI nástroje za 1 deň</h3>
+        <p>Praktické AI pre podnikanie: texty, nápady, automatizácie, procesy.</p>
+        <div class="actions"><a class="btn btn--ghost" href="#rezervacia">Chcem miesto</a></div>
+      </div>
+      <div class="card">
+        <h3>Na mieru</h3>
+        <p>Ak chceš kombináciu (napr. web + reklama), napíš a vyskladáme deň.</p>
+        <div class="actions"><a class="btn btn--primary" href="/kontakt#objednat">Napísať dopyt</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="co-ziskas">
+    <h2>Čo si z workshopu odnesieš</h2>
+    <div class="grid3">
+      <div class="card">
+        <h3>Hotové nastavenie</h3>
+        <p>Nie “teóriu do šuflíka”, ale reálne kroky spravené priamo na tvojom projekte.</p>
+      </div>
+      <div class="card">
+        <h3>Checklist + šablóny</h3>
+        <p>Kontrolný zoznam, odporúčané postupy a šablóny textov podľa typu workshopu.</p>
+      </div>
+      <div class="card">
+        <h3>Jasný ďalší plán</h3>
+        <p>Po dni vieš presne, čo je ďalší krok a čo už neriešiť “naslepo”.</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--primary" href="#rezervacia">Rezervovať miesto</a>
+      <a class="btn btn--ghost" href="/kontakt#objednat">Mám otázku</a>
     </div>
   </section>
 
   <section class="section" id="terminy">
     <h2>Aktuálne termíny</h2>
+
     {openTerms.length === 0 ? (
-      <div class="card"><p>Termíny doplníme čoskoro. Ak chcete, napíšte a dáme vám vedieť prvý voľný termín.</p></div>
+      <div class="card">
+        <p>Termíny doplníme čoskoro. Napíš a dáme ti vedieť prvý voľný termín.</p>
+        <div class="actions">
+          <a class="btn btn--primary" href="/kontakt#objednat">Napísať správu</a>
+        </div>
+      </div>
     ) : (
       <div class="grid2">
         {openTerms.map(t => (
@@ -38,11 +98,53 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
             <p><strong>{t.date}</strong> • {t.city} • {t.price} € • kapacita {t.capacity}</p>
             <div class="actions">
               <a class="btn btn--primary" href="#rezervacia">Rezervovať</a>
+              <a class="btn btn--ghost" href="/kontakt#objednat">Spýtať sa</a>
             </div>
           </div>
         ))}
       </div>
     )}
+  </section>
+
+  <section class="section" id="miesto">
+    <h2>Miesto a forma</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Kde to prebieha</h3>
+        <p>Martin a okolie (presnú adresu posielame po rezervácii). Pracuje sa na vlastnom notebooku.</p>
+      </div>
+      <div class="card">
+        <h3>Kapacita</h3>
+        <p>Malá skupina (typicky do 12 ľudí), aby každý dostal pomoc a stihol spraviť výsledok.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq">
+    <h2>FAQ</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Je to pre začiatočníkov?</h3>
+        <p>Áno. Dôležité je mať cieľ (čo chceš spraviť) a prísť s notebookom.</p>
+      </div>
+      <div class="card">
+        <h3>Čo ak nestihnem všetko?</h3>
+        <p>Dostaneš checklist a odporúčania. Podľa dohody vieme dať krátky follow-up.</p>
+      </div>
+      <div class="card">
+        <h3>Je v cene aj konzultácia?</h3>
+        <p>Po rezervácii sa ozveme s detailmi a krátkym upresnením, aby deň prebehol hladko.</p>
+      </div>
+      <div class="card">
+        <h3>Faktúra?</h3>
+        <p>Áno. Pri rezervácii stačí uviesť údaje (alebo IČO v správe v poznámke).</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn--primary" href="#rezervacia">Chcem sa prihlásiť</a>
+      <a class="btn btn--ghost" href="/kontakt#objednat">Mám otázku</a>
+    </div>
   </section>
 
   <section class="section" id="rezervacia">
@@ -55,10 +157,30 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
         data-netlify="true"
         action="/dakujem-workshopy/"
         data-domain-form
+        data-ico-form
       >
+
         <input type="hidden" name="form-name" value="workshopy" />
+        <!-- Hidden company fields (Netlify submission) -->
+        <input type="hidden" name="Firma - názov" value="" />
+        <input type="hidden" name="Firma - DIČ" value="" />
+        <input type="hidden" name="Firma - IČ DPH" value="" />
+        <input type="hidden" name="Firma - Ulica" value="" />
+        <input type="hidden" name="Firma - Číslo" value="" />
+        <input type="hidden" name="Firma - Mesto" value="" />
+        <input type="hidden" name="Firma - PSČ" value="" />
+        <input type="hidden" name="Firma - Krajina" value="" />
+        <input type="hidden" name="Firma - Adresa (celá)" value="" />
+
 
         <div class="formGrid">
+        <div class="field">
+          <label for="wsIco">IČO (voliteľné)</label>
+          <input id="wsIco" name="IČO" inputmode="numeric" placeholder="napr. 12345678" />
+          <div class="help">Ak ste FO alebo firmu neuvádzate, nechajte prázdne.</div>
+          <div class="statusLine" data-ico-status></div>
+        </div>
+
           <div class="field">
             <label for="wsName">Meno a priezvisko</label>
             <input id="wsName" name="Meno a priezvisko" placeholder="Vaše meno" required />

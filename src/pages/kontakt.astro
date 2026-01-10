@@ -2,11 +2,14 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 <BaseLayout title="Kontakt | Portrétny film" description="Objednávka portrétneho filmu – dopyt.">
+
   <section class="hero" id="objednat">
     <div class="eyebrow">Kontakt</div>
     <h1>Objednávka portrétneho filmu</h1>
     <p class="lead">Napíšte pár informácií a ozveme sa vám čo najskôr e-mailom alebo telefonicky.</p>
+  </section>
 
+  <section class="section">
     <div class="formCard">
       <form
         name="kontakt"
@@ -67,7 +70,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
           <div class="field" style="grid-column: 1 / -1;">
             <label for="msg">Správa</label>
-            <textarea id="msg" name="Správa" placeholder=""></textarea>
+            <textarea id="msg" name="Správa"></textarea>
           </div>
         </div>
 
@@ -126,5 +129,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
   </section>
 
-<script type="module" src="/scripts/enrich-forms.js"></script>
+  <script type="module" src="/scripts/enrich-forms.js"></script>
 </BaseLayout>
+
