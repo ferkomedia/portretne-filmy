@@ -1,4 +1,5 @@
 // functions/ico-lookup.js
+// Používa oficiálne RPO API od Štatistického úradu SR
 export async function onRequest(context) {
     const url = new URL(context.request.url);
     const ico = url.searchParams.get("ico")?.replace(/\s+/g, "");
@@ -13,74 +14,96 @@ export async function onRequest(context) {
     }
 
     try {
-        // Nové Slovensko.Digital DataHub API
-        const apiUrl = `https://datahub.ekosystem.slovensko.digital/api/datahub/corporate_bodies/search?q=cin:${ico}`;
+        // Oficiálne RPO API od Štatistického úradu SR (bezplatné)
+        const apiUrl = `https://api.statistics.sk/rpo/v1/search?identifier=${ico}`;
         const res = await fetch(apiUrl, {
             headers: { "Accept": "application/json" }
         });
-
-        if (res.status === 404) {
-            return new Response(JSON.stringify({ ok: true, found: false }), { headers });
-        }
 
         if (!res.ok) {
             return new Response(JSON.stringify({ ok: false, error: "API error" }), { headers });
         }
 
-        const company = await res.json();
+        const data = await res.json();
 
-        if (!company || !company.id) {
+        // API vracia pole výsledkov
+        if (!data || !Array.isArray(data) || data.length === 0) {
             return new Response(JSON.stringify({ ok: true, found: false }), { headers });
         }
 
-        // Parse address from formatted_address or individual fields
-        const address = company.formatted_address || "";
-        let street = company.street || "";
-        let number = company.building_number || company.reg_number || "";
-        let city = company.municipality || company.city || "";
-        let psc = company.postal_code || "";
+        const company = data[0];
 
-        // If no individual fields, try to parse from formatted_address
-        if (!street && address) {
-            const addressParts = address.split(", ");
-            if (addressParts.length >= 2) {
-                const streetPart = addressParts[0] || "";
-                const cityPart = addressParts[addressParts.length - 1] || "";
+        // Získaj aktuálnu adresu
+        let street = "";
+        let number = "";
+        let city = "";
+        let psc = "";
+        let addressFull = "";
 
-                // Extract street and number
-                const streetMatch = streetPart.match(/^(.+?)\s+(\d+[A-Za-z\/]*)$/);
-                if (streetMatch) {
-                    street = streetMatch[1];
-                    number = streetMatch[2];
-                } else {
-                    street = streetPart;
-                }
+        if (company.addresses && company.addresses.length > 0) {
+            // Nájdi aktuálnu adresu (bez effectiveTo alebo s najnovším dátumom)
+            const currentAddress = company.addresses.find(a => !a.effectiveTo) || company.addresses[0];
 
-                // Extract PSC and city
-                const cityMatch = cityPart.match(/^(\d{3}\s?\d{2})\s+(.+)$/);
-                if (cityMatch) {
-                    psc = cityMatch[1];
-                    city = cityMatch[2];
-                } else {
-                    city = cityPart;
+            street = currentAddress.street || "";
+            number = currentAddress.buildingNumber || currentAddress.regNumber || "";
+            if (currentAddress.regNumber && currentAddress.buildingNumber) {
+                number = `${currentAddress.regNumber}/${currentAddress.buildingNumber}`;
+            }
+            city = currentAddress.municipality || "";
+            psc = currentAddress.postalCode || "";
+
+            // Zostav plnú adresu
+            const parts = [];
+            if (street) parts.push(street + (number ? " " + number : ""));
+            if (psc || city) parts.push((psc ? psc + " " : "") + city);
+            addressFull = parts.join(", ");
+        }
+
+        // Získaj aktuálny názov
+        let name = "";
+        if (company.names && company.names.length > 0) {
+            const currentName = company.names.find(n => !n.effectiveTo) || company.names[0];
+            name = currentName.value || "";
+        }
+
+        // DIČ a IČ DPH - RPO API ich nemusí obsahovať, použijeme Register UZ ako zálohu
+        let dic = "";
+        let icdph = "";
+
+        // Skús získať DIČ z Register účtovných závierok
+        try {
+            const uzUrl = `https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?zmenene-od=2000-01-01&pokracovat-za-id=1&max-zaznamov=1&ico=${ico}`;
+            const uzRes = await fetch(uzUrl);
+            if (uzRes.ok) {
+                const uzData = await uzRes.json();
+                if (uzData.id && uzData.id.length > 0) {
+                    const detailUrl = `https://www.registeruz.sk/cruz-public/api/uctovna-jednotka?id=${uzData.id[0]}`;
+                    const detailRes = await fetch(detailUrl);
+                    if (detailRes.ok) {
+                        const detail = await detailRes.json();
+                        dic = detail.dic || "";
+                        icdph = detail.icDph || "";
+                    }
                 }
             }
+        } catch (e) {
+            // Ignoruj chyby z Register UZ, nie je kritické
         }
 
         return new Response(JSON.stringify({
             ok: true,
             found: true,
             company: {
-                name: company.name || "",
-                ico: company.cin || ico,
-                dic: company.tin ? company.tin.toString() : "",
-                icdph: company.vatin || "",
+                name: name,
+                ico: company.identifier || ico,
+                dic: dic,
+                icdph: icdph,
                 street: street,
                 number: number,
                 city: city,
                 psc: psc,
                 country: "Slovensko",
-                addressFull: address,
+                addressFull: addressFull,
             },
         }), { headers });
 
