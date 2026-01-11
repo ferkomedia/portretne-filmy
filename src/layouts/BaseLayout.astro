@@ -1,12 +1,28 @@
 ---
 import "../styles/global.css";
 
-const { title = "Portrétny film", description = "" } = Astro.props;
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article" | "video.other";
+  noindex?: boolean;
+}
+
+const {
+  title = "Portrétny film",
+  description = "Profesionálne portrétne filmy, ktoré zachytia vašu osobnosť a životný príbeh. Objednajte si portrétny film na mieru.",
+  image = "/images/og-default.jpg",
+  type = "website",
+  noindex = false,
+} = Astro.props;
+
 const path = Astro.url.pathname;
+const siteUrl = "https://portretnefilmy.sk";
+const canonical = `${siteUrl}${path}`;
+const ogImage = image.startsWith("http") ? image : `${siteUrl}${image}`;
 
-const canonical = `https://portretnefilmy.sk${Astro.url.pathname}`;
-
-const isActive = (href) => {
+const isActive = (href: string) => {
   if (href === "/") return path === "/";
   return path.startsWith(href);
 };
@@ -18,6 +34,45 @@ const nav = [
   { href: "/workshopy", label: "Workshopy" },
   { href: "/kontakt", label: "Kontakt" },
 ];
+
+// Schema.org JSON-LD
+const schemaOrg = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": `${siteUrl}/#business`,
+      name: "FerkoMedia - Portrétny film",
+      description: description,
+      url: siteUrl,
+      logo: `${siteUrl}/favicon.svg`,
+      email: "info@ferkomedia.sk",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Martin",
+        addressCountry: "SK",
+      },
+      sameAs: [],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: "Portrétny film",
+      publisher: { "@id": `${siteUrl}/#business` },
+      inLanguage: "sk",
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description: description,
+      isPartOf: { "@id": `${siteUrl}/#website` },
+      inLanguage: "sk",
+    },
+  ],
+};
 ---
 <!doctype html>
 <html lang="sk">
@@ -25,10 +80,36 @@ const nav = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="canonical" href={canonical} />
-
+    <!-- Primary Meta Tags -->
     <title>{title}</title>
-    {description && <meta name="description" content={description} />}
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="sk_SK" />
+    <meta property="og:site_name" content="Portrétny film" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonical} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json" set:html={JSON.stringify(schemaOrg)} />
   </head>
 
   <body>
