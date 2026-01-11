@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import terms from "../data/workshop-terms.json";
+
+const openTerms = terms.filter(t => t.status === "open");
+const closedTerms = terms.filter(t => t.status !== "open");
 ---
 
 <BaseLayout title="Admin | Správa workshopov" noindex={true}>
@@ -11,45 +14,41 @@ import terms from "../data/workshop-terms.json";
   </section>
 
   <section class="section">
-    <h2>Aktuálne termíny</h2>
+    <h2>Otvorené termíny ({openTerms.length})</h2>
 
-    {terms.length === 0 ? (
+    {openTerms.length === 0 && (
       <div class="card">
-        <p>Žiadne termíny. Pridaj prvý termín nižšie.</p>
+        <p>Žiadne otvorené termíny.</p>
       </div>
-    ) : (
-      <div class="adminTable">
-        <table>
-          <thead>
-            <tr>
-              <th>Workshop</th>
-              <th>Dátum</th>
-              <th>Mesto</th>
-              <th>Cena</th>
-              <th>Kapacita</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {terms.map((t) => (
-              <tr class={t.status === 'open' ? 'rowOpen' : 'rowClosed'}>
-                <td>{t.title}</td>
-                <td>{t.date}</td>
-                <td>{t.city}</td>
-                <td>{t.price} €</td>
-                <td>{t.capacity}</td>
-                <td>
-                  <span class={t.status === 'open' ? 'badge badge--success' : 'badge badge--muted'}>
-                    {t.status === 'open' ? 'Otvorený' : 'Zatvorený'}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    )}
+
+    {openTerms.length > 0 && (
+      <div class="grid2">
+        {openTerms.map((t) => (
+          <div class="card cardOpen">
+            <h3>{t.title}</h3>
+            <p><strong>{t.date}</strong> • {t.city} • {t.price} € • kapacita {t.capacity}</p>
+            <span class="badge badgeSuccess">Otvorený</span>
+          </div>
+        ))}
       </div>
     )}
   </section>
+
+  {closedTerms.length > 0 && (
+    <section class="section">
+      <h2>Zatvorené termíny ({closedTerms.length})</h2>
+      <div class="grid2">
+        {closedTerms.map((t) => (
+          <div class="card cardClosed">
+            <h3>{t.title}</h3>
+            <p><strong>{t.date}</strong> • {t.city} • {t.price} €</p>
+            <span class="badge badgeMuted">Zatvorený</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  )}
 
   <section class="section">
     <h2>Pridať nový termín</h2>
@@ -70,7 +69,7 @@ import terms from "../data/workshop-terms.json";
 
           <div class="field">
             <label for="date">Dátum</label>
-            <input id="date" type="text" placeholder="DD.MM.RRRR" required pattern="\d{2}\.\d{2}\.\d{4}" />
+            <input id="date" type="text" placeholder="DD.MM.RRRR" required />
           </div>
 
           <div class="field">
@@ -102,10 +101,10 @@ import terms from "../data/workshop-terms.json";
         </div>
       </form>
 
-      <div id="jsonOutput" style="display:none; margin-top: 1.5rem;">
+      <div id="jsonOutput" class="jsonOutput">
         <h3>Nový JSON záznam:</h3>
-        <pre id="jsonCode" style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; overflow-x: auto;"></pre>
-        <p class="help">Skopíruj tento záznam a pridaj ho do súboru <code>src/data/workshop-terms.json</code></p>
+        <pre id="jsonCode"></pre>
+        <p class="help">Skopíruj tento záznam a pridaj ho do súboru src/data/workshop-terms.json</p>
       </div>
     </div>
   </section>
@@ -115,15 +114,15 @@ import terms from "../data/workshop-terms.json";
     <div class="grid2">
       <div class="card">
         <h3>1. Otvor súbor</h3>
-        <p><code>src/data/workshop-terms.json</code></p>
+        <p>src/data/workshop-terms.json</p>
       </div>
       <div class="card">
         <h3>2. Uprav JSON</h3>
         <p>Pridaj, zmeň alebo odstráň termíny.</p>
       </div>
       <div class="card">
-        <h3>3. Commit & Push</h3>
-        <p><code>git add . && git commit -m "Update terms" && git push</code></p>
+        <h3>3. Commit a Push</h3>
+        <p>git add . && git commit -m "Update terms" && git push</p>
       </div>
       <div class="card">
         <h3>4. Hotovo</h3>
@@ -135,7 +134,7 @@ import terms from "../data/workshop-terms.json";
   <section class="section">
     <h2>Príklad JSON štruktúry</h2>
     <div class="card">
-      <pre style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; overflow-x: auto;">[
+      <pre class="codeBlock">[
   {
     "title": "Web za 1 deň",
     "date": "25.01.2026",
@@ -143,21 +142,17 @@ import terms from "../data/workshop-terms.json";
     "price": 149,
     "capacity": 12,
     "status": "open"
-  },
-  {
-    "title": "E-shop za 1 deň",
-    "date": "08.02.2026",
-    "city": "Martin",
-    "price": 179,
-    "capacity": 10,
-    "status": "open"
   }
 ]</pre>
     </div>
   </section>
 
   <script>
-    document.getElementById('addTermForm').addEventListener('submit', (e) => {
+    const form = document.getElementById('addTermForm');
+    const output = document.getElementById('jsonOutput');
+    const code = document.getElementById('jsonCode');
+
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
 
       const term = {
@@ -169,57 +164,45 @@ import terms from "../data/workshop-terms.json";
         status: document.getElementById('status').value
       };
 
-      const json = JSON.stringify(term, null, 2);
-      document.getElementById('jsonCode').textContent = json;
-      document.getElementById('jsonOutput').style.display = 'block';
+      code.textContent = JSON.stringify(term, null, 2);
+      output.style.display = 'block';
     });
   </script>
 </BaseLayout>
 
 <style>
-  .adminTable {
-    overflow-x: auto;
+  .cardOpen {
+    border-left: 4px solid #22c55e;
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  th, td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-  th {
-    background: rgba(255,255,255,0.05);
-    font-weight: 600;
-  }
-  .rowOpen {
-    background: rgba(34, 197, 94, 0.1);
-  }
-  .rowClosed {
+  .cardClosed {
     opacity: 0.6;
+    border-left: 4px solid #666;
   }
   .badge {
+    display: inline-block;
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
+    margin-top: 0.5rem;
   }
-  .badge--success {
+  .badgeSuccess {
     background: #22c55e;
     color: white;
   }
-  .badge--muted {
+  .badgeMuted {
     background: rgba(255,255,255,0.2);
     color: rgba(255,255,255,0.7);
   }
-  code {
-    background: rgba(255,255,255,0.1);
-    padding: 0.2rem 0.4rem;
-    border-radius: 4px;
-    font-family: monospace;
+  .jsonOutput {
+    display: none;
+    margin-top: 1.5rem;
   }
-  pre {
+  .codeBlock, #jsonCode {
+    background: rgba(0,0,0,0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
     font-family: monospace;
     font-size: 0.875rem;
     line-height: 1.5;
