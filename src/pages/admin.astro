@@ -31,7 +31,7 @@ import terms from "../data/workshop-terms.json";
             </tr>
           </thead>
           <tbody>
-            {terms.map((t, i) => (
+            {terms.map((t) => (
               <tr class={t.status === 'open' ? 'rowOpen' : 'rowClosed'}>
                 <td>{t.title}</td>
                 <td>{t.date}</td>
@@ -39,7 +39,7 @@ import terms from "../data/workshop-terms.json";
                 <td>{t.price} €</td>
                 <td>{t.capacity}</td>
                 <td>
-                  <span class={`badge badge--${t.status === 'open' ? 'success' : 'muted'}`}>
+                  <span class={t.status === 'open' ? 'badge badge--success' : 'badge badge--muted'}>
                     {t.status === 'open' ? 'Otvorený' : 'Zatvorený'}
                   </span>
                 </td>
