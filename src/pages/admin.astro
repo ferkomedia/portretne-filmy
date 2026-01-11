@@ -1,54 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import terms from "../data/workshop-terms.json";
-
-const openTerms = terms.filter(t => t.status === "open");
-const closedTerms = terms.filter(t => t.status !== "open");
 ---
 
 <BaseLayout title="Admin | Správa workshopov" noindex={true}>
   <section class="hero">
     <div class="eyebrow">Admin</div>
     <h1>Správa termínov workshopov</h1>
-    <p class="lead">Pridávaj, upravuj a spravuj termíny workshopov.</p>
+    <p class="lead">Generuj JSON záznamy a pridávaj ich do súboru.</p>
   </section>
-
-  <section class="section">
-    <h2>Otvorené termíny ({openTerms.length})</h2>
-
-    {openTerms.length === 0 && (
-      <div class="card">
-        <p>Žiadne otvorené termíny.</p>
-      </div>
-    )}
-
-    {openTerms.length > 0 && (
-      <div class="grid2">
-        {openTerms.map((t) => (
-          <div class="card cardOpen">
-            <h3>{t.title}</h3>
-            <p><strong>{t.date}</strong> • {t.city} • {t.price} € • kapacita {t.capacity}</p>
-            <span class="badge badgeSuccess">Otvorený</span>
-          </div>
-        ))}
-      </div>
-    )}
-  </section>
-
-  {closedTerms.length > 0 && (
-    <section class="section">
-      <h2>Zatvorené termíny ({closedTerms.length})</h2>
-      <div class="grid2">
-        {closedTerms.map((t) => (
-          <div class="card cardClosed">
-            <h3>{t.title}</h3>
-            <p><strong>{t.date}</strong> • {t.city} • {t.price} €</p>
-            <span class="badge badgeMuted">Zatvorený</span>
-          </div>
-        ))}
-      </div>
-    </section>
-  )}
 
   <section class="section">
     <h2>Pridať nový termín</h2>
@@ -101,9 +60,9 @@ const closedTerms = terms.filter(t => t.status !== "open");
         </div>
       </form>
 
-      <div id="jsonOutput" class="jsonOutput">
+      <div id="jsonOutput" style="display:none; margin-top:1.5rem;">
         <h3>Nový JSON záznam:</h3>
-        <pre id="jsonCode"></pre>
+        <pre id="jsonCode" style="background:rgba(0,0,0,0.3); padding:1rem; border-radius:8px; overflow-x:auto;"></pre>
         <p class="help">Skopíruj tento záznam a pridaj ho do súboru src/data/workshop-terms.json</p>
       </div>
     </div>
@@ -122,40 +81,35 @@ const closedTerms = terms.filter(t => t.status !== "open");
       </div>
       <div class="card">
         <h3>3. Commit a Push</h3>
-        <p>git add . && git commit -m "Update terms" && git push</p>
+        <p>git add . && git commit -m "Update" && git push</p>
       </div>
       <div class="card">
         <h3>4. Hotovo</h3>
-        <p>Cloudflare automaticky deployuje zmeny.</p>
+        <p>Cloudflare automaticky deployuje.</p>
       </div>
     </div>
   </section>
 
   <section class="section">
-    <h2>Príklad JSON štruktúry</h2>
+    <h2>Príklad JSON</h2>
     <div class="card">
-      <pre class="codeBlock">[
-  {
+      <pre style="background:rgba(0,0,0,0.3); padding:1rem; border-radius:8px;">[
+  &#123;
     "title": "Web za 1 deň",
     "date": "25.01.2026",
     "city": "Martin",
     "price": 149,
     "capacity": 12,
     "status": "open"
-  }
+  &#125;
 ]</pre>
     </div>
   </section>
 
   <script>
-    const form = document.getElementById('addTermForm');
-    const output = document.getElementById('jsonOutput');
-    const code = document.getElementById('jsonCode');
-
-    form.addEventListener('submit', function(e) {
+    document.getElementById('addTermForm').addEventListener('submit', function(e) {
       e.preventDefault();
-
-      const term = {
+      var term = {
         title: document.getElementById('title').value,
         date: document.getElementById('date').value,
         city: document.getElementById('city').value,
@@ -163,48 +117,8 @@ const closedTerms = terms.filter(t => t.status !== "open");
         capacity: parseInt(document.getElementById('capacity').value),
         status: document.getElementById('status').value
       };
-
-      code.textContent = JSON.stringify(term, null, 2);
-      output.style.display = 'block';
+      document.getElementById('jsonCode').textContent = JSON.stringify(term, null, 2);
+      document.getElementById('jsonOutput').style.display = 'block';
     });
   </script>
 </BaseLayout>
-
-<style>
-  .cardOpen {
-    border-left: 4px solid #22c55e;
-  }
-  .cardClosed {
-    opacity: 0.6;
-    border-left: 4px solid #666;
-  }
-  .badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-top: 0.5rem;
-  }
-  .badgeSuccess {
-    background: #22c55e;
-    color: white;
-  }
-  .badgeMuted {
-    background: rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.7);
-  }
-  .jsonOutput {
-    display: none;
-    margin-top: 1.5rem;
-  }
-  .codeBlock, #jsonCode {
-    background: rgba(0,0,0,0.3);
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-family: monospace;
-    font-size: 0.875rem;
-    line-height: 1.5;
-  }
-</style>
