@@ -62,7 +62,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     <div class="grid3">
       <div class="card">
         <h3>Hotové nastavenie</h3>
-        <p>Nie “teóriu do šuflíka”, ale reálne kroky spravené priamo na tvojom projekte.</p>
+        <p>Nie "teóriu do šuflíka", ale reálne kroky spravené priamo na tvojom projekte.</p>
       </div>
       <div class="card">
         <h3>Checklist + šablóny</h3>
@@ -70,7 +70,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
       </div>
       <div class="card">
         <h3>Jasný ďalší plán</h3>
-        <p>Po dni vieš presne, čo je ďalší krok a čo už neriešiť “naslepo”.</p>
+        <p>Po dni vieš presne, čo je ďalší krok a čo už neriešiť "naslepo".</p>
       </div>
     </div>
 
@@ -154,8 +154,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
       <form
         name="workshopy"
         method="POST"
-        data-netlify="true"
-        action="/dakujem-workshopy/"
+        action="/api/form-submit"
         data-domain-form
         data-ico-form
       >
@@ -213,6 +212,48 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
           <div class="field" style="grid-column: 1 / -1;">
             <label for="wsNote">Poznámka (voliteľné)</label>
             <textarea id="wsNote" name="Poznámka" placeholder="Ak máte otázku alebo špeciálnu požiadavku, napíšte sem."></textarea>
+          </div>
+        </div>
+
+        <!-- Auto-filled company fields (visible only when loaded) -->
+        <div class="autoFields" data-auto-fields style="margin-top:14px;">
+          <div class="grid2">
+            <div class="field">
+              <label for="wsCompanyName">Firma – názov</label>
+              <input id="wsCompanyName" readonly />
+            </div>
+            <div class="field">
+              <label for="wsCompanyAddressFull">Firma – adresa</label>
+              <input id="wsCompanyAddressFull" readonly />
+            </div>
+            <div class="field">
+              <label for="wsCompanyDic">DIČ</label>
+              <input id="wsCompanyDic" readonly />
+            </div>
+            <div class="field">
+              <label for="wsCompanyIcdph">IČ DPH</label>
+              <input id="wsCompanyIcdph" readonly />
+            </div>
+            <div class="field">
+              <label for="wsCompanyStreet">Ulica</label>
+              <input id="wsCompanyStreet" readonly />
+            </div>
+            <div class="field">
+              <label for="wsCompanyNumber">Číslo</label>
+              <input id="wsCompanyNumber" readonly />
+            </div>
+            <div class="field">
+              <label for="wsCompanyCity">Mesto</label>
+              <input id="wsCompanyCity" readonly />
+            </div>
+            <div class="field">
+              <label for="wsCompanyPsc">PSČ</label>
+              <input id="wsCompanyPsc" readonly />
+            </div>
+            <div class="field" style="grid-column: 1 / -1;">
+              <label for="wsCompanyCountry">Krajina</label>
+              <input id="wsCompanyCountry" readonly />
+            </div>
           </div>
         </div>
 

@@ -1,0 +1,118 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Ďakujeme za objednávku | FerkoMedia"
+  description="Vaša objednávka bola úspešne prijatá."
+  noindex={true}
+>
+
+  <section class="hero success">
+    <div class="successIcon">✓</div>
+    <h1>Ďakujeme za objednávku!</h1>
+    <p class="lead">Platba prebehla úspešne. Potvrdenie sme poslali na váš e-mail.</p>
+  </section>
+
+  <section class="section">
+    <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+      <h2>Čo bude nasledovať?</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="stepNumber">1</div>
+          <div class="stepContent">
+            <strong>Potvrdenie e-mailom</strong>
+            <p>Do pár minút dostanete e-mail s potvrdením a faktúrou.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="stepNumber">2</div>
+          <div class="stepContent">
+            <strong>Kontaktujeme vás</strong>
+            <p>Do 24 hodín sa ozveme a dohodneme detaily.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="stepNumber">3</div>
+          <div class="stepContent">
+            <strong>Realizácia</strong>
+            <p>Workshop alebo natáčanie podľa dohody.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact">
+        <p>Máte otázky? Napíšte nám:</p>
+        <a href="mailto:info@portretnefilmy.sk">info@portretnefilmy.sk</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="text-align: center;">
+    <a class="btn btn--ghost" href="/">← Späť na hlavnú stránku</a>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .success {
+    text-align: center;
+  }
+  .successIcon {
+    width: 80px;
+    height: 80px;
+    background: #22c55e;
+    color: white;
+    font-size: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  .steps {
+    margin: 2rem 0;
+    text-align: left;
+  }
+  .step {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .step:last-child {
+    border-bottom: none;
+  }
+  .stepNumber {
+    width: 32px;
+    height: 32px;
+    background: var(--accent, #3b82f6);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .stepContent p {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+  }
+  .contact {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .contact p {
+    margin-bottom: 0.5rem;
+    color: rgba(255,255,255,0.7);
+  }
+  .contact a {
+    color: var(--accent, #3b82f6);
+    font-size: 1.1rem;
+  }
+</style>

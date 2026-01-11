@@ -1,0 +1,348 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Cenník | Portrétne filmy a Workshopy"
+  description="Portrétne filmy od 1290€, praktické workshopy od 129€. Objednajte online a plaťte bezpečne kartou."
+>
+
+  <section class="hero">
+    <div class="eyebrow">Cenník</div>
+    <h1>Investícia, ktorá má zmysel</h1>
+    <p class="lead">Vyberte si, čo potrebujete. Plaťte bezpečne online alebo zálohou.</p>
+  </section>
+
+  <!-- PORTRÉTNE FILMY -->
+  <section class="section" id="filmy">
+    <h2>Portrétne filmy</h2>
+
+    <div class="grid2">
+      <div class="card cardPricing">
+        <div class="cardBadge">Najpopulárnejší</div>
+        <h3>Osobnosť</h3>
+        <div class="price">1 290 €</div>
+
+        <p class="cardLead">Váš príbeh. Vaša energia. Zachytené navždy.</p>
+
+        <p>Kto ste, keď vás nikto nesleduje? Čo vás poháňa? Film Osobnosť zachytí to, čo robí práve vás výnimočným.</p>
+
+        <ul class="checkList">
+          <li>Osobná konzultácia a príprava</li>
+          <li>Celodenné natáčanie</li>
+          <li>Film 3-5 minút v 4K</li>
+          <li>Profesionálny strih a color grading</li>
+          <li>Licencovaná hudba</li>
+        </ul>
+
+        <div class="cardActions">
+          <button class="btn btn--primary" data-checkout="osobnost">Objednať za 1 290 €</button>
+          <a class="btn btn--ghost" href="/kontakt#objednat">Mám otázku</a>
+        </div>
+      </div>
+
+      <div class="card cardPricing">
+        <h3>Životný príbeh</h3>
+        <div class="price">2 290 €</div>
+
+        <p class="cardLead">Príbehy, ktoré by sa nemali zabudnúť.</p>
+
+        <p>Každý život je román. Zachyťte príbehy vašich blízkych pre budúce generácie. Dar, ktorý pretrváva.</p>
+
+        <ul class="checkList">
+          <li>Hĺbková príprava a rozhovory</li>
+          <li>2 natáčacie dni</li>
+          <li>Film 8-15 minút v 4K</li>
+          <li>Archívne fotografie a spomienky</li>
+          <li>Profesionálny strih a hudba</li>
+        </ul>
+
+        <div class="cardActions">
+          <button class="btn btn--primary" data-checkout="zivotny-pribeh">Objednať za 2 290 €</button>
+          <a class="btn btn--ghost" href="/kontakt#objednat">Mám otázku</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Ako to funguje?</strong> Po objednaní vás kontaktujeme do 24 hodín. Dohodneme termín a miesto natáčania. Platíte 30% zálohu, zvyšok po dodaní filmu.
+    </div>
+  </section>
+
+  <!-- WORKSHOPY -->
+  <section class="section" id="workshopy">
+    <h2>Workshopy za 1 deň</h2>
+    <p class="sectionLead">Prídeš ráno, odídeš večer s hotovým výsledkom. Žiadna teória do šuflíka.</p>
+
+    <div class="grid3">
+      <div class="card cardPricing cardCompact">
+        <h3>Web za 1 deň</h3>
+        <div class="price">149 €</div>
+        <p>Postav si vlastný web od nuly. WordPress, dizajn, texty, SEO základy.</p>
+        <button class="btn btn--primary btn--full" data-checkout="workshop-web">Rezervovať</button>
+      </div>
+
+      <div class="card cardPricing cardCompact">
+        <h3>E-shop za 1 deň</h3>
+        <div class="price">179 €</div>
+        <p>Funkčný e-shop s produktmi, platbami a dopravou. Predávaj ešte dnes.</p>
+        <button class="btn btn--primary btn--full" data-checkout="workshop-eshop">Rezervovať</button>
+      </div>
+
+      <div class="card cardPricing cardCompact">
+        <h3>Google reklama za 1 deň</h3>
+        <div class="price">149 €</div>
+        <p>Nastav si kampane, kľúčové slová a rozpočet. Získaj prvých zákazníkov.</p>
+        <button class="btn btn--primary btn--full" data-checkout="workshop-google">Rezervovať</button>
+      </div>
+
+      <div class="card cardPricing cardCompact">
+        <h3>Sociálne siete za 1 deň</h3>
+        <div class="price">129 €</div>
+        <p>Obsahový plán, šablóny, natáčanie. Buď konzistentný bez stresu.</p>
+        <button class="btn btn--primary btn--full" data-checkout="workshop-social">Rezervovať</button>
+      </div>
+
+      <div class="card cardPricing cardCompact">
+        <h3>AI nástroje za 1 deň</h3>
+        <div class="price">129 €</div>
+        <p>ChatGPT, automatizácie, AI pre texty a procesy. Pracuj múdrejšie.</p>
+        <button class="btn btn--primary btn--full" data-checkout="workshop-ai">Rezervovať</button>
+      </div>
+
+      <div class="card cardPricing cardCompact cardHighlight">
+        <h3>Na mieru</h3>
+        <div class="price">Dohodou</div>
+        <p>Potrebuješ kombináciu? Napíš a vyskladáme deň presne pre teba.</p>
+        <a class="btn btn--ghost btn--full" href="/kontakt#objednat">Napísať dopyt</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- BALÍKY -->
+  <section class="section" id="baliky">
+    <h2>Výhodné balíky</h2>
+    <p class="sectionLead">Kombinuj a ušetri. Čím viac, tým lepšia cena.</p>
+
+    <div class="grid3">
+      <div class="card cardPricing">
+        <h3>Starter</h3>
+        <div class="price">249 €</div>
+        <div class="priceNote">Ušetríš ~50 €</div>
+        <p>2 ľubovoľné workshopy podľa vlastného výberu.</p>
+        <button class="btn btn--primary btn--full" data-checkout="balik-starter">Vybrať balík</button>
+      </div>
+
+      <div class="card cardPricing cardHighlight">
+        <div class="cardBadge">Najlepšia hodnota</div>
+        <h3>Business</h3>
+        <div class="price">399 €</div>
+        <div class="priceNote">Ušetríš ~100 €</div>
+        <p>3 workshopy + 1 hodina konzultácie s lektorom.</p>
+        <button class="btn btn--primary btn--full" data-checkout="balik-business">Vybrať balík</button>
+      </div>
+
+      <div class="card cardPricing">
+        <h3>Premium</h3>
+        <div class="price">1 690 €</div>
+        <div class="priceNote">Ušetríš ~150 €</div>
+        <p>Portrétny film Osobnosť + 2 workshopy podľa výberu.</p>
+        <button class="btn btn--primary btn--full" data-checkout="balik-premium">Vybrať balík</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <h2>Časté otázky</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Ako prebieha platba?</h3>
+        <p>Platíte bezpečne kartou. Pri filmoch platíte 30% zálohu, zvyšok po dodaní. Pri workshopoch platíte celú sumu vopred.</p>
+      </div>
+      <div class="card">
+        <h3>Môžem stornovať?</h3>
+        <p>Workshopy: do 7 dní pred termínom vrátíme 100%. Filmy: záloha je nevratná, ale termín presunieme.</p>
+      </div>
+      <div class="card">
+        <h3>Dostnem faktúru?</h3>
+        <p>Áno, faktúru posielame e-mailom automaticky po platbe. Ak potrebujete firemné údaje, vyplňte IČO pri objednávke.</p>
+      </div>
+      <div class="card">
+        <h3>Kde prebiehajú workshopy?</h3>
+        <p>V Martine a okolí. Presnú adresu pošleme po rezervácii. Pracujete na vlastnom notebooku.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="cta">
+      <h2>Neviete si vybrať?</h2>
+      <p>Napíšte nám a poradíme, čo je pre vás najlepšie.</p>
+      <a class="btn btn--primary" href="/kontakt#objednat">Napísať správu</a>
+    </div>
+  </section>
+
+  <script>
+    // Stripe Checkout
+    const PRICE_IDS = {
+      'osobnost': 'price_1SoRyxK7AvTQZ0XNZUyps1D8',
+      'zivotny-pribeh': 'price_1SoS1mK7AvTQZ0XN3cJy2T56',
+      'workshop-web': 'price_1SoS5IK7AvTQZ0XNeasnYB9A',
+      'workshop-eshop': 'price_1SoS9yK7AvTQZ0XN5Dn94Wjl',
+      'workshop-google': 'price_1SoSByK7AvTQZ0XNcoWWud21',
+      'workshop-social': 'price_1SoSDBK7AvTQZ0XNLnWCDjF8',
+      'workshop-ai': 'price_1SoSEYK7AvTQZ0XNwFRpFfQ7',
+      'balik-starter': 'price_1SoSFcK7AvTQZ0XNPnU7Vrqm',
+      'balik-business': 'price_1SoSHCK7AvTQZ0XNnVairWs2',
+      'balik-premium': 'price_1SoSIdK7AvTQZ0XNSC4bpjWN',
+    };
+
+    document.querySelectorAll('[data-checkout]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const productId = btn.dataset.checkout;
+        const priceId = PRICE_IDS[productId];
+
+        if (!priceId || priceId.startsWith('PRICE_ID_')) {
+          alert('Produkt sa pripravuje. Kontaktujte nás prosím.');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Presmerovávam...';
+
+        try {
+          const response = await fetch('/api/create-checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ priceId, productId }),
+          });
+
+          const { url, error } = await response.json();
+
+          if (error) {
+            alert('Chyba: ' + error);
+            btn.disabled = false;
+            btn.textContent = 'Skúsiť znova';
+            return;
+          }
+
+          window.location.href = url;
+        } catch (err) {
+          alert('Nastala chyba. Skúste to prosím znova.');
+          btn.disabled = false;
+        }
+      });
+    });
+  </script>
+
+</BaseLayout>
+
+<style>
+  .cardPricing {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  .cardPricing h3 {
+    margin-bottom: 0.5rem;
+  }
+  .price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent, #fff);
+    margin-bottom: 0.25rem;
+  }
+  .priceNote {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 1rem;
+  }
+  .cardLead {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 1rem;
+  }
+  .checkList {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+    text-align: left;
+  }
+  .checkList li {
+    padding: 0.5rem 0;
+    padding-left: 1.75rem;
+    position: relative;
+  }
+  .checkList li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #22c55e;
+    font-weight: bold;
+  }
+  .cardActions {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .cardCompact {
+    padding: 1.5rem;
+  }
+  .cardCompact .price {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .cardCompact p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .cardHighlight {
+    border: 2px solid var(--accent, #3b82f6);
+    position: relative;
+  }
+  .cardBadge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent, #3b82f6);
+    color: #fff;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .btn--full {
+    width: 100%;
+  }
+  .sectionLead {
+    text-align: center;
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 2rem;
+  }
+  .note {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    text-align: center;
+  }
+  .cta {
+    text-align: center;
+    padding: 3rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+  }
+  .cta h2 {
+    margin-bottom: 0.5rem;
+  }
+  .cta p {
+    margin-bottom: 1.5rem;
+    color: rgba(255,255,255,0.7);
+  }
+</style>

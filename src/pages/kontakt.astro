@@ -14,8 +14,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <form
         name="kontakt"
         method="POST"
-        data-netlify="true"
-        action="/dakujem/"
+        action="/api/form-submit"
         data-ico-form
       >
         <input type="hidden" name="form-name" value="kontakt" />
@@ -43,8 +42,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <label for="type">Typ portrétneho filmu</label>
             <select id="type" name="Typ portrétneho filmu" required>
               <option value="" selected disabled>Vyber formát</option>
-              <option>Portrétny film „Osobnosť“</option>
-              <option>Portrétny film „Životný príbeh“</option>
+              <option>Portrétny film „Osobnosť"</option>
+              <option>Portrétny film „Životný príbeh"</option>
             </select>
           </div>
 
@@ -65,7 +64,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
           <div class="field">
             <label for="date">Preferovaný termín (ak už viete)</label>
-            <input id="date" type="date" name="Preferovaný termín" />
+            <input id="date" name="Preferovaný termín" placeholder="napr. 25.01.2026" pattern="\d{1,2}\.\d{1,2}\.\d{4}" />
+            <div class="help">Formát: DD.MM.RRRR</div>
           </div>
 
           <div class="field" style="grid-column: 1 / -1;">
@@ -131,4 +131,3 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   <script type="module" src="/scripts/enrich-forms.js"></script>
 </BaseLayout>
-

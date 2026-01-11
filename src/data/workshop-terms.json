@@ -1,10 +1,18 @@
 [
   {
-    "date": "2026-01-25",
-    "title": "Workshop: Web za 1 deň",
+    "title": "Web za 1 deň",
+    "date": "25.01.2026",
     "city": "Martin",
-    "capacity": 12,
     "price": 149,
+    "capacity": 12,
+    "status": "open"
+  },
+  {
+    "title": "E-shop za 1 deň",
+    "date": "08.02.2026",
+    "city": "Martin",
+    "price": 179,
+    "capacity": 10,
     "status": "open"
   }
 ]
