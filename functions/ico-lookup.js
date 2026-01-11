@@ -13,46 +13,57 @@ export async function onRequest(context) {
     }
 
     try {
-        // Slovensko.Digital API (zadarmo)
-        const apiUrl = `https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}&private_access_token=`;
-        const res = await fetch(apiUrl);
+        // Nové Slovensko.Digital DataHub API
+        const apiUrl = `https://datahub.ekosystem.slovensko.digital/api/datahub/corporate_bodies/search?q=cin:${ico}`;
+        const res = await fetch(apiUrl, {
+            headers: { "Accept": "application/json" }
+        });
+
+        if (res.status === 404) {
+            return new Response(JSON.stringify({ ok: true, found: false }), { headers });
+        }
 
         if (!res.ok) {
             return new Response(JSON.stringify({ ok: false, error: "API error" }), { headers });
         }
 
-        const data = await res.json();
+        const company = await res.json();
 
-        if (!data || data.length === 0) {
+        if (!company || !company.id) {
             return new Response(JSON.stringify({ ok: true, found: false }), { headers });
         }
 
-        const company = data[0];
+        // Parse address from formatted_address or individual fields
         const address = company.formatted_address || "";
-        const addressParts = address.split(", ");
+        let street = company.street || "";
+        let number = company.building_number || company.reg_number || "";
+        let city = company.municipality || company.city || "";
+        let psc = company.postal_code || "";
 
-        // Parse address (format: "Ulica číslo, PSČ Mesto")
-        let street = "", number = "", city = "", psc = "";
-        if (addressParts.length >= 2) {
-            const streetPart = addressParts[0] || "";
-            const cityPart = addressParts[1] || "";
+        // If no individual fields, try to parse from formatted_address
+        if (!street && address) {
+            const addressParts = address.split(", ");
+            if (addressParts.length >= 2) {
+                const streetPart = addressParts[0] || "";
+                const cityPart = addressParts[addressParts.length - 1] || "";
 
-            // Extract street and number
-            const streetMatch = streetPart.match(/^(.+?)\s+(\d+[A-Za-z\/]*)$/);
-            if (streetMatch) {
-                street = streetMatch[1];
-                number = streetMatch[2];
-            } else {
-                street = streetPart;
-            }
+                // Extract street and number
+                const streetMatch = streetPart.match(/^(.+?)\s+(\d+[A-Za-z\/]*)$/);
+                if (streetMatch) {
+                    street = streetMatch[1];
+                    number = streetMatch[2];
+                } else {
+                    street = streetPart;
+                }
 
-            // Extract PSC and city
-            const cityMatch = cityPart.match(/^(\d{3}\s?\d{2})\s+(.+)$/);
-            if (cityMatch) {
-                psc = cityMatch[1];
-                city = cityMatch[2];
-            } else {
-                city = cityPart;
+                // Extract PSC and city
+                const cityMatch = cityPart.match(/^(\d{3}\s?\d{2})\s+(.+)$/);
+                if (cityMatch) {
+                    psc = cityMatch[1];
+                    city = cityMatch[2];
+                } else {
+                    city = cityPart;
+                }
             }
         }
 
@@ -62,7 +73,7 @@ export async function onRequest(context) {
             company: {
                 name: company.name || "",
                 ico: company.cin || ico,
-                dic: company.tin || "",
+                dic: company.tin ? company.tin.toString() : "",
                 icdph: company.vatin || "",
                 street: street,
                 number: number,
