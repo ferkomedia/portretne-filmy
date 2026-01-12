@@ -276,8 +276,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         document.getElementById('qrVS').textContent = vs;
         document.getElementById('qrNote').textContent = currentProduct;
 
-        // PAY by square format for Slovak banks
-        var qrData = 'SPD*1.0*ACC:SK5911000000002942178901*AM:' + amount + '*CC:EUR*X-VS:' + vs + '*MSG:' + encodeURIComponent(currentProduct);
+        // EPC QR code format (European SEPA standard)
+        var qrData = [
+          'BCD',           // Service Tag
+          '002',           // Version
+          '1',             // Encoding (UTF-8)
+          'SCT',           // SEPA Credit Transfer
+          'TATRSKBX',      // BIC Tatra banka
+          'FerkoMedia',    // Beneficiary name
+          'SK5911000000002942178901', // IBAN
+          'EUR' + amount,  // Amount
+          '',              // Purpose
+          vs,              // Reference (VS)
+          currentProduct,  // Text
+          ''               // Hint
+        ].join('\n');
 
         // Use QR Server API for QR code
         var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(qrData);
