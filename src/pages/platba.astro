@@ -1,0 +1,399 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+// Produkty s cenami
+const products = [
+  { id: 'osobnost', name: 'Portrétny film „Osobnosť"', price: 129000, priceDisplay: '1 290 €' },
+  { id: 'zivotny-pribeh', name: 'Portrétny film „Životný príbeh"', price: 229000, priceDisplay: '2 290 €' },
+  { id: 'web', name: 'Workshop: Web za 1 deň', price: 14900, priceDisplay: '149 €' },
+  { id: 'eshop', name: 'Workshop: E-shop za 1 deň', price: 17900, priceDisplay: '179 €' },
+  { id: 'google', name: 'Workshop: Google reklama za 1 deň', price: 14900, priceDisplay: '149 €' },
+  { id: 'socialne', name: 'Workshop: Sociálne siete za 1 deň', price: 12900, priceDisplay: '129 €' },
+  { id: 'ai', name: 'Workshop: AI nástroje za 1 deň', price: 12900, priceDisplay: '129 €' },
+  { id: 'starter', name: 'Balík Starter (2 workshopy)', price: 24900, priceDisplay: '249 €' },
+  { id: 'business', name: 'Balík Business (3 workshopy + konzultácia)', price: 39900, priceDisplay: '399 €' },
+  { id: 'premium', name: 'Balík Premium (film + 2 workshopy)', price: 169000, priceDisplay: '1 690 €' },
+];
+---
+
+<BaseLayout title="Platba | FerkoMedia" description="Bezpečná online platba za služby FerkoMedia.">
+  <section class="hero">
+    <div class="eyebrow">Platba</div>
+    <h1>Dokončite objednávku</h1>
+    <p class="lead">Bezpečná platba cez Stripe. Podporujeme karty, Apple Pay a Google Pay.</p>
+  </section>
+
+  <section class="section">
+    <div class="paymentContainer">
+      <!-- Krok 1: Výber produktu -->
+      <div class="paymentStep" id="step1">
+        <h2>1. Vyberte službu</h2>
+        <div class="productGrid">
+          {products.map((p) => (
+            <button
+              type="button"
+              class="productCard"
+              data-product-id={p.id}
+              data-product-name={p.name}
+              data-product-price={p.price}
+            >
+              <span class="productName">{p.name}</span>
+              <span class="productPrice">{p.priceDisplay}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Krok 2: Kontaktné údaje -->
+      <div class="paymentStep" id="step2" style="display:none;">
+        <h2>2. Kontaktné údaje</h2>
+        <div class="formCard">
+          <div class="formGrid">
+            <div class="field">
+              <label for="customerName">Meno a priezvisko</label>
+              <input type="text" id="customerName" required placeholder="Vaše meno" />
+            </div>
+            <div class="field">
+              <label for="customerEmail">E-mail</label>
+              <input type="email" id="customerEmail" required placeholder="vas@email.sk" />
+            </div>
+            <div class="field">
+              <label for="customerPhone">Telefón</label>
+              <input type="tel" id="customerPhone" placeholder="+421..." />
+            </div>
+          </div>
+          <div class="formActions">
+            <button type="button" class="btn btn--ghost" id="backToStep1">← Späť</button>
+            <button type="button" class="btn btn--primary" id="continueToPayment">Pokračovať na platbu</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Krok 3: Platba -->
+      <div class="paymentStep" id="step3" style="display:none;">
+        <h2>3. Platba</h2>
+
+        <div class="orderSummary">
+          <div class="summaryRow">
+            <span>Služba:</span>
+            <strong id="summaryProduct">-</strong>
+          </div>
+          <div class="summaryRow">
+            <span>Suma:</span>
+            <strong id="summaryPrice">-</strong>
+          </div>
+        </div>
+
+        <div class="formCard">
+          <div id="payment-element"></div>
+          <div id="payment-message" class="paymentMessage"></div>
+          <div class="formActions">
+            <button type="button" class="btn btn--ghost" id="backToStep2">← Späť</button>
+            <button type="submit" class="btn btn--primary" id="submit-button" disabled>
+              <span id="button-text">Zaplatiť</span>
+              <span id="spinner" class="spinner" style="display:none;"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Úspešná platba -->
+      <div class="paymentStep" id="stepSuccess" style="display:none;">
+        <div class="successBox">
+          <div class="successIcon">✓</div>
+          <h2>Platba úspešná!</h2>
+          <p>Ďakujeme za vašu objednávku. Potvrdenie sme poslali na váš e-mail.</p>
+          <p>Ozveme sa vám do 24 hodín s ďalšími informáciami.</p>
+          <a href="/" class="btn btn--primary">Späť na úvod</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stripe.js -->
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <script is:inline define:vars={{ stripePublishableKey: import.meta.env.PUBLIC_STRIPE_KEY || 'pk_live_51QhWvUIvWfypTEn7EgOOctDzJfFn2uxHLbP9EQ4CMQ5vLH0AQ8NyF3Yb2x2qU6sVS2qUE0z6v7T3B9xU6lZBrfGj00qEKhOy3k' }}>
+    // State
+    let selectedProduct = null;
+    let stripe = null;
+    let elements = null;
+    let paymentElement = null;
+
+    // Initialize Stripe
+    document.addEventListener('DOMContentLoaded', function() {
+      stripe = Stripe('pk_live_51SIajzK7AvTQZ0XNgrY5daEJeZX4ew0fxpRaVwgahpvPAamiISdRB0SpwlPYtbrvnsJritP542yNLaZximzBZwZo007qtYg79p');
+    });
+
+    // Product selection
+    document.querySelectorAll('.productCard').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.productCard').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+
+        selectedProduct = {
+          id: this.dataset.productId,
+          name: this.dataset.productName,
+          price: parseInt(this.dataset.productPrice)
+        };
+
+        // Show step 2
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'block';
+      });
+    });
+
+    // Back to step 1
+    document.getElementById('backToStep1').addEventListener('click', function() {
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step1').style.display = 'block';
+    });
+
+    // Continue to payment
+    document.getElementById('continueToPayment').addEventListener('click', async function() {
+      const name = document.getElementById('customerName').value.trim();
+      const email = document.getElementById('customerEmail').value.trim();
+
+      if (!name || !email) {
+        alert('Vyplňte meno a e-mail');
+        return;
+      }
+
+      // Update summary
+      document.getElementById('summaryProduct').textContent = selectedProduct.name;
+      document.getElementById('summaryPrice').textContent = (selectedProduct.price / 100).toLocaleString('sk-SK') + ' €';
+
+      // Create PaymentIntent
+      try {
+        const response = await fetch('/api/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: selectedProduct.price,
+            productName: selectedProduct.name,
+            customerEmail: email,
+            customerName: name
+          })
+        });
+
+        const { clientSecret, error } = await response.json();
+
+        if (error) {
+          document.getElementById('payment-message').textContent = error;
+          return;
+        }
+
+        // Initialize Payment Element
+        const appearance = {
+          theme: 'night',
+          variables: {
+            colorPrimary: '#f97316',
+            colorBackground: '#1a1a1a',
+            colorText: '#ffffff',
+            colorDanger: '#ef4444',
+            fontFamily: 'system-ui, sans-serif',
+            borderRadius: '8px',
+            spacingUnit: '4px'
+          },
+          rules: {
+            '.Input': {
+              backgroundColor: '#0a0a0a',
+              border: '1px solid #333'
+            },
+            '.Input:focus': {
+              border: '1px solid #f97316',
+              boxShadow: '0 0 0 1px #f97316'
+            },
+            '.Label': {
+              color: '#999'
+            }
+          }
+        };
+
+        elements = stripe.elements({ clientSecret, appearance });
+        paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+
+        paymentElement.on('ready', function() {
+          document.getElementById('submit-button').disabled = false;
+        });
+
+        // Show step 3
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step3').style.display = 'block';
+
+      } catch (err) {
+        document.getElementById('payment-message').textContent = 'Chyba pri načítaní platby: ' + err.message;
+      }
+    });
+
+    // Back to step 2
+    document.getElementById('backToStep2').addEventListener('click', function() {
+      document.getElementById('step3').style.display = 'none';
+      document.getElementById('step2').style.display = 'block';
+      // Unmount payment element
+      if (paymentElement) {
+        paymentElement.unmount();
+      }
+    });
+
+    // Submit payment
+    document.getElementById('submit-button').addEventListener('click', async function(e) {
+      e.preventDefault();
+
+      const button = this;
+      const buttonText = document.getElementById('button-text');
+      const spinner = document.getElementById('spinner');
+      const messageEl = document.getElementById('payment-message');
+
+      button.disabled = true;
+      buttonText.style.display = 'none';
+      spinner.style.display = 'inline-block';
+      messageEl.textContent = '';
+
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.origin + '/dakujem-platba',
+          receipt_email: document.getElementById('customerEmail').value,
+        },
+        redirect: 'if_required'
+      });
+
+      if (error) {
+        messageEl.textContent = error.message;
+        button.disabled = false;
+        buttonText.style.display = 'inline';
+        spinner.style.display = 'none';
+      } else {
+        // Payment succeeded without redirect
+        document.getElementById('step3').style.display = 'none';
+        document.getElementById('stepSuccess').style.display = 'block';
+      }
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .paymentContainer {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .paymentStep h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+  }
+
+  .productGrid {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .productCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    color: white;
+    font-size: 1rem;
+  }
+
+  .productCard:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .productCard.selected {
+    background: rgba(249, 115, 22, 0.1);
+    border-color: #f97316;
+  }
+
+  .productName {
+    font-weight: 500;
+  }
+
+  .productPrice {
+    color: #f97316;
+    font-weight: 600;
+  }
+
+  .orderSummary {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .summaryRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+  }
+
+  .summaryRow span {
+    color: #999;
+  }
+
+  #payment-element {
+    margin-bottom: 1.5rem;
+  }
+
+  .paymentMessage {
+    color: #ef4444;
+    margin-bottom: 1rem;
+    min-height: 1.5rem;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .successBox {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+
+  .successIcon {
+    width: 80px;
+    height: 80px;
+    background: #22c55e;
+    color: white;
+    font-size: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+
+  .successBox h2 {
+    color: #22c55e;
+    margin-bottom: 1rem;
+  }
+
+  .successBox p {
+    color: #999;
+    margin-bottom: 0.5rem;
+  }
+
+  .successBox .btn {
+    margin-top: 2rem;
+  }
+</style>
