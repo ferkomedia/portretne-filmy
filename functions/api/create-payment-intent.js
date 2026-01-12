@@ -28,7 +28,7 @@ export async function onRequestPost(context) {
             );
         }
 
-        // Create PaymentIntent
+        // Create PaymentIntent - only cards
         const response = await fetch('https://api.stripe.com/v1/payment_intents', {
             method: 'POST',
             headers: {
@@ -38,7 +38,7 @@ export async function onRequestPost(context) {
             body: new URLSearchParams({
                 amount: String(amount), // in cents
                 currency: 'eur',
-                'automatic_payment_methods[enabled]': 'true',
+                'payment_method_types[0]': 'card',
                 description: productName,
                 'metadata[product]': productName,
                 'metadata[customer_email]': customerEmail || '',

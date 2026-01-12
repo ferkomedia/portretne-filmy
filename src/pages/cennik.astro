@@ -9,7 +9,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <section class="hero">
     <div class="eyebrow">Cenník</div>
     <h1>Investícia, ktorá má zmysel</h1>
-    <p class="lead">Vyberte si, čo potrebujete. Plaťte bezpečne online alebo zálohou.</p>
+    <p class="lead">Vyberte si, čo potrebujete. Plaťte bezpečne online.</p>
   </section>
 
   <!-- PORTRÉTNE FILMY -->
@@ -24,8 +24,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
         <p class="cardLead">Váš príbeh. Vaša energia. Zachytené navždy.</p>
 
-        <p>Kto ste, keď vás nikto nesleduje? Čo vás poháňa? Film Osobnosť zachytí to, čo robí práve vás výnimočným.</p>
-
         <ul class="checkList">
           <li>Osobná konzultácia a príprava</li>
           <li>Celodenné natáčanie</li>
@@ -35,8 +33,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </ul>
 
         <div class="cardActions">
-          <button class="btn btn--primary" data-checkout="osobnost">Objednať za 1 290 €</button>
-          <a class="btn btn--ghost" href="/kontakt#objednat">Mám otázku</a>
+          <button class="btn btn--primary" data-pay="Portrétny film Osobnosť" data-amount="129000">Objednať za 1 290 €</button>
         </div>
       </div>
 
@@ -45,8 +42,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <div class="price">2 290 €</div>
 
         <p class="cardLead">Príbehy, ktoré by sa nemali zabudnúť.</p>
-
-        <p>Každý život je román. Zachyťte príbehy vašich blízkych pre budúce generácie. Dar, ktorý pretrváva.</p>
 
         <ul class="checkList">
           <li>Hĺbková príprava a rozhovory</li>
@@ -57,62 +52,57 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </ul>
 
         <div class="cardActions">
-          <button class="btn btn--primary" data-checkout="zivotny-pribeh">Objednať za 2 290 €</button>
-          <a class="btn btn--ghost" href="/kontakt#objednat">Mám otázku</a>
+          <button class="btn btn--primary" data-pay="Portrétny film Životný príbeh" data-amount="229000">Objednať za 2 290 €</button>
         </div>
       </div>
-    </div>
-
-    <div class="note">
-      <strong>Ako to funguje?</strong> Po objednaní vás kontaktujeme do 24 hodín. Dohodneme termín a miesto natáčania. Platíte 30% zálohu, zvyšok po dodaní filmu.
     </div>
   </section>
 
   <!-- WORKSHOPY -->
   <section class="section" id="workshopy">
     <h2>Workshopy za 1 deň</h2>
-    <p class="sectionLead">Prídeš ráno, odídeš večer s hotovým výsledkom. Žiadna teória do šuflíka.</p>
+    <p class="sectionLead">Prídeš ráno, odídeš večer s hotovým výsledkom.</p>
 
     <div class="grid3">
       <div class="card cardPricing cardCompact">
         <h3>Web za 1 deň</h3>
         <div class="price">149 €</div>
         <p>Postav si vlastný web od nuly. WordPress, dizajn, texty, SEO základy.</p>
-        <button class="btn btn--primary btn--full" data-checkout="workshop-web">Rezervovať</button>
+        <button class="btn btn--primary btn--full" data-pay="Workshop: Web za 1 deň" data-amount="14900">Rezervovať</button>
       </div>
 
       <div class="card cardPricing cardCompact">
         <h3>E-shop za 1 deň</h3>
         <div class="price">179 €</div>
-        <p>Funkčný e-shop s produktmi, platbami a dopravou. Predávaj ešte dnes.</p>
-        <button class="btn btn--primary btn--full" data-checkout="workshop-eshop">Rezervovať</button>
+        <p>Funkčný e-shop s produktmi, platbami a dopravou.</p>
+        <button class="btn btn--primary btn--full" data-pay="Workshop: E-shop za 1 deň" data-amount="17900">Rezervovať</button>
       </div>
 
       <div class="card cardPricing cardCompact">
         <h3>Google reklama za 1 deň</h3>
         <div class="price">149 €</div>
-        <p>Nastav si kampane, kľúčové slová a rozpočet. Získaj prvých zákazníkov.</p>
-        <button class="btn btn--primary btn--full" data-checkout="workshop-google">Rezervovať</button>
+        <p>Nastav si kampane, kľúčové slová a rozpočet.</p>
+        <button class="btn btn--primary btn--full" data-pay="Workshop: Google reklama za 1 deň" data-amount="14900">Rezervovať</button>
       </div>
 
       <div class="card cardPricing cardCompact">
         <h3>Sociálne siete za 1 deň</h3>
         <div class="price">129 €</div>
-        <p>Obsahový plán, šablóny, natáčanie. Buď konzistentný bez stresu.</p>
-        <button class="btn btn--primary btn--full" data-checkout="workshop-social">Rezervovať</button>
+        <p>Obsahový plán, šablóny, natáčanie. Buď konzistentný.</p>
+        <button class="btn btn--primary btn--full" data-pay="Workshop: Sociálne siete za 1 deň" data-amount="12900">Rezervovať</button>
       </div>
 
       <div class="card cardPricing cardCompact">
         <h3>AI nástroje za 1 deň</h3>
         <div class="price">129 €</div>
-        <p>ChatGPT, automatizácie, AI pre texty a procesy. Pracuj múdrejšie.</p>
-        <button class="btn btn--primary btn--full" data-checkout="workshop-ai">Rezervovať</button>
+        <p>ChatGPT, automatizácie, AI pre texty a procesy.</p>
+        <button class="btn btn--primary btn--full" data-pay="Workshop: AI nástroje za 1 deň" data-amount="12900">Rezervovať</button>
       </div>
 
-      <div class="card cardPricing cardCompact cardHighlight">
+      <div class="card cardPricing cardCompact">
         <h3>Na mieru</h3>
         <div class="price">Dohodou</div>
-        <p>Potrebuješ kombináciu? Napíš a vyskladáme deň presne pre teba.</p>
+        <p>Potrebuješ kombináciu? Napíš a vyskladáme deň.</p>
         <a class="btn btn--ghost btn--full" href="/kontakt#objednat">Napísať dopyt</a>
       </div>
     </div>
@@ -121,7 +111,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <!-- BALÍKY -->
   <section class="section" id="baliky">
     <h2>Výhodné balíky</h2>
-    <p class="sectionLead">Kombinuj a ušetri. Čím viac, tým lepšia cena.</p>
+    <p class="sectionLead">Kombinuj a ušetri.</p>
 
     <div class="grid3">
       <div class="card cardPricing">
@@ -129,7 +119,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <div class="price">249 €</div>
         <div class="priceNote">Ušetríš ~50 €</div>
         <p>2 ľubovoľné workshopy podľa vlastného výberu.</p>
-        <button class="btn btn--primary btn--full" data-checkout="balik-starter">Vybrať balík</button>
+        <button class="btn btn--primary btn--full" data-pay="Balík Starter (2 workshopy)" data-amount="24900">Vybrať balík</button>
       </div>
 
       <div class="card cardPricing cardHighlight">
@@ -137,16 +127,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <h3>Business</h3>
         <div class="price">399 €</div>
         <div class="priceNote">Ušetríš ~100 €</div>
-        <p>3 workshopy + 1 hodina konzultácie s lektorom.</p>
-        <button class="btn btn--primary btn--full" data-checkout="balik-business">Vybrať balík</button>
+        <p>3 workshopy + 1 hodina konzultácie.</p>
+        <button class="btn btn--primary btn--full" data-pay="Balík Business (3 workshopy + konzultácia)" data-amount="39900">Vybrať balík</button>
       </div>
 
       <div class="card cardPricing">
         <h3>Premium</h3>
         <div class="price">1 690 €</div>
         <div class="priceNote">Ušetríš ~150 €</div>
-        <p>Portrétny film Osobnosť + 2 workshopy podľa výberu.</p>
-        <button class="btn btn--primary btn--full" data-checkout="balik-premium">Vybrať balík</button>
+        <p>Portrétny film Osobnosť + 2 workshopy.</p>
+        <button class="btn btn--primary btn--full" data-pay="Balík Premium (film + 2 workshopy)" data-amount="169000">Vybrať balík</button>
       </div>
     </div>
   </section>
@@ -157,81 +147,253 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <div class="grid2">
       <div class="card">
         <h3>Ako prebieha platba?</h3>
-        <p>Platíte bezpečne kartou. Pri filmoch platíte 30% zálohu, zvyšok po dodaní. Pri workshopoch platíte celú sumu vopred.</p>
+        <p>Platíte bezpečne kartou cez Stripe. Podporujeme Visa, Mastercard, Apple Pay, Google Pay.</p>
       </div>
       <div class="card">
         <h3>Môžem stornovať?</h3>
         <p>Workshopy: do 7 dní pred termínom vrátíme 100%. Filmy: záloha je nevratná, ale termín presunieme.</p>
       </div>
       <div class="card">
-        <h3>Dostnem faktúru?</h3>
-        <p>Áno, faktúru posielame e-mailom automaticky po platbe. Ak potrebujete firemné údaje, vyplňte IČO pri objednávke.</p>
+        <h3>Dostanem faktúru?</h3>
+        <p>Áno, faktúru posielame e-mailom automaticky po platbe.</p>
       </div>
       <div class="card">
         <h3>Kde prebiehajú workshopy?</h3>
-        <p>V Martine a okolí. Presnú adresu pošleme po rezervácii. Pracujete na vlastnom notebooku.</p>
+        <p>V Martine a okolí. Presnú adresu pošleme po rezervácii.</p>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="cta">
-      <h2>Neviete si vybrať?</h2>
-      <p>Napíšte nám a poradíme, čo je pre vás najlepšie.</p>
-      <a class="btn btn--primary" href="/kontakt#objednat">Napísať správu</a>
+  <!-- PAYMENT MODAL -->
+  <div id="paymentModal" class="modal">
+    <div class="modalContent">
+      <button class="modalClose" id="closeModal">&times;</button>
+
+      <div class="modalHeader">
+        <h2 id="modalProduct">Produkt</h2>
+        <div class="modalPrice" id="modalPrice">0 €</div>
+      </div>
+
+      <!-- Payment method tabs -->
+      <div class="paymentTabs">
+        <button class="paymentTab active" data-tab="card">💳 Platba kartou</button>
+        <button class="paymentTab" data-tab="qr">📱 QR platba</button>
+      </div>
+
+      <!-- Card payment -->
+      <div id="cardPayment" class="paymentPanel active">
+        <div id="payment-element"></div>
+        <div id="payment-message"></div>
+        <button id="submitPayment" class="btn btn--primary btn--full" disabled>
+          <span id="btnText">Zaplatiť</span>
+          <span id="btnSpinner" class="spinner"></span>
+        </button>
+      </div>
+
+      <!-- QR payment -->
+      <div id="qrPayment" class="paymentPanel">
+        <div class="qrInfo">
+          <p>Naskenujte QR kód v mobilnej aplikácii vašej banky:</p>
+          <div class="qrCode" id="qrCodeContainer"></div>
+          <div class="bankDetails">
+            <p><strong>IBAN:</strong> SK25 0900 0000 0052 4314 9574</p>
+            <p><strong>Suma:</strong> <span id="qrAmount">0 €</span></p>
+            <p><strong>Variabilný symbol:</strong> <span id="qrVS">-</span></p>
+            <p><strong>Poznámka:</strong> <span id="qrNote">-</span></p>
+          </div>
+          <p class="qrNote">Po odoslaní platby vás budeme kontaktovať do 24 hodín.</p>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <script>
-    // Stripe Checkout
-    const PRICE_IDS = {
-      'osobnost': 'price_1SoRyxK7AvTQZ0XNZUyps1D8',
-      'zivotny-pribeh': 'price_1SoS1mK7AvTQZ0XN3cJy2T56',
-      'workshop-web': 'price_1SoS5IK7AvTQZ0XNeasnYB9A',
-      'workshop-eshop': 'price_1SoS9yK7AvTQZ0XN5Dn94Wjl',
-      'workshop-google': 'price_1SoSByK7AvTQZ0XNcoWWud21',
-      'workshop-social': 'price_1SoSDBK7AvTQZ0XNLnWCDjF8',
-      'workshop-ai': 'price_1SoSEYK7AvTQZ0XNwFRpFfQ7',
-      'balik-starter': 'price_1SoSFcK7AvTQZ0XNPnU7Vrqm',
-      'balik-business': 'price_1SoSHCK7AvTQZ0XNnVairWs2',
-      'balik-premium': 'price_1SoSIdK7AvTQZ0XNSC4bpjWN',
-    };
+  <!-- Stripe.js -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <!-- QR Code library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-    document.querySelectorAll('[data-checkout]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const productId = btn.dataset.checkout;
-        const priceId = PRICE_IDS[productId];
+  <script is:inline>
+    var stripe = Stripe('pk_live_51SIajzK7AvTQZ0XNgrY5daEJeZX4ew0fxpRaVwgahpvPAamiISdRB0SpwlPYtbrvnsJritP542yNLaZximzBZwZo007qtYg79p');
+    var elements = null;
+    var paymentElement = null;
+    var currentProduct = null;
+    var currentAmount = 0;
+    var qrCode = null;
 
-        if (!priceId || priceId.startsWith('PRICE_ID_')) {
-          alert('Produkt sa pripravuje. Kontaktujte nás prosím.');
+    // Tab switching
+    document.querySelectorAll('.paymentTab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        var tabId = this.dataset.tab;
+
+        document.querySelectorAll('.paymentTab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.paymentPanel').forEach(function(p) { p.classList.remove('active'); });
+
+        this.classList.add('active');
+        document.getElementById(tabId + 'Payment').classList.add('active');
+
+        if (tabId === 'card' && !paymentElement) {
+          initPayment();
+        }
+      });
+    });
+
+    // Open modal on button click
+    document.querySelectorAll('[data-pay]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        currentProduct = this.dataset.pay;
+        currentAmount = parseInt(this.dataset.amount);
+
+        document.getElementById('modalProduct').textContent = currentProduct;
+        var priceFormatted = (currentAmount / 100).toLocaleString('sk-SK') + ' €';
+        document.getElementById('modalPrice').textContent = priceFormatted;
+        document.getElementById('paymentModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // Reset to card tab
+        document.querySelectorAll('.paymentTab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.paymentPanel').forEach(function(p) { p.classList.remove('active'); });
+        document.querySelector('[data-tab="card"]').classList.add('active');
+        document.getElementById('cardPayment').classList.add('active');
+
+        // Generate QR
+        generateQR();
+
+        // Init card payment
+        initPayment();
+      });
+    });
+
+    function generateQR() {
+      var vs = Date.now().toString().slice(-10);
+      var amount = (currentAmount / 100).toFixed(2);
+
+      document.getElementById('qrAmount').textContent = amount + ' €';
+      document.getElementById('qrVS').textContent = vs;
+      document.getElementById('qrNote').textContent = currentProduct;
+
+      // Clear previous QR
+      var container = document.getElementById('qrCodeContainer');
+      container.innerHTML = '';
+
+      // PAY by square format for Slovak banks
+      // Simple version - just payment info
+      var qrData = 'SPD*1.0*ACC:SK8909000000005183123456*AM:' + amount + '*CC:EUR*X-VS:' + vs + '*MSG:' + encodeURIComponent(currentProduct);
+
+      qrCode = new QRCode(container, {
+        text: qrData,
+        width: 200,
+        height: 200,
+        colorDark: '#000000',
+        colorLight: '#ffffff'
+      });
+    }
+
+    // Close modal
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    function closeModal() {
+      document.getElementById('paymentModal').classList.remove('open');
+      document.body.style.overflow = '';
+      if (paymentElement) {
+        paymentElement.unmount();
+        paymentElement = null;
+      }
+      elements = null;
+    }
+
+    async function initPayment() {
+      if (paymentElement) return; // Already initialized
+
+      document.getElementById('submitPayment').disabled = true;
+      document.getElementById('payment-message').textContent = 'Načítavam...';
+
+      try {
+        var response = await fetch('/api/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: currentAmount,
+            productName: currentProduct
+          })
+        });
+
+        var data = await response.json();
+
+        if (data.error) {
+          document.getElementById('payment-message').textContent = data.error;
           return;
         }
 
-        btn.disabled = true;
-        btn.textContent = 'Presmerovávam...';
-
-        try {
-          const response = await fetch('/api/create-checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ priceId, productId }),
-          });
-
-          const { url, error } = await response.json();
-
-          if (error) {
-            alert('Chyba: ' + error);
-            btn.disabled = false;
-            btn.textContent = 'Skúsiť znova';
-            return;
+        var appearance = {
+          theme: 'night',
+          variables: {
+            colorPrimary: '#f97316',
+            colorBackground: '#1a1a1a',
+            colorText: '#ffffff',
+            colorDanger: '#ef4444',
+            fontFamily: 'system-ui, sans-serif',
+            borderRadius: '8px'
+          },
+          rules: {
+            '.Input': {
+              backgroundColor: '#0a0a0a',
+              border: '1px solid #333'
+            },
+            '.Input:focus': {
+              border: '1px solid #f97316',
+              boxShadow: '0 0 0 1px #f97316'
+            }
           }
+        };
 
-          window.location.href = url;
-        } catch (err) {
-          alert('Nastala chyba. Skúste to prosím znova.');
-          btn.disabled = false;
-        }
+        elements = stripe.elements({ clientSecret: data.clientSecret, appearance: appearance, locale: 'sk' });
+        paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+
+        document.getElementById('payment-message').textContent = '';
+
+        paymentElement.on('ready', function() {
+          document.getElementById('submitPayment').disabled = false;
+        });
+
+      } catch (err) {
+        document.getElementById('payment-message').textContent = 'Chyba: ' + err.message;
+      }
+    }
+
+    // Submit payment
+    document.getElementById('submitPayment').addEventListener('click', async function() {
+      var btn = this;
+      var btnText = document.getElementById('btnText');
+      var spinner = document.getElementById('btnSpinner');
+      var msg = document.getElementById('payment-message');
+
+      btn.disabled = true;
+      btnText.style.display = 'none';
+      spinner.style.display = 'inline-block';
+      msg.textContent = '';
+
+      var result = await stripe.confirmPayment({
+        elements: elements,
+        confirmParams: {
+          return_url: window.location.origin + '/dakujem-platba'
+        },
+        redirect: 'if_required'
       });
+
+      if (result.error) {
+        msg.textContent = result.error.message;
+        btn.disabled = false;
+        btnText.style.display = 'inline';
+        spinner.style.display = 'none';
+      } else {
+        // Success without redirect
+        closeModal();
+        window.location.href = '/dakujem-platba';
+      }
     });
   </script>
 
@@ -243,36 +405,32 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     flex-direction: column;
     text-align: center;
   }
-  .cardPricing h3 {
-    margin-bottom: 0.5rem;
-  }
   .price {
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--accent, #fff);
-    margin-bottom: 0.25rem;
+    color: #f97316;
+    margin-bottom: 1rem;
   }
   .priceNote {
     font-size: 0.875rem;
-    color: rgba(255,255,255,0.6);
+    color: #22c55e;
+    margin-top: -0.75rem;
     margin-bottom: 1rem;
   }
   .cardLead {
-    font-size: 1.1rem;
-    font-style: italic;
-    color: rgba(255,255,255,0.8);
-    margin-bottom: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
   }
   .checkList {
     list-style: none;
     padding: 0;
-    margin: 1.5rem 0;
+    margin: 1rem 0;
     text-align: left;
   }
   .checkList li {
-    padding: 0.5rem 0;
-    padding-left: 1.75rem;
+    padding: 0.5rem 0 0.5rem 1.75rem;
     position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
   .checkList li::before {
     content: "✓";
@@ -284,9 +442,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .cardActions {
     margin-top: auto;
     padding-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
   }
   .cardCompact {
     padding: 1.5rem;
@@ -295,54 +450,171 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     font-size: 2rem;
     margin-bottom: 0.75rem;
   }
-  .cardCompact p {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
   .cardHighlight {
-    border: 2px solid var(--accent, #3b82f6);
-    position: relative;
+    border: 2px solid #f97316;
   }
   .cardBadge {
     position: absolute;
     top: -12px;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--accent, #3b82f6);
+    background: #f97316;
     color: #fff;
     padding: 0.25rem 1rem;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
-    text-transform: uppercase;
   }
   .btn--full {
     width: 100%;
   }
   .sectionLead {
     text-align: center;
-    font-size: 1.1rem;
     color: rgba(255,255,255,0.7);
     margin-bottom: 2rem;
   }
-  .note {
-    background: rgba(255,255,255,0.05);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-top: 2rem;
-    text-align: center;
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
   }
-  .cta {
-    text-align: center;
-    padding: 3rem;
-    background: rgba(255,255,255,0.03);
+  .modal.open {
+    display: flex;
+  }
+  .modalContent {
+    background: #111;
+    border: 1px solid #333;
     border-radius: 12px;
+    padding: 2rem;
+    max-width: 450px;
+    width: 100%;
+    position: relative;
   }
-  .cta h2 {
+  .modalClose {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modalClose:hover {
+    color: #fff;
+  }
+  .modalHeader {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .modalHeader h2 {
+    font-size: 1.125rem;
     margin-bottom: 0.5rem;
   }
-  .cta p {
+  .modalPrice {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #f97316;
+  }
+  #payment-element {
+    margin-bottom: 1rem;
+  }
+  #payment-message {
+    color: #ef4444;
+    text-align: center;
+    margin-bottom: 1rem;
+    min-height: 1.25rem;
+  }
+  .spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Payment tabs */
+  .paymentTabs {
+    display: flex;
+    gap: 0.5rem;
     margin-bottom: 1.5rem;
-    color: rgba(255,255,255,0.7);
+  }
+  .paymentTab {
+    flex: 1;
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #999;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .paymentTab:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+  }
+  .paymentTab.active {
+    background: rgba(249, 115, 22, 0.1);
+    border-color: #f97316;
+    color: #f97316;
+  }
+  .paymentPanel {
+    display: none;
+  }
+  .paymentPanel.active {
+    display: block;
+  }
+
+  /* QR payment */
+  .qrInfo {
+    text-align: center;
+  }
+  .qrInfo > p {
+    color: #999;
+    margin-bottom: 1rem;
+  }
+  .qrCode {
+    display: inline-block;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+  .bankDetails {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: left;
+    margin-bottom: 1rem;
+  }
+  .bankDetails p {
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
+  }
+  .bankDetails strong {
+    color: #999;
+    display: inline-block;
+    width: 140px;
+  }
+  .qrNote {
+    font-size: 0.8rem;
+    color: #666;
   }
 </style>
