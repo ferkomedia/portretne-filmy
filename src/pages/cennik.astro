@@ -196,7 +196,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <p>Naskenujte QR kód v mobilnej aplikácii vašej banky:</p>
           <div class="qrCode" id="qrCodeContainer"></div>
           <div class="bankDetails">
-            <p><strong>IBAN:</strong> SK25 0900 0000 0052 4314 9574</p>
+            <p><strong>IBAN:</strong> SK89 0900 0000 0051 8312 3456</p>
             <p><strong>Suma:</strong> <span id="qrAmount">0 €</span></p>
             <p><strong>Variabilný symbol:</strong> <span id="qrVS">-</span></p>
             <p><strong>Poznámka:</strong> <span id="qrNote">-</span></p>
@@ -212,188 +212,197 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <!-- QR Code library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  <script is:inline>
-    var stripe = Stripe('pk_live_51SIajzK7AvTQZ0XNgrY5daEJeZX4ew0fxpRaVwgahpvPAamiISdRB0SpwlPYtbrvnsJritP542yNLaZximzBZwZo007qtYg79p');
-    var elements = null;
-    var paymentElement = null;
-    var currentProduct = null;
-    var currentAmount = 0;
-    var qrCode = null;
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var stripe = Stripe('pk_live_51SIajzK7AvTQZ0XNgrY5daEJeZX4ew0fxpRaVwgahpvPAamiISdRB0SpwlPYtbrvnsJritP542yNLaZximzBZwZo007qtYg79p');
+      var elements = null;
+      var paymentElement = null;
+      var currentProduct = null;
+      var currentAmount = 0;
+      var qrCode = null;
 
-    // Tab switching
-    document.querySelectorAll('.paymentTab').forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        var tabId = this.dataset.tab;
+      // Tab switching
+      document.querySelectorAll('.paymentTab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          var tabId = this.dataset.tab;
 
-        document.querySelectorAll('.paymentTab').forEach(function(t) { t.classList.remove('active'); });
-        document.querySelectorAll('.paymentPanel').forEach(function(p) { p.classList.remove('active'); });
+          document.querySelectorAll('.paymentTab').forEach(function(t) { t.classList.remove('active'); });
+          document.querySelectorAll('.paymentPanel').forEach(function(p) { p.classList.remove('active'); });
 
-        this.classList.add('active');
-        document.getElementById(tabId + 'Payment').classList.add('active');
+          this.classList.add('active');
+          document.getElementById(tabId + 'Payment').classList.add('active');
 
-        if (tabId === 'card' && !paymentElement) {
-          initPayment();
-        }
-      });
-    });
-
-    // Open modal on button click
-    document.querySelectorAll('[data-pay]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        currentProduct = this.dataset.pay;
-        currentAmount = parseInt(this.dataset.amount);
-
-        document.getElementById('modalProduct').textContent = currentProduct;
-        var priceFormatted = (currentAmount / 100).toLocaleString('sk-SK') + ' €';
-        document.getElementById('modalPrice').textContent = priceFormatted;
-        document.getElementById('paymentModal').classList.add('open');
-        document.body.style.overflow = 'hidden';
-
-        // Reset to card tab
-        document.querySelectorAll('.paymentTab').forEach(function(t) { t.classList.remove('active'); });
-        document.querySelectorAll('.paymentPanel').forEach(function(p) { p.classList.remove('active'); });
-        document.querySelector('[data-tab="card"]').classList.add('active');
-        document.getElementById('cardPayment').classList.add('active');
-
-        // Generate QR
-        generateQR();
-
-        // Init card payment
-        initPayment();
-      });
-    });
-
-    function generateQR() {
-      var vs = Date.now().toString().slice(-10);
-      var amount = (currentAmount / 100).toFixed(2);
-
-      document.getElementById('qrAmount').textContent = amount + ' €';
-      document.getElementById('qrVS').textContent = vs;
-      document.getElementById('qrNote').textContent = currentProduct;
-
-      // Clear previous QR
-      var container = document.getElementById('qrCodeContainer');
-      container.innerHTML = '';
-
-      // PAY by square format for Slovak banks
-      // Simple version - just payment info
-      var qrData = 'SPD*1.0*ACC:SK8909000000005183123456*AM:' + amount + '*CC:EUR*X-VS:' + vs + '*MSG:' + encodeURIComponent(currentProduct);
-
-      qrCode = new QRCode(container, {
-        text: qrData,
-        width: 200,
-        height: 200,
-        colorDark: '#000000',
-        colorLight: '#ffffff'
-      });
-    }
-
-    // Close modal
-    document.getElementById('closeModal').addEventListener('click', closeModal);
-    document.getElementById('paymentModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
-
-    function closeModal() {
-      document.getElementById('paymentModal').classList.remove('open');
-      document.body.style.overflow = '';
-      if (paymentElement) {
-        paymentElement.unmount();
-        paymentElement = null;
-      }
-      elements = null;
-    }
-
-    async function initPayment() {
-      if (paymentElement) return; // Already initialized
-
-      document.getElementById('submitPayment').disabled = true;
-      document.getElementById('payment-message').textContent = 'Načítavam...';
-
-      try {
-        var response = await fetch('/api/create-payment-intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: currentAmount,
-            productName: currentProduct
-          })
-        });
-
-        var data = await response.json();
-
-        if (data.error) {
-          document.getElementById('payment-message').textContent = data.error;
-          return;
-        }
-
-        var appearance = {
-          theme: 'night',
-          variables: {
-            colorPrimary: '#f97316',
-            colorBackground: '#1a1a1a',
-            colorText: '#ffffff',
-            colorDanger: '#ef4444',
-            fontFamily: 'system-ui, sans-serif',
-            borderRadius: '8px'
-          },
-          rules: {
-            '.Input': {
-              backgroundColor: '#0a0a0a',
-              border: '1px solid #333'
-            },
-            '.Input:focus': {
-              border: '1px solid #f97316',
-              boxShadow: '0 0 0 1px #f97316'
-            }
+          if (tabId === 'card' && !paymentElement) {
+            initPayment();
           }
-        };
-
-        elements = stripe.elements({ clientSecret: data.clientSecret, appearance: appearance, locale: 'sk' });
-        paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element');
-
-        document.getElementById('payment-message').textContent = '';
-
-        paymentElement.on('ready', function() {
-          document.getElementById('submitPayment').disabled = false;
         });
-
-      } catch (err) {
-        document.getElementById('payment-message').textContent = 'Chyba: ' + err.message;
-      }
-    }
-
-    // Submit payment
-    document.getElementById('submitPayment').addEventListener('click', async function() {
-      var btn = this;
-      var btnText = document.getElementById('btnText');
-      var spinner = document.getElementById('btnSpinner');
-      var msg = document.getElementById('payment-message');
-
-      btn.disabled = true;
-      btnText.style.display = 'none';
-      spinner.style.display = 'inline-block';
-      msg.textContent = '';
-
-      var result = await stripe.confirmPayment({
-        elements: elements,
-        confirmParams: {
-          return_url: window.location.origin + '/dakujem-platba'
-        },
-        redirect: 'if_required'
       });
 
-      if (result.error) {
-        msg.textContent = result.error.message;
-        btn.disabled = false;
-        btnText.style.display = 'inline';
-        spinner.style.display = 'none';
-      } else {
-        // Success without redirect
-        closeModal();
-        window.location.href = '/dakujem-platba';
+      // Open modal on button click
+      document.querySelectorAll('[data-pay]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentProduct = this.dataset.pay;
+          currentAmount = parseInt(this.dataset.amount);
+
+          document.getElementById('modalProduct').textContent = currentProduct;
+          var priceFormatted = (currentAmount / 100).toLocaleString('sk-SK') + ' €';
+          document.getElementById('modalPrice').textContent = priceFormatted;
+          document.getElementById('paymentModal').classList.add('open');
+          document.body.style.overflow = 'hidden';
+
+          // Reset to card tab
+          document.querySelectorAll('.paymentTab').forEach(function(t) { t.classList.remove('active'); });
+          document.querySelectorAll('.paymentPanel').forEach(function(p) { p.classList.remove('active'); });
+          document.querySelector('[data-tab="card"]').classList.add('active');
+          document.getElementById('cardPayment').classList.add('active');
+
+          // Reset payment element
+          if (paymentElement) {
+            paymentElement.unmount();
+            paymentElement = null;
+          }
+          elements = null;
+
+          // Generate QR
+          generateQR();
+
+          // Init card payment
+          initPayment();
+        });
+      });
+
+      function generateQR() {
+        var vs = Date.now().toString().slice(-10);
+        var amount = (currentAmount / 100).toFixed(2);
+
+        document.getElementById('qrAmount').textContent = amount + ' €';
+        document.getElementById('qrVS').textContent = vs;
+        document.getElementById('qrNote').textContent = currentProduct;
+
+        // Clear previous QR
+        var container = document.getElementById('qrCodeContainer');
+        container.innerHTML = '';
+
+        // PAY by square format for Slovak banks
+        var qrData = 'SPD*1.0*ACC:SK8909000000005183123456*AM:' + amount + '*CC:EUR*X-VS:' + vs + '*MSG:' + encodeURIComponent(currentProduct);
+
+        if (typeof QRCode !== 'undefined') {
+          qrCode = new QRCode(container, {
+            text: qrData,
+            width: 200,
+            height: 200,
+            colorDark: '#000000',
+            colorLight: '#ffffff'
+          });
+        }
       }
+
+      // Close modal
+      document.getElementById('closeModal').addEventListener('click', closeModal);
+      document.getElementById('paymentModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+      });
+
+      function closeModal() {
+        document.getElementById('paymentModal').classList.remove('open');
+        document.body.style.overflow = '';
+        if (paymentElement) {
+          paymentElement.unmount();
+          paymentElement = null;
+        }
+        elements = null;
+      }
+
+      async function initPayment() {
+        if (paymentElement) return;
+
+        document.getElementById('submitPayment').disabled = true;
+        document.getElementById('payment-message').textContent = 'Načítavam...';
+
+        try {
+          var response = await fetch('/api/create-payment-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: currentAmount,
+              productName: currentProduct
+            })
+          });
+
+          var data = await response.json();
+
+          if (data.error) {
+            document.getElementById('payment-message').textContent = data.error;
+            return;
+          }
+
+          var appearance = {
+            theme: 'night',
+            variables: {
+              colorPrimary: '#f97316',
+              colorBackground: '#1a1a1a',
+              colorText: '#ffffff',
+              colorDanger: '#ef4444',
+              fontFamily: 'system-ui, sans-serif',
+              borderRadius: '8px'
+            },
+            rules: {
+              '.Input': {
+                backgroundColor: '#0a0a0a',
+                border: '1px solid #333'
+              },
+              '.Input:focus': {
+                border: '1px solid #f97316',
+                boxShadow: '0 0 0 1px #f97316'
+              }
+            }
+          };
+
+          elements = stripe.elements({ clientSecret: data.clientSecret, appearance: appearance, locale: 'sk' });
+          paymentElement = elements.create('payment');
+          paymentElement.mount('#payment-element');
+
+          document.getElementById('payment-message').textContent = '';
+
+          paymentElement.on('ready', function() {
+            document.getElementById('submitPayment').disabled = false;
+          });
+
+        } catch (err) {
+          document.getElementById('payment-message').textContent = 'Chyba: ' + err.message;
+        }
+      }
+
+      // Submit payment
+      document.getElementById('submitPayment').addEventListener('click', async function() {
+        var btn = this;
+        var btnText = document.getElementById('btnText');
+        var spinner = document.getElementById('btnSpinner');
+        var msg = document.getElementById('payment-message');
+
+        btn.disabled = true;
+        btnText.style.display = 'none';
+        spinner.style.display = 'inline-block';
+        msg.textContent = '';
+
+        var result = await stripe.confirmPayment({
+          elements: elements,
+          confirmParams: {
+            return_url: window.location.origin + '/dakujem-platba'
+          },
+          redirect: 'if_required'
+        });
+
+        if (result.error) {
+          msg.textContent = result.error.message;
+          btn.disabled = false;
+          btnText.style.display = 'inline';
+          spinner.style.display = 'none';
+        } else {
+          closeModal();
+          window.location.href = '/dakujem-platba';
+        }
+      });
     });
   </script>
 
