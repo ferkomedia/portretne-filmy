@@ -90,8 +90,15 @@ const schemaOrg = {
 
     <!-- Favicon - inline SVG -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23111'/><circle cx='50' cy='50' r='28' fill='%23f97316'/></svg>" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png" />
     <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Portrétne filmy" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content={type} />
@@ -206,6 +213,17 @@ const schemaOrg = {
           if (e.key === "Escape") close();
         });
       })();
+    </script>
+
+    <!-- PWA Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW registration failed:', err));
+        });
+      }
     </script>
   </body>
 </html>
