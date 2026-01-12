@@ -196,7 +196,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <p>Naskenujte QR kód v mobilnej aplikácii vašej banky:</p>
           <div class="qrCode" id="qrCodeContainer"></div>
           <div class="bankDetails">
-            <p><strong>IBAN:</strong> SK89 0900 0000 0051 8312 3456</p>
+            <p><strong>IBAN:</strong> SK59 1100 0000 0029 4217 8901</p>
             <p><strong>Suma:</strong> <span id="qrAmount">0 €</span></p>
             <p><strong>Variabilný symbol:</strong> <span id="qrVS">-</span></p>
             <p><strong>Poznámka:</strong> <span id="qrNote">-</span></p>
@@ -209,8 +209,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   <!-- Stripe.js -->
   <script src="https://js.stripe.com/v3/"></script>
-  <!-- QR Code library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -219,7 +217,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       var paymentElement = null;
       var currentProduct = null;
       var currentAmount = 0;
-      var qrCode = null;
 
       // Tab switching
       document.querySelectorAll('.paymentTab').forEach(function(tab) {
@@ -279,22 +276,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         document.getElementById('qrVS').textContent = vs;
         document.getElementById('qrNote').textContent = currentProduct;
 
-        // Clear previous QR
-        var container = document.getElementById('qrCodeContainer');
-        container.innerHTML = '';
-
         // PAY by square format for Slovak banks
-        var qrData = 'SPD*1.0*ACC:SK8909000000005183123456*AM:' + amount + '*CC:EUR*X-VS:' + vs + '*MSG:' + encodeURIComponent(currentProduct);
+        var qrData = 'SPD*1.0*ACC:SK5911000000002942178901*AM:' + amount + '*CC:EUR*X-VS:' + vs + '*MSG:' + encodeURIComponent(currentProduct);
 
-        if (typeof QRCode !== 'undefined') {
-          qrCode = new QRCode(container, {
-            text: qrData,
-            width: 200,
-            height: 200,
-            colorDark: '#000000',
-            colorLight: '#ffffff'
-          });
-        }
+        // Use Google Chart API for QR code
+        var qrUrl = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent(qrData);
+        document.getElementById('qrCodeContainer').innerHTML = '<img src="' + qrUrl + '" alt="QR kód" width="200" height="200" />';
       }
 
       // Close modal
