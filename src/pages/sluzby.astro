@@ -1,108 +1,360 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-
 <BaseLayout
-  title="Portrétne filmy Osobnosť a Životný príbeh | FerkoMedia"
-  description="Dva formáty portrétnych filmov: Osobnosť pre lídrov a umelcov, Životný príbeh ako dedičstvo pre rodinu. Zachyťte to, čo vás robí jedinečným.">
-  <section class="hero">
-    <div class="eyebrow">Služby</div>
-    <h1>Portrétny film, ktorý ľudia cítia</h1>
-    <p class="lead">
-      Robíme dva formáty: <strong>Osobnosť</strong> a <strong>Životný príbeh</strong>.
-      Pomôžeme ti pripraviť sa, vedieme natáčanie a dodáme film s emóciou aj kvalitou.
-    </p>
-    <div class="actions">
-      <a class="btn btn--primary" href="/kontakt#objednat">Dopyt / objednávka</a>
-      <a class="btn btn--ghost" href="/portfolio">Pozrieť ukážky</a>
+  title="Služby | Portrétny film"
+  description="Portrétne filmy pre podnikateľov, rodiny a firmy. Workshopy pre váš biznis. Profesionálna produkcia, férové ceny."
+>
+
+  <!-- HERO -->
+  <section class="heroSection">
+    <div class="heroContent">
+      <h1>Vytvárame príbehy,<br/>ktoré pracujú za vás.</h1>
+      <p class="heroLead">Či už budujete osobný brand, zachytávate rodinné dedičstvo, alebo sa chcete naučiť nové zručnosti – máme pre vás riešenie.</p>
     </div>
   </section>
 
+  <!-- PORTRÉTNE FILMY -->
+  <section class="section" id="filmy">
+    <div class="sectionHeader">
+      <h2>Portrétne filmy</h2>
+      <p class="sectionLead">Autentický pohľad na to, kto ste a prečo robíte to, čo robíte. Žiadna reklama, žiadna umelosť – len vy a váš príbeh.</p>
+    </div>
+
+    <div class="serviceGrid">
+      <div class="serviceCard">
+        <h3>Osobnosť</h3>
+        <p class="serviceTagline">Pre tých, ktorí chcú byť videní a pochopení.</p>
+        <p>Kto ste, keď sa nikto nepozerá? Čo vás poháňa? Čomu veríte? Tento film zachytí vašu energiu a hodnoty tak autenticky, že bude pracovať za vás ešte predtým, než vás ľudia osobne stretnú.</p>
+        <div class="serviceFor">
+          <span>Ideálne pre:</span> podnikateľov, lektorov, koučov, expertov
+        </div>
+      </div>
+
+      <div class="serviceCard">
+        <h3>Životný príbeh</h3>
+        <p class="serviceTagline">Pre príbehy, ktoré by sa nemali zabudnúť.</p>
+        <p>Vaši rodičia, starí rodičia – ich príbehy sú poklad, ktorý sa stráca každým dňom. Zachyťte ich múdrosť, skúsenosti a spomienky pre ďalšie generácie. Každý život je román.</p>
+        <div class="serviceFor">
+          <span>Ideálne pre:</span> rodiny, jubileá, generačné dedičstvo
+        </div>
+      </div>
+    </div>
+
+    <div class="serviceCta">
+      <a class="btn btn--primary" href="/cennik">Pozrieť cenník filmov</a>
+    </div>
+  </section>
+
+  <!-- PROCES -->
+  <section class="section sectionAlt">
+    <div class="sectionHeader">
+      <h2>Ako vzniká portrétny film?</h2>
+    </div>
+
+    <div class="processGrid">
+      <div class="processStep">
+        <div class="processNumber">1</div>
+        <h4>Konzultácia</h4>
+        <p>Zistíme, čo chcete povedať svetu. Pripravíme scenár a naplánujeme natáčanie.</p>
+      </div>
+      <div class="processStep">
+        <div class="processNumber">2</div>
+        <h4>Natáčanie</h4>
+        <p>V prostredí, kde sa cítite prirodzene. Žiadne štúdio, žiadny stres.</p>
+      </div>
+      <div class="processStep">
+        <div class="processNumber">3</div>
+        <h4>Post-produkcia</h4>
+        <p>Strih, hudba, farebné ladenie. Náhľad na pripomienky pred finalizáciou.</p>
+      </div>
+      <div class="processStep">
+        <div class="processNumber">4</div>
+        <h4>Dodanie</h4>
+        <p>Hotový film vo všetkých formátoch. Použite ho kdekoľvek.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKSHOPY -->
+  <section class="section" id="workshopy">
+    <div class="sectionHeader">
+      <h2>Workshopy</h2>
+      <p class="sectionLead">Nečakajte na agentúru. Príďte na workshop a odíďte s hotovým výsledkom.</p>
+    </div>
+
+    <div class="workshopList">
+      <div class="workshopItem">
+        <h4>Web za 1 deň</h4>
+        <p>Odídete s funkčným webom. WordPress, hosting, doména – všetko nastavíme spolu.</p>
+      </div>
+      <div class="workshopItem">
+        <h4>E-shop za 1 deň</h4>
+        <p>Kompletný e-shop na WooCommerce. Produkty, platby, doprava – pripravený predávať.</p>
+      </div>
+      <div class="workshopItem">
+        <h4>Google reklama za 1 deň</h4>
+        <p>Google Ads bez chaosu. Účet, kampane, kľúčové slová – pochopíte, kam idú peniaze.</p>
+      </div>
+      <div class="workshopItem">
+        <h4>AI nástroje za 1 deň</h4>
+        <p>ChatGPT, Claude, Midjourney. Praktické využitie AI vo vašom biznise.</p>
+      </div>
+      <div class="workshopItem">
+        <h4>Sociálne siete za 1 deň</h4>
+        <p>Obsahový plán, šablóny, natáčanie na mobil. Konzistentný výstup.</p>
+      </div>
+    </div>
+
+    <div class="serviceCta">
+      <a class="btn btn--primary" href="/workshopy">Pozrieť workshopy a termíny</a>
+    </div>
+  </section>
+
+  <!-- PRE FIRMY -->
+  <section class="section sectionAlt" id="firmy">
+    <div class="sectionHeader">
+      <h2>Pre firmy</h2>
+      <p class="sectionLead">Väčšie projekty, viacero filmov, firemné workshopy. Pripravíme ponuku presne podľa vašich potrieb.</p>
+    </div>
+
+    <div class="corporateGrid">
+      <div class="corporateItem">
+        <h4>Employer branding</h4>
+        <p>Príbehy vašich zamestnancov, ktoré pritiahnu talenty.</p>
+      </div>
+      <div class="corporateItem">
+        <h4>Séria portrétov</h4>
+        <p>Predstavte celý tím. Konzistentný štýl, výhodnejšia cena.</p>
+      </div>
+      <div class="corporateItem">
+        <h4>Firemné workshopy</h4>
+        <p>Privátne školenia pre váš tím. Termín a obsah na mieru.</p>
+      </div>
+      <div class="corporateItem">
+        <h4>Dlhodobá spolupráca</h4>
+        <p>Pravidelná video produkcia, content stratégia.</p>
+      </div>
+    </div>
+
+    <div class="serviceCta">
+      <a class="btn btn--primary" href="/kontakt">Napísať dopyt</a>
+    </div>
+  </section>
+
+  <!-- CTA -->
   <section class="section">
-    <h2>Prečo portrétny film</h2>
-    <div class="grid3">
-      <div class="card"><h3>Dôvera a osobná značka</h3><p>Film povie viac než text. Ukáže človeka, energiu a hodnoty.</p></div>
-      <div class="card"><h3>Obsah, ktorý nestarne</h3><p>Je to spomienka aj reprezentácia. Hodnota rastie s časom.</p></div>
-      <div class="card"><h3>Viac výstupov</h3><p>Hlavný film + krátke verzie pre sociálne siete (podľa dohody).</p></div>
-    </div>
-  </section>
-
-  <section class="section" id="osobnost">
-    <div class="card">
-      <h2>Portrétny film „Osobnosť“</h2>
-      <p>
-        Je našou špecialitou – snažíme sa zachytiť to, čo robí človeka jedinečným:
-        tvorbu, hodnoty, energiu a charakter.
-      </p>
-
-      <div class="grid2" style="margin-top:14px;">
-        <div class="card">
-          <h3>Ideálne pre</h3>
-          <p>
-            umelcov a kreatívcov, podnikateľov a lídrov, športovcov a verejne činné osoby –
-            každého, kto chce ukázať autentickú stránku a zanechať odkaz.
-          </p>
-        </div>
-        <div class="card">
-          <h3>Čo je vo výstupe</h3>
-          <p>
-            rozhovor + atmosféra + detaily; strih, color, čistý zvuk; finálny film +
-            krátke verzie na siete (podľa dohody).
-          </p>
-        </div>
-      </div>
-
-      <div class="actions">
-        <a class="btn btn--primary" href="/kontakt#objednat">Mám záujem</a>
-        <a class="btn btn--ghost" href="/kontakt#objednat">Nie som si istý – poraď mi</a>
+    <div class="finalCta">
+      <h2>Neviete, čo je pre vás najlepšie?</h2>
+      <p>Zavolajte nám alebo napíšte. Poradíme a pomôžeme vybrať správne riešenie.</p>
+      <div class="finalCtaButtons">
+        <a class="btn btn--primary btn--large" href="/kontakt">Napísať správu</a>
+        <a class="btn btn--ghost btn--large" href="/cennik">Pozrieť cenník</a>
       </div>
     </div>
   </section>
 
-  <section class="section" id="zivotnypribeh">
-    <div class="card">
-      <h2>Portrétny film „Životný príbeh“</h2>
-      <p>
-        Odpoveď na túžbu zachovať životné skúsenosti a múdrosť pre budúce generácie.
-        Je to rodinný poklad – spomienky, hodnoty, skúsenosti a odkaz.
-      </p>
-
-      <div class="grid2" style="margin-top:14px;">
-        <div class="card">
-          <h3>Vhodné pre</h3>
-          <p>
-            starších členov rodiny, ľudí s výnimočným príbehom, osobnosti s úspechmi –
-            každého, kto chce zdokumentovať cestu pre deti a vnúčatá.
-          </p>
-        </div>
-        <div class="card">
-          <h3>Čo je vo výstupe</h3>
-          <p>
-            pokojný rozhovor + atmosféra; strih a dramaturgia; finálny film +
-            dohodnuté zostrihy.
-          </p>
-        </div>
-      </div>
-
-      <div class="actions">
-        <a class="btn btn--primary" href="/kontakt#objednat">Mám záujem</a>
-        <a class="btn btn--ghost" href="/kontakt#objednat">Nie som si istý – poraď mi</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <h2>Ako prebieha natáčanie</h2>
-    <div class="grid2">
-      <div class="card"><h3>1) Dopyt + krátky call</h3><p>Ujasníme cieľ, publikum a tón. Navrhneme formát.</p></div>
-      <div class="card"><h3>2) Príprava otázok</h3><p>Dostaneš jednoduchú prípravu. Otázky pripravíme my.</p></div>
-      <div class="card"><h3>3) Natáčanie</h3><p>Vedieme rozhovor tak, aby to pôsobilo prirodzene. Pridáme atmosféru.</p></div>
-      <div class="card"><h3>4) Postprodukcia</h3><p>Strih, color, zvuk, titulky podľa potreby. Dodáme finálne výstupy.</p></div>
-    </div>
-
-    <div class="actions">
-      <a class="btn btn--primary" href="/kontakt#objednat">Chcem portrétny film</a>
-      <a class="btn btn--ghost" href="/portfolio">Pozrieť ukážky</a>
-    </div>
-  </section>
 </BaseLayout>
+
+<style>
+  /* Hero */
+  .heroSection {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 1.5rem 4rem;
+    background: radial-gradient(ellipse at top, rgba(249,115,22,0.12) 0%, transparent 60%);
+  }
+  .heroContent {
+    max-width: 800px;
+  }
+  .heroSection h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+  }
+  .heroLead {
+    font-size: clamp(1.05rem, 2vw, 1.25rem);
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+  }
+
+  /* Sections */
+  .section {
+    padding: 5rem 0;
+  }
+  .sectionAlt {
+    background: rgba(255,255,255,0.02);
+    margin: 0 -1.5rem;
+    padding: 5rem 1.5rem;
+  }
+  .sectionHeader {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto 3rem;
+  }
+  .sectionHeader h2 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    margin-bottom: 1rem;
+  }
+  .sectionLead {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  /* Service Grid */
+  .serviceGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .serviceCard {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  .serviceCard h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .serviceTagline {
+    color: #f97316;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+  .serviceCard > p {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .serviceFor {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .serviceFor span {
+    color: #22c55e;
+    font-weight: 600;
+  }
+  .serviceCta {
+    text-align: center;
+    margin-top: 2.5rem;
+  }
+
+  /* Process Grid */
+  .processGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .processStep {
+    text-align: center;
+  }
+  .processNumber {
+    width: 44px;
+    height: 44px;
+    background: #f97316;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 0 auto 1rem;
+  }
+  .processStep h4 {
+    margin-bottom: 0.5rem;
+  }
+  .processStep p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Workshop List */
+  .workshopList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .workshopItem {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  .workshopItem h4 {
+    margin-bottom: 0.5rem;
+    color: #f97316;
+  }
+  .workshopItem p {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Corporate Grid */
+  .corporateGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .corporateItem {
+    text-align: center;
+  }
+  .corporateItem h4 {
+    margin-bottom: 0.5rem;
+  }
+  .corporateItem p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Final CTA */
+  .finalCta {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(34,197,94,0.08));
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .finalCta h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: 1rem;
+  }
+  .finalCta > p {
+    color: rgba(255,255,255,0.7);
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+  .finalCtaButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Buttons */
+  .btn--large {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+  }
+</style>

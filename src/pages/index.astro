@@ -2,78 +2,565 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 <BaseLayout
-  title="Portrétny film | Zachyťte svoj príbeh profesionálne"
-  description="Vytvárame portrétne filmy, ktoré zachytia vašu osobnosť a životný príbeh. Pre podnikateľov, umelcov a rodiny. 4K kvalita, emócia a profesionálny prístup."
-  <section class="hero">
-    <div class="eyebrow">FerkoMedia</div>
-    <h1>Portrétny film, ktorý má zmysel</h1>
-    <p class="lead">
-      Vytvárame dva formáty: <strong>Osobnosť</strong> a <strong>Životný príbeh</strong>.
-      Autenticky, citlivo a vizuálne profesionálne – aby výsledok mal hodnotu aj o roky.
-    </p>
+  title="Portrétny film | Príbehy, ktoré predávajú"
+  description="Profesionálne portrétne filmy pre podnikateľov, rodiny a firmy. Zachyťte svoju osobnosť, hodnoty a príbeh. Workshopy pre váš biznis."
+>
 
-    <div class="badges">
-      <span class="badge">4K produkcia</span>
-      <span class="badge">Scenár + réžia</span>
-      <span class="badge">Strih + color</span>
+  <!-- HERO -->
+  <section class="heroFull">
+    <div class="heroContent">
+      <h1>Ľudia nekupujú produkty.<br/>Kupujú príbehy.</h1>
+      <p class="heroLead">Portrétny film zachytí to, čo robí práve vás výnimočným – vašu energiu, hodnoty a osobnosť. Nie je to o minútach. Je to o momente, keď sa niekto zastaví a povie: „Tomuto človeku verím."</p>
+      <div class="heroCtas">
+        <a class="btn btn--primary btn--large" href="/cennik#filmy">Chcem portrétny film</a>
+        <a class="btn btn--ghost btn--large" href="#ako-to-funguje">Ako to funguje</a>
+      </div>
     </div>
-
-    <div class="actions">
-      <a class="btn btn--primary" href="/kontakt#objednat">Objednať film</a>
-      <a class="btn btn--ghost" href="/portfolio">Pozrieť ukážky</a>
+    <div class="heroScroll">
+      <span class="scrollArrow"></span>
     </div>
   </section>
 
+  <!-- PROBLEM / SOLUTION -->
   <section class="section">
-    <div class="grid3">
-      <div class="card">
-        <h3>Osobnosť</h3>
-        <p>Pre tvorcov, podnikateľov, športovcov a ľudí, ktorí chcú ukázať, kým sú.</p>
-        <div class="actions"><a class="btn btn--ghost" href="/sluzby#osobnost">Zistiť viac</a></div>
+    <div class="splitSection">
+      <div class="splitText">
+        <div class="eyebrow">Problém</div>
+        <h2>Vaša konkurencia má web, sociálne siete, reklamy. Vy tiež.</h2>
+        <p>Všetci vyzerajú rovnako. Všetci hovoria to isté. Zákazníci scrollujú ďalej, lebo nemajú dôvod zastaviť sa práve pri vás.</p>
+        <p>Čísla, fakty a benefity nestačia. Ľudia sa rozhodujú emóciami – a až potom hľadajú racionálne dôvody.</p>
       </div>
-      <div class="card">
-        <h3>Životný príbeh</h3>
-        <p>Pre rodiny a osobnosti, ktoré chcú zachovať odkaz pre deti a vnukov.</p>
-        <div class="actions"><a class="btn btn--ghost" href="/sluzby#zivotnypribeh">Zistiť viac</a></div>
-      </div>
-      <div class="card">
-        <h3>Bez stresu</h3>
-        <p>Pomôžeme otázkami, prípravou a vedením natáčania. Vy sa sústredíte na príbeh.</p>
-        <div class="actions"><a class="btn btn--primary" href="/kontakt#objednat">Odoslať dopyt</a></div>
+      <div class="splitText">
+        <div class="eyebrow eyebrowGreen">Riešenie</div>
+        <h2>Príbeh, ktorý si ľudia zapamätajú.</h2>
+        <p>Portrétny film nie je reklama. Je to autentický pohľad na to, kto ste a prečo robíte to, čo robíte. Ľudia vás uvidia, pochopia a začnú vám veriť ešte predtým, než vás osobne stretnú.</p>
+        <p><strong>Dôvera sa nedá kúpiť. Ale dá sa vybudovať.</strong></p>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <h2>Prečo portrétny film</h2>
-    <div class="grid3">
-      <div class="card"><h3>Dôvera a emócia</h3><p>Ľudia si kupujú príbeh a vzťah. Portrét buduje dôveru rýchlejšie než text.</p></div>
-      <div class="card"><h3>Hodnota na roky</h3><p>Je to obsah, ktorý nestarne. Dáva zmysel dnes aj o veľa rokov.</p></div>
-      <div class="card"><h3>Viac použiteľných výstupov</h3><p>Hlavný film + krátke verzie na siete (podľa dohody).</p></div>
+  <!-- PRE KOHO -->
+  <section class="section sectionAlt" id="pre-koho">
+    <div class="sectionHeader">
+      <h2>Pre koho je portrétny film?</h2>
+      <p class="sectionLead">Nie je to len pre veľké firmy s veľkými rozpočtami. Je to pre každého, kto chce budovať dôveru.</p>
+    </div>
+
+    <div class="audienceGrid">
+      <div class="audienceCard">
+        <div class="audienceIcon">P</div>
+        <h3>Pre podnikateľov</h3>
+        <p>Budujete osobný brand? Chcete, aby vás zákazníci poznali skôr, než si kúpia? Portrétny film je najefektívnejší spôsob, ako predávať bez predávania.</p>
+        <ul class="miniList">
+          <li>LinkedIn profil, ktorý zaujme</li>
+          <li>Web, ktorý buduje dôveru</li>
+          <li>Prezentácie, ktoré presvedčia</li>
+        </ul>
+      </div>
+
+      <div class="audienceCard">
+        <div class="audienceIcon">R</div>
+        <h3>Pre rodiny</h3>
+        <p>Príbehy vašich rodičov a starých rodičov sú poklad, ktorý sa stráca každým dňom. Zachyťte ich múdrosť, skúsenosti a spomienky pre ďalšie generácie.</p>
+        <ul class="miniList">
+          <li>Dar, ktorý nemá cenu</li>
+          <li>Dedičstvo pre vnukov</li>
+          <li>Spomienky, ktoré neodídu</li>
+        </ul>
+      </div>
+
+      <div class="audienceCard">
+        <div class="audienceIcon">F</div>
+        <h3>Pre firmy</h3>
+        <p>Zamestnanci sú vaša najväčšia hodnota. Ukážte ich príbehy, hodnoty a kultúru. Prilákajte talenty a zákazníkov, ktorí zdieľajú vašu víziu.</p>
+        <ul class="miniList">
+          <li>Employer branding</li>
+          <li>Firemné hodnoty</li>
+          <li>Tímové predstavenie</li>
+        </ul>
+      </div>
     </div>
   </section>
 
-  <section class="section">
-    <h2>Proces</h2>
-    <div class="grid2">
-      <div class="card"><h3>1) Dopyt</h3><p>Napíšete základné info a dohodneme krátky call.</p></div>
-      <div class="card"><h3>2) Natáčanie</h3><p>Pripravíme otázky a natočíme rozhovor + atmosféru.</p></div>
-      <div class="card"><h3>3) Strih</h3><p>Vyberieme to najlepšie a poskladáme film, ktorý drží emóciu.</p></div>
-      <div class="card"><h3>4) Odovzdanie</h3><p>Dostanete finálne video + dohodnuté verzie.</p></div>
+  <!-- AKO TO FUNGUJE -->
+  <section class="section" id="ako-to-funguje">
+    <div class="sectionHeader">
+      <h2>Ako to funguje?</h2>
+      <p class="sectionLead">Od prvého telefonátu po hotový film. Žiadne komplikácie, žiadne prekvapenia.</p>
     </div>
-    <div class="actions">
-      <a class="btn btn--primary" href="/kontakt#objednat">Chcem portrétny film</a>
-      <a class="btn btn--ghost" href="/portfolio">Pozrieť ukážky</a>
+
+    <div class="processTimeline">
+      <div class="timelineItem">
+        <div class="timelineNumber">1</div>
+        <div class="timelineContent">
+          <h3>Konzultácia</h3>
+          <p>Stretneme sa (osobne alebo online) a zistíme, čo chcete povedať svetu. Aký je váš príbeh? Čo vás robí výnimočným? Pripravíme scenár a naplánujeme natáčanie.</p>
+          <div class="timelineNote">Bezplatná, nezáväzná, 30 minút</div>
+        </div>
+      </div>
+
+      <div class="timelineItem">
+        <div class="timelineNumber">2</div>
+        <div class="timelineContent">
+          <h3>Natáčanie</h3>
+          <p>Žiadne štúdio, žiadna umelosť. Natáčame v prostredí, kde sa cítite prirodzene – doma, v kancelárii, v prírode. Nie je to výsluch, je to rozhovor.</p>
+          <div class="timelineNote">1 deň, u vás alebo na dohodnutom mieste</div>
+        </div>
+      </div>
+
+      <div class="timelineItem">
+        <div class="timelineNumber">3</div>
+        <div class="timelineContent">
+          <h3>Post-produkcia</h3>
+          <p>Strih, hudba, farebné ladenie. Vytvoríme film, na ktorý budete hrdí. Pred finalizáciou vám pošleme náhľad na pripomienky.</p>
+          <div class="timelineNote">2-3 týždne, jedna revízia v cene</div>
+        </div>
+      </div>
+
+      <div class="timelineItem">
+        <div class="timelineNumber">4</div>
+        <div class="timelineContent">
+          <h3>Dodanie</h3>
+          <p>Hotový film vo všetkých formátoch – pre web, sociálne siete, prezentácie. Použite ho kdekoľvek, kedykoľvek.</p>
+          <div class="timelineNote">4K kvalita, verzie pre všetky platformy</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="processCta">
+      <a class="btn btn--primary btn--large" href="/cennik#filmy">Pozrieť cenník</a>
     </div>
   </section>
 
-  <section class="section">
-    <h2>Najčastejšie otázky</h2>
-    <div class="grid2">
-      <div class="card"><h3>Ako dlho trvá výroba?</h3><p>Závisí od rozsahu. Po dopyte navrhneme realistický harmonogram.</p></div>
-      <div class="card"><h3>Kde prebieha natáčanie?</h3><p>Podľa príbehu – u vás, v práci, v exteriéri alebo kombinácia.</p></div>
-      <div class="card"><h3>Pomôžete aj s otázkami?</h3><p>Áno. Pripravíme otázky a vedieme rozhovor tak, aby pôsobil prirodzene.</p></div>
-      <div class="card"><h3>Koľko výstupov dostanem?</h3><p>Štandardne hlavný film, plus krátke verzie podľa dohody.</p></div>
+  <!-- PREČO MY -->
+  <section class="section sectionAlt">
+    <div class="sectionHeader">
+      <h2>Prečo práve my?</h2>
+    </div>
+
+    <div class="benefitsGrid">
+      <div class="benefitItem">
+        <div class="benefitIcon"></div>
+        <h4>Autentické bez pózy</h4>
+        <p>Nevytvárame reklamy. Vytvárame autentické príbehy, ktoré rezonujú.</p>
+      </div>
+      <div class="benefitItem">
+        <div class="benefitIcon"></div>
+        <h4>Osobný prístup</h4>
+        <p>Každý projekt robíme na mieru. Nie sme továreň na videá.</p>
+      </div>
+      <div class="benefitItem">
+        <div class="benefitIcon"></div>
+        <h4>Férová cena</h4>
+        <p>Viete presne, čo dostanete a za koľko. Žiadne skryté poplatky.</p>
+      </div>
+      <div class="benefitItem">
+        <div class="benefitIcon"></div>
+        <h4>Rýchle dodanie</h4>
+        <p>Do 3 týždňov máte hotový film. Nie mesiace čakania.</p>
+      </div>
     </div>
   </section>
+
+  <!-- WORKSHOPY TEASER -->
+  <section class="section">
+    <div class="workshopTeaser">
+      <div class="workshopTeaserContent">
+        <div class="eyebrow">Workshopy</div>
+        <h2>Naučte sa to sami.<br/>Za jeden deň.</h2>
+        <p>Nečakajte na agentúru. Nečakajte na freelancera. Príďte na workshop a odíďte s hotovým webom, e-shopom alebo reklamnými kampaňami.</p>
+        <ul class="workshopTeaserList">
+          <li><strong>Web za 1 deň</strong> – 149 €</li>
+          <li><strong>E-shop za 1 deň</strong> – 179 €</li>
+          <li><strong>Google reklama za 1 deň</strong> – 149 €</li>
+          <li><strong>AI nástroje za 1 deň</strong> – 129 €</li>
+        </ul>
+        <a class="btn btn--primary" href="/workshopy">Pozrieť všetky workshopy</a>
+      </div>
+      <div class="workshopTeaserVisual">
+        <div class="workshopCard">
+          <div class="workshopCardIcon">?</div>
+          <div class="workshopCardText">
+            <strong>Prečo workshop?</strong>
+            <p>Online kurz dokončí 3% ľudí. Z workshopu odídeš s hotovým výsledkom.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="section">
+    <div class="finalCta">
+      <h2>Pripravení začať?</h2>
+      <p>Napíšte nám. Radi zodpovieme všetky otázky a poradíme, čo je pre vás najlepšie. Nezáväzne, bezplatne.</p>
+      <div class="finalCtaButtons">
+        <a class="btn btn--primary btn--large" href="/cennik">Pozrieť cenník</a>
+        <a class="btn btn--ghost btn--large" href="/kontakt">Napísať správu</a>
+      </div>
+      <p class="finalCtaNote">Odpovieme do 24 hodín</p>
+    </div>
+  </section>
+
 </BaseLayout>
+
+<style>
+  /* Hero Full */
+  .heroFull {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 1.5rem;
+    position: relative;
+    background: radial-gradient(ellipse at top, rgba(249,115,22,0.15) 0%, transparent 60%);
+  }
+  .heroContent {
+    max-width: 900px;
+  }
+  .heroFull h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+  }
+  .heroLead {
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    color: rgba(255,255,255,0.8);
+    line-height: 1.7;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+  }
+  .heroCtas {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .heroScroll {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+  }
+  .scrollArrow {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid rgba(255,255,255,0.4);
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+    transform: rotate(45deg);
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
+  }
+
+  /* Split Section */
+  .splitSection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+  @media (max-width: 768px) {
+    .splitSection { grid-template-columns: 1fr; gap: 3rem; }
+  }
+  .splitText h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  .splitText p {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+  .splitText p strong {
+    color: #22c55e;
+  }
+
+  /* Eyebrow */
+  .eyebrow {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #f97316;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+  .eyebrowGreen {
+    color: #22c55e;
+  }
+
+  /* Section */
+  .section {
+    padding: 5rem 0;
+  }
+  .sectionAlt {
+    background: rgba(255,255,255,0.02);
+    margin: 0 -1.5rem;
+    padding: 5rem 1.5rem;
+  }
+  .sectionHeader {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+  }
+  .sectionHeader h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: 1rem;
+  }
+  .sectionLead {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  /* Audience Grid */
+  .audienceGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  .audienceCard {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  .audienceIcon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1.25rem;
+  }
+  .audienceCard h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .audienceCard p {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  .miniList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .miniList li {
+    padding: 0.4rem 0 0.4rem 1.5rem;
+    position: relative;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+  }
+  .miniList li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65rem;
+    width: 6px;
+    height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+  }
+
+  /* Timeline */
+  .processTimeline {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .timelineItem {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+  .timelineItem:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 24px;
+    top: 60px;
+    bottom: -3rem;
+    width: 2px;
+    background: rgba(249,115,22,0.3);
+  }
+  .timelineNumber {
+    width: 50px;
+    height: 50px;
+    background: #f97316;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+  .timelineContent h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .timelineContent p {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+  .timelineNote {
+    font-size: 0.85rem;
+    color: #22c55e;
+    font-weight: 500;
+  }
+  .processCta {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  /* Benefits Grid */
+  .benefitsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+  }
+  .benefitItem {
+    text-align: center;
+  }
+  .benefitIcon {
+    width: 48px;
+    height: 48px;
+    background: rgba(34,197,94,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    position: relative;
+  }
+  .benefitIcon::before {
+    content: "";
+    width: 12px;
+    height: 20px;
+    border-right: 3px solid #22c55e;
+    border-bottom: 3px solid #22c55e;
+    transform: rotate(45deg) translateY(-2px);
+  }
+  .benefitItem h4 {
+    margin-bottom: 0.5rem;
+  }
+  .benefitItem p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+  }
+
+  /* Workshop Teaser */
+  .workshopTeaser {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  @media (max-width: 768px) {
+    .workshopTeaser { grid-template-columns: 1fr; gap: 2rem; }
+  }
+  .workshopTeaserContent h2 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    margin-bottom: 1rem;
+  }
+  .workshopTeaserContent p {
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .workshopTeaserList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+  }
+  .workshopTeaserList li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.95rem;
+  }
+  .workshopTeaserList li strong {
+    color: #f97316;
+  }
+  .workshopCard {
+    background: rgba(249,115,22,0.1);
+    border: 1px solid rgba(249,115,22,0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+  .workshopCardIcon {
+    width: 40px;
+    height: 40px;
+    background: rgba(249,115,22,0.3);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f97316;
+    flex-shrink: 0;
+  }
+  .workshopCardText strong {
+    color: #f97316;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  .workshopCardText p {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Final CTA */
+  .finalCta {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(34,197,94,0.1));
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .finalCta h2 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: 1rem;
+  }
+  .finalCta > p {
+    color: rgba(255,255,255,0.7);
+    max-width: 500px;
+    margin: 0 auto 2rem;
+  }
+  .finalCtaButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .finalCtaNote {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Buttons */
+  .btn--large {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+  }
+</style>

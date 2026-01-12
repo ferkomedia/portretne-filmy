@@ -1,133 +1,376 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
-<BaseLayout title="Kontakt a objednávka | Portrétny film" description="Objednajte si portrétny film alebo nám napíšte dopyt. Odpovieme do 24 hodín. Vyplňte formulár a začnime spoluprácu.">
+<BaseLayout title="Kontakt | Portrétny film" description="Napíšte nám alebo zavolajte. Odpovieme do 24 hodín. Portrétne filmy a workshopy v Martine.">
 
-  <section class="hero" id="objednat">
-    <div class="eyebrow">Kontakt</div>
-    <h1>Objednávka portrétneho filmu</h1>
-    <p class="lead">Napíšte pár informácií a ozveme sa vám čo najskôr e-mailom alebo telefonicky.</p>
+  <!-- HERO -->
+  <section class="heroSection">
+    <div class="heroContent">
+      <h1>Porozprávajme sa.</h1>
+      <p class="heroLead">Máte otázku? Chcete konzultáciu? Napíšte alebo zavolajte. Odpovieme do 24 hodín.</p>
+    </div>
   </section>
 
+  <!-- KONTAKTNÉ INFO -->
   <section class="section">
-    <div class="formCard">
-      <form
-        name="kontakt"
-        method="POST"
-        action="/api/form-submit"
-        data-ico-form
-      >
-        <input type="hidden" name="form-name" value="kontakt" />
-
-        <!-- Hidden company fields (Netlify submission) -->
-        <input type="hidden" name="Firma - názov" value="" />
-        <input type="hidden" name="Firma - DIČ" value="" />
-        <input type="hidden" name="Firma - IČ DPH" value="" />
-        <input type="hidden" name="Firma - Ulica" value="" />
-        <input type="hidden" name="Firma - Číslo" value="" />
-        <input type="hidden" name="Firma - Mesto" value="" />
-        <input type="hidden" name="Firma - PSČ" value="" />
-        <input type="hidden" name="Firma - Krajina" value="" />
-        <input type="hidden" name="Firma - Adresa (celá)" value="" />
-
-        <div class="formGrid">
-          <div class="field">
-            <label for="ico">IČO (voliteľné)</label>
-            <input id="ico" name="IČO" inputmode="numeric" placeholder="napr. 12345678" />
-            <div class="help">Ak ste fyzická osoba alebo firmu neuvádzate, nechajte prázdne.</div>
-            <div class="statusLine" data-ico-status></div>
-          </div>
-
-          <div class="field">
-            <label for="type">Typ portrétneho filmu</label>
-            <select id="type" name="Typ portrétneho filmu" required>
-              <option value="" selected disabled>Vyber formát</option>
-              <option>Portrétny film „Osobnosť"</option>
-              <option>Portrétny film „Životný príbeh"</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="name">Meno a priezvisko</label>
-            <input id="name" name="Meno a priezvisko" placeholder="Vaše meno" required />
-          </div>
-
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" type="email" name="Email" placeholder="napr. meno@firma.sk" required />
-          </div>
-
-          <div class="field">
-            <label for="phone">Telefón</label>
-            <input id="phone" name="Telefón" placeholder="+421…" />
-          </div>
-
-          <div class="field">
-            <label for="date">Preferovaný termín (ak už viete)</label>
-            <input id="date" name="Preferovaný termín" placeholder="napr. 25.01.2026" pattern="\d{1,2}\.\d{1,2}\.\d{4}" />
-            <div class="help">Formát: DD.MM.RRRR</div>
-          </div>
-
-          <div class="field" style="grid-column: 1 / -1;">
-            <label for="msg">Správa</label>
-            <textarea id="msg" name="Správa"></textarea>
-          </div>
+    <div class="contactGrid">
+      <div class="contactInfo">
+        <div class="contactItem">
+          <h3>Telefón</h3>
+          <a href="tel:+421949460832" class="contactLink">0949 460 832</a>
+          <p>Po – Pi: 9:00 – 18:00</p>
         </div>
 
-        <!-- Auto-filled (visible only when loaded) -->
-        <div class="autoFields" data-auto-fields style="margin-top:14px;">
-          <div class="grid2">
+        <div class="contactItem">
+          <h3>E-mail</h3>
+          <a href="mailto:info@ferkomedia.sk" class="contactLink">info@ferkomedia.sk</a>
+          <p>Odpovieme do 24 hodín</p>
+        </div>
+
+        <div class="contactItem">
+          <h3>Adresa</h3>
+          <p class="contactAddress">Červenej armády 1<br/>036 01 Martin</p>
+        </div>
+
+        <div class="contactItem">
+          <h3>Fakturačné údaje</h3>
+          <p>FerkoMedia s.r.o.<br/>IČO: 12345678<br/>DIČ: 2012345678</p>
+        </div>
+      </div>
+
+      <div class="contactForm" id="objednat">
+        <h2>Napíšte nám</h2>
+        <form
+          name="kontakt"
+          method="POST"
+          action="/api/form-submit"
+          data-ico-form
+        >
+          <input type="hidden" name="form-name" value="kontakt" />
+          <input type="hidden" name="Firma - názov" value="" />
+          <input type="hidden" name="Firma - DIČ" value="" />
+          <input type="hidden" name="Firma - IČ DPH" value="" />
+          <input type="hidden" name="Firma - Ulica" value="" />
+          <input type="hidden" name="Firma - Číslo" value="" />
+          <input type="hidden" name="Firma - Mesto" value="" />
+          <input type="hidden" name="Firma - PSČ" value="" />
+          <input type="hidden" name="Firma - Krajina" value="" />
+          <input type="hidden" name="Firma - Adresa (celá)" value="" />
+
+          <div class="formFields">
             <div class="field">
-              <label for="companyName">Firma – názov</label>
-              <input id="companyName" readonly />
-            </div>
-            <div class="field">
-              <label for="companyAddressFull">Firma – adresa</label>
-              <input id="companyAddressFull" readonly />
-            </div>
-            <div class="field">
-              <label for="companyDic">DIČ</label>
-              <input id="companyDic" readonly />
-            </div>
-            <div class="field">
-              <label for="companyIcdph">IČ DPH</label>
-              <input id="companyIcdph" readonly />
+              <label for="name">Meno a priezvisko</label>
+              <input id="name" name="Meno a priezvisko" required />
             </div>
 
             <div class="field">
-              <label for="companyStreet">Ulica</label>
-              <input id="companyStreet" readonly />
+              <label for="email">E-mail</label>
+              <input id="email" type="email" name="Email" required />
             </div>
+
             <div class="field">
-              <label for="companyNumber">Číslo</label>
-              <input id="companyNumber" readonly />
+              <label for="phone">Telefón</label>
+              <input id="phone" name="Telefón" />
             </div>
+
             <div class="field">
-              <label for="companyCity">Mesto</label>
-              <input id="companyCity" readonly />
+              <label for="subject">Čoho sa to týka?</label>
+              <select id="subject" name="Predmet">
+                <option value="Portrétny film">Portrétny film</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Firemná spolupráca">Firemná spolupráca</option>
+                <option value="Iné">Iné</option>
+              </select>
             </div>
+
             <div class="field">
-              <label for="companyPsc">PSČ</label>
-              <input id="companyPsc" readonly />
+              <label for="ico">IČO (pre faktúru)</label>
+              <input id="ico" name="IČO" inputmode="numeric" />
+              <div class="statusLine" data-ico-status></div>
             </div>
-            <div class="field" style="grid-column: 1 / -1;">
-              <label for="companyCountry">Krajina</label>
-              <input id="companyCountry" readonly />
+
+            <div class="field fieldFull">
+              <label for="msg">Správa</label>
+              <textarea id="msg" name="Správa" rows="4" placeholder="Popíšte, čo potrebujete..."></textarea>
             </div>
           </div>
-        </div>
 
-        <div class="formActions">
-          <label class="checkRow">
-            <input type="checkbox" name="GDPR súhlas" required />
-            Súhlasím so spracovaním osobných údajov za účelom vybavenia dopytu.
-          </label>
+          <div class="autoFields" data-auto-fields style="display:none;">
+            <div class="autoFieldsInner">
+              <div class="field">
+                <label>Firma</label>
+                <input id="companyName" readonly />
+              </div>
+              <div class="field">
+                <label>Adresa</label>
+                <input id="companyAddressFull" readonly />
+              </div>
+            </div>
+            <input type="hidden" id="companyDic" />
+            <input type="hidden" id="companyIcdph" />
+            <input type="hidden" id="companyStreet" />
+            <input type="hidden" id="companyNumber" />
+            <input type="hidden" id="companyCity" />
+            <input type="hidden" id="companyPsc" />
+            <input type="hidden" id="companyCountry" />
+          </div>
 
-          <button class="btn btn--primary" type="submit">Odoslať dopyt</button>
-        </div>
-      </form>
+          <div class="formActions">
+            <label class="checkRow">
+              <input type="checkbox" name="GDPR súhlas" required />
+              <span>Súhlasím so spracovaním osobných údajov</span>
+            </label>
+            <button class="btn btn--primary btn--large" type="submit">Odoslať správu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section sectionAlt">
+    <div class="sectionHeader">
+      <h2>Často sa pýtate</h2>
+    </div>
+
+    <div class="faqList">
+      <details class="faqItem">
+        <summary>Ako dlho trvá výroba portrétneho filmu?</summary>
+        <p>Od natáčania po hotový film to trvá približne 3 týždne. Pri komplexnejších projektoch (Životný príbeh) počítajte s 4-6 týždňami.</p>
+      </details>
+      <details class="faqItem">
+        <summary>Kde natáčate?</summary>
+        <p>Všade, kde sa cítite prirodzene. Môže to byť u vás doma, v kancelárii, v prírode. Žiadne štúdio, žiadna umelosť.</p>
+      </details>
+      <details class="faqItem">
+        <summary>Čo ak neviem, čo povedať pred kamerou?</summary>
+        <p>To je úplne normálne. Pred natáčaním pripravíme scenár a otázky. Nie je to výsluch, je to rozhovor. Postaráme sa, aby ste sa cítili pohodlne.</p>
+      </details>
+      <details class="faqItem">
+        <summary>Aké sú možnosti platby?</summary>
+        <p>Platba kartou, bankovým prevodom alebo QR platbou. Faktúru vystavíme automaticky. Pri väčších projektoch je možné rozložiť platbu.</p>
+      </details>
     </div>
   </section>
 
   <script type="module" src="/scripts/enrich-forms.js"></script>
 </BaseLayout>
+
+<style>
+  /* Hero */
+  .heroSection {
+    min-height: 40vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 1.5rem 3rem;
+    background: radial-gradient(ellipse at top, rgba(249,115,22,0.12) 0%, transparent 60%);
+  }
+  .heroContent {
+    max-width: 600px;
+  }
+  .heroSection h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 1rem;
+  }
+  .heroLead {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+  }
+
+  /* Section */
+  .section {
+    padding: 4rem 0;
+  }
+  .sectionAlt {
+    background: rgba(255,255,255,0.02);
+    margin: 0 -1.5rem;
+    padding: 4rem 1.5rem;
+  }
+  .sectionHeader {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .sectionHeader h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  /* Contact Grid */
+  .contactGrid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .contactGrid {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+
+  /* Contact Info */
+  .contactInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .contactItem h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.5rem;
+  }
+  .contactLink {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f97316;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .contactLink:hover {
+    color: #fb923c;
+  }
+  .contactItem p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .contactAddress {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.8);
+  }
+
+  /* Contact Form */
+  .contactForm {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  .contactForm h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .formFields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  @media (max-width: 600px) {
+    .formFields { grid-template-columns: 1fr; }
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .fieldFull {
+    grid-column: 1 / -1;
+  }
+  .field label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #fff;
+    font-size: 1rem;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: #f97316;
+  }
+  .statusLine {
+    font-size: 0.8rem;
+    min-height: 1.2em;
+  }
+  .autoFields {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .autoFieldsInner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 600px) {
+    .autoFieldsInner { grid-template-columns: 1fr; }
+  }
+  .autoFields input {
+    background: rgba(34,197,94,0.1);
+    border-color: rgba(34,197,94,0.3);
+  }
+  .formActions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .checkRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+  }
+  .checkRow input {
+    margin-top: 0.2rem;
+  }
+
+  /* FAQ */
+  .faqList {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .faqItem {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .faqItem summary {
+    padding: 1.25rem 0;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .faqItem summary::-webkit-details-marker {
+    display: none;
+  }
+  .faqItem summary::after {
+    content: "+";
+    font-size: 1.5rem;
+    color: #f97316;
+    font-weight: 400;
+  }
+  .faqItem[open] summary::after {
+    content: "-";
+  }
+  .faqItem p {
+    padding: 0 0 1.25rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Buttons */
+  .btn--large {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+  }
+</style>

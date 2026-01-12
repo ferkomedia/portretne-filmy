@@ -1,79 +1,490 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import YouTubeVideo from "../components/YouTubeVideo.astro";
-import ImageGallery from "../components/ImageGallery.astro";
 ---
-
 <BaseLayout
   title="Portfólio | Portrétny film"
-  description="Pripravujeme ukážky našich portrétnych filmov. Zatiaľ si pozrite, ako pracujeme a čo môžete očakávať."
+  description="Ukážky portrétnych filmov. Pozrite si príbehy podnikateľov, rodín a firiem, ktoré sme zachytili."
 >
-  <section class="hero">
-    <div class="eyebrow">Portfólio</div>
-    <h1>Ukážky prác</h1>
-    <p class="lead">
-      Portrétne filmy a fotografie z našich projektov. Kvalitné zábery a profesionálny prístup.
-    </p>
-    <div class="actions">
-      <a class="btn btn--primary" href="/kontakt#objednat">Objednať film</a>
-      <a class="btn btn--ghost" href="/sluzby">Služby</a>
+
+  <!-- HERO -->
+  <section class="heroSection">
+    <div class="heroContent">
+      <h1>Príbehy, ktoré sme<br/>pomohli rozpovedať.</h1>
+      <p class="heroLead">Každý film je iný, pretože každý človek je iný. Pozrite si, ako vyzerajú autentické príbehy.</p>
     </div>
   </section>
 
+  <!-- FILTER -->
+  <section class="filterSection">
+    <div class="filterTabs">
+      <button class="filterTab active" data-filter="all">Všetko</button>
+      <button class="filterTab" data-filter="podnikatelia">Podnikatelia</button>
+      <button class="filterTab" data-filter="rodiny">Rodiny</button>
+      <button class="filterTab" data-filter="firmy">Firmy</button>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO GRID -->
   <section class="section">
-    <h2>Videá</h2>
-    <div class="grid3">
-      <div>
-        <h3>Video 1</h3>
-        <YouTubeVideo videoId="M_yjxlFo7_s" title="Portrétny film 1" />
-      </div>
-      <div>
-        <h3>Video 2</h3>
-        <YouTubeVideo videoId="M_yjxlFo7_s" title="Portrétny film 2" />
-      </div>
-      <div>
-        <h3>Video 3</h3>
-        <YouTubeVideo videoId="M_yjxlFo7_s" title="Portrétny film 3" />
+    <div class="portfolioGrid">
+
+      <article class="portfolioItem" data-category="podnikatelia">
+        <div class="portfolioThumb">
+          <div class="thumbPlaceholder">
+            <span class="playIcon"></span>
+          </div>
+        </div>
+        <div class="portfolioInfo">
+          <span class="portfolioCategory">Podnikateľ</span>
+          <h3>Martin K.</h3>
+          <p>Finančný poradca, ktorý chcel ukázať klientom, že za číslami stojí človek s príbehom.</p>
+        </div>
+      </article>
+
+      <article class="portfolioItem" data-category="rodiny">
+        <div class="portfolioThumb">
+          <div class="thumbPlaceholder">
+            <span class="playIcon"></span>
+          </div>
+        </div>
+        <div class="portfolioInfo">
+          <span class="portfolioCategory">Rodinný príbeh</span>
+          <h3>Dedko Jozef</h3>
+          <p>90 rokov života, dve vojny, päť detí. Príbeh, ktorý by sa nemal zabudnúť.</p>
+        </div>
+      </article>
+
+      <article class="portfolioItem" data-category="firmy">
+        <div class="portfolioThumb">
+          <div class="thumbPlaceholder">
+            <span class="playIcon"></span>
+          </div>
+        </div>
+        <div class="portfolioInfo">
+          <span class="portfolioCategory">Firma</span>
+          <h3>TechStart s.r.o.</h3>
+          <p>Startup, ktorý potreboval ukázať investorom tím stojaci za produktom.</p>
+        </div>
+      </article>
+
+      <article class="portfolioItem" data-category="podnikatelia">
+        <div class="portfolioThumb">
+          <div class="thumbPlaceholder">
+            <span class="playIcon"></span>
+          </div>
+        </div>
+        <div class="portfolioInfo">
+          <span class="portfolioCategory">Podnikateľ</span>
+          <h3>Zuzana M.</h3>
+          <p>Koučka a lektorka. Film jej pomáha budovať dôveru ešte pred prvým stretnutím.</p>
+        </div>
+      </article>
+
+      <article class="portfolioItem" data-category="rodiny">
+        <div class="portfolioThumb">
+          <div class="thumbPlaceholder">
+            <span class="playIcon"></span>
+          </div>
+        </div>
+        <div class="portfolioInfo">
+          <span class="portfolioCategory">Rodinný príbeh</span>
+          <h3>Rodina Horváthová</h3>
+          <p>Tri generácie, jeden dom, tisíc spomienok. Dar k zlatej svadbe.</p>
+        </div>
+      </article>
+
+      <article class="portfolioItem" data-category="firmy">
+        <div class="portfolioThumb">
+          <div class="thumbPlaceholder">
+            <span class="playIcon"></span>
+          </div>
+        </div>
+        <div class="portfolioInfo">
+          <span class="portfolioCategory">Firma</span>
+          <h3>Kávový dom</h3>
+          <p>Rodinná pražiareň kávy. Príbeh vášne, ktorá sa prenáša z pohárika do pohárika.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section sectionAlt">
+    <div class="sectionHeader">
+      <h2>Čo hovoria klienti</h2>
+    </div>
+
+    <div class="testimonialSlider">
+      <div class="testimonialTrack" id="testimonialTrack">
+        <blockquote class="testimonial">
+          <p>Film mi priniesol viac klientov ako ročná investícia do reklamy. Ľudia mi píšu, že ma už poznajú, hoci sme sa nikdy nestretli.</p>
+          <footer>
+            <strong>Martin K.</strong>
+            <span>Finančný poradca</span>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testimonial">
+          <p>Dedko sa na natáčaní cítil príjemne a rozrozprával sa o veciach, o ktorých sme ani nevedeli. Ten film je pre nás poklad.</p>
+          <footer>
+            <strong>Jana H.</strong>
+            <span>Vnučka</span>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testimonial">
+          <p>Profesionálny prístup, rýchle dodanie a výsledok, ktorý prekonáva očakávania. Jednoznačne odporúčam.</p>
+          <footer>
+            <strong>Peter S.</strong>
+            <span>CEO, TechStart</span>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testimonial">
+          <p>Najlepšia investícia do osobného brandu. Za tri mesiace som získala viac dopytov ako za celý predchádzajúci rok.</p>
+          <footer>
+            <strong>Zuzana M.</strong>
+            <span>Koučka</span>
+          </footer>
+        </blockquote>
+
+        <blockquote class="testimonial">
+          <p>Konečne video, ktoré skutočne reprezentuje našu firemnú kultúru. Zamestnanci sú hrdí, že sú jeho súčasťou.</p>
+          <footer>
+            <strong>Tomáš R.</strong>
+            <span>HR manažér</span>
+          </footer>
+        </blockquote>
       </div>
     </div>
   </section>
 
+  <!-- STATS -->
   <section class="section">
-    <h2>Fotky</h2>
-    <ImageGallery
-      images={[
-        {
-          src: "https://picsum.photos/400/300?random=1",
-          alt: "Portrétny záber 1",
-          title: "Projekt 1"
-        },
-        {
-          src: "https://picsum.photos/400/300?random=2",
-          alt: "Portrétny záber 2",
-          title: "Projekt 2"
-        },
-        {
-          src: "https://picsum.photos/400/300?random=3",
-          alt: "Portrétny záber 3",
-          title: "Projekt 3"
-        },
-        {
-          src: "https://picsum.photos/400/300?random=4",
-          alt: "Portrétny záber 4",
-          title: "Projekt 4"
-        },
-        {
-          src: "https://picsum.photos/400/300?random=5",
-          alt: "Portrétny záber 5",
-          title: "Projekt 5"
-        },
-        {
-          src: "https://picsum.photos/400/300?random=6",
-          alt: "Portrétny záber 6",
-          title: "Projekt 6"
-        },
-      ]}
-      columns={3}
-    />
+    <div class="statsGrid">
+      <div class="statItem">
+        <span class="statNumber">50+</span>
+        <span class="statLabel">Dokončených filmov</span>
+      </div>
+      <div class="statItem">
+        <span class="statNumber">100%</span>
+        <span class="statLabel">Spokojných klientov</span>
+      </div>
+      <div class="statItem">
+        <span class="statNumber">3</span>
+        <span class="statLabel">Týždne dodanie</span>
+      </div>
+      <div class="statItem">
+        <span class="statNumber">4K</span>
+        <span class="statLabel">Kvalita obrazu</span>
+      </div>
+    </div>
   </section>
+
+  <!-- CTA -->
+  <section class="section">
+    <div class="finalCta">
+      <h2>Chcete byť súčasťou tohto portfólia?</h2>
+      <p>Každý príbeh je jedinečný. Porozprávajme sa o tom vašom.</p>
+      <div class="finalCtaButtons">
+        <a class="btn btn--primary btn--large" href="/kontakt">Dohodnúť konzultáciu</a>
+        <a class="btn btn--ghost btn--large" href="/cennik">Pozrieť cenník</a>
+      </div>
+    </div>
+  </section>
+
 </BaseLayout>
+
+<style>
+  /* Hero */
+  .heroSection {
+    min-height: 45vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 1.5rem 3rem;
+    background: radial-gradient(ellipse at top, rgba(249,115,22,0.12) 0%, transparent 60%);
+  }
+  .heroContent {
+    max-width: 750px;
+  }
+  .heroSection h1 {
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+  }
+  .heroLead {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+  }
+
+  /* Filter */
+  .filterSection {
+    padding: 0 0 2rem;
+  }
+  .filterTabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .filterTab {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    padding: 0.6rem 1.25rem;
+    border-radius: 100px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filterTab:hover {
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+  }
+  .filterTab.active {
+    background: #f97316;
+    border-color: #f97316;
+    color: #fff;
+  }
+
+  /* Section */
+  .section {
+    padding: 4rem 0;
+  }
+  .sectionAlt {
+    background: rgba(255,255,255,0.02);
+    margin: 0 -1.5rem;
+    padding: 4rem 1.5rem;
+  }
+  .sectionHeader {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .sectionHeader h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  /* Portfolio Grid */
+  .portfolioGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+  .portfolioItem {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    cursor: pointer;
+  }
+  .portfolioItem:hover {
+    transform: translateY(-4px);
+    border-color: rgba(249,115,22,0.4);
+  }
+  .portfolioItem.hidden {
+    display: none;
+  }
+  .portfolioThumb {
+    aspect-ratio: 16/9;
+    background: rgba(0,0,0,0.3);
+    position: relative;
+  }
+  .thumbPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(249,115,22,0.3) 0%, rgba(249,115,22,0.1) 50%, rgba(249,115,22,0.25) 100%);
+    background-size: 200% 200%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .playIcon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .playIcon::before {
+    content: "";
+    position: absolute;
+    left: 24px;
+    top: 18px;
+    border-style: solid;
+    border-width: 12px 0 12px 20px;
+    border-color: transparent transparent transparent rgba(255,255,255,0.9);
+  }
+  .portfolioItem:hover .playIcon {
+    background: #f97316;
+  }
+  .portfolioInfo {
+    padding: 1.5rem;
+  }
+  .portfolioCategory {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #f97316;
+    font-weight: 600;
+  }
+  .portfolioInfo h3 {
+    font-size: 1.25rem;
+    margin: 0.5rem 0;
+  }
+  .portfolioInfo p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* Testimonials Slider */
+  .testimonialSlider {
+    overflow: hidden;
+    margin: 0 -1.5rem;
+    padding: 0 1.5rem;
+  }
+  .testimonialTrack {
+    display: flex;
+    gap: 1.5rem;
+    animation: scroll 30s linear infinite;
+  }
+  .testimonialTrack:hover {
+    animation-play-state: paused;
+  }
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-350px * 5 - 1.5rem * 5)); }
+  }
+  .testimonial {
+    flex: 0 0 350px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 0;
+  }
+  .testimonial p {
+    color: rgba(255,255,255,0.8);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .testimonial p::before {
+    content: "";
+    display: block;
+    width: 32px;
+    height: 24px;
+    background: rgba(249,115,22,0.3);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 24'%3E%3Cpath d='M0 24V14.4C0 6.4 5.6 1.6 14 0l1.4 4.8C10.2 6 7.6 9.2 7.4 13H14v11H0zm18 0V14.4C18 6.4 23.6 1.6 32 0l1.4 4.8C28.2 6 25.6 9.2 25.4 13H32v11H18z'/%3E%3C/svg%3E") no-repeat center;
+    margin-bottom: 1rem;
+  }
+  .testimonial footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .testimonial footer strong {
+    color: #fff;
+  }
+  .testimonial footer span {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Stats */
+  .statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 2rem;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .statItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .statNumber {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: #f97316;
+  }
+  .statLabel {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* Final CTA */
+  .finalCta {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(34,197,94,0.08));
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .finalCta h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: 1rem;
+  }
+  .finalCta > p {
+    color: rgba(255,255,255,0.7);
+    max-width: 450px;
+    margin: 0 auto 2rem;
+  }
+  .finalCtaButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Buttons */
+  .btn--large {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+  }
+</style>
+
+<script>
+  const tabs = document.querySelectorAll('.filterTab');
+  const items = document.querySelectorAll('.portfolioItem');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const filter = tab.dataset.filter;
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      items.forEach(item => {
+        if (filter === 'all' || item.dataset.category === filter) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Duplicate testimonials for infinite scroll
+  const track = document.getElementById('testimonialTrack');
+  if (track) {
+    const items = track.innerHTML;
+    track.innerHTML = items + items;
+  }
+</script>
