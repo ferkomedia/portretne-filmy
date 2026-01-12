@@ -279,8 +279,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         // PAY by square format for Slovak banks
         var qrData = 'SPD*1.0*ACC:SK5911000000002942178901*AM:' + amount + '*CC:EUR*X-VS:' + vs + '*MSG:' + encodeURIComponent(currentProduct);
 
-        // Use Google Chart API for QR code
-        var qrUrl = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=' + encodeURIComponent(qrData);
+        // Use QR Server API for QR code
+        var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(qrData);
         document.getElementById('qrCodeContainer').innerHTML = '<img src="' + qrUrl + '" alt="QR kód" width="200" height="200" />';
       }
 
