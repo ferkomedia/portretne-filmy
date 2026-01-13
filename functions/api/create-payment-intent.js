@@ -10,7 +10,19 @@ export async function onRequestPost(context) {
     };
 
     try {
-        const { amount, productName, customerEmail, customerName } = await request.json();
+        const {
+            amount,
+            productName,
+            customerEmail,
+            customerName,
+            customerPhone,
+            // Company/billing info
+            companyName,
+            companyIco,
+            companyDic,
+            companyIcDph,
+            companyAddress,
+        } = await request.json();
 
         if (!amount || !productName) {
             return new Response(
@@ -28,22 +40,40 @@ export async function onRequestPost(context) {
             );
         }
 
-        // Create PaymentIntent - only cards
+        // Build metadata with all customer and company info
+        const metadata = {
+            product: productName,
+            customer_email: customerEmail || '',
+            customer_name: customerName || '',
+            customer_phone: customerPhone || '',
+            company_name: companyName || '',
+            company_ico: companyIco || '',
+            company_dic: companyDic || '',
+            company_icdph: companyIcDph || '',
+            company_address: companyAddress || '',
+        };
+
+        // Create PaymentIntent with metadata
+        const params = new URLSearchParams({
+            amount: String(amount),
+            currency: 'eur',
+            'payment_method_types[0]': 'card',
+            description: productName,
+            receipt_email: customerEmail || '',
+        });
+
+        // Add metadata
+        Object.entries(metadata).forEach(([key, value]) => {
+            params.append(`metadata[${key}]`, value);
+        });
+
         const response = await fetch('https://api.stripe.com/v1/payment_intents', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${stripeSecretKey}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams({
-                amount: String(amount), // in cents
-                currency: 'eur',
-                'payment_method_types[0]': 'card',
-                description: productName,
-                'metadata[product]': productName,
-                'metadata[customer_email]': customerEmail || '',
-                'metadata[customer_name]': customerName || '',
-            }),
+            body: params,
         });
 
         const paymentIntent = await response.json();

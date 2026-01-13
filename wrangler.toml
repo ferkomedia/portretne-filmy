@@ -1,0 +1,20 @@
+# Cloudflare Pages Configuration
+# Note: Most settings are in Cloudflare dashboard
+# This file is for local development with wrangler
+
+name = "portretne-filmy"
+compatibility_date = "2024-01-01"
+
+# KV Namespace for invoices
+# Create in Cloudflare Dashboard: Workers & Pages > KV > Create namespace
+# Then bind it in Pages project settings
+[[kv_namespaces]]
+binding = "INVOICES_KV"
+id = "YOUR_KV_NAMESPACE_ID"  # Replace with actual ID from dashboard
+
+# Environment variables (set in Cloudflare Dashboard for production)
+# STRIPE_SECRET_KEY = "sk_live_..."
+# RESEND_API_KEY = "re_..."
+# ADMIN_EMAIL = "info@ferkomedia.sk"
+# EMAIL_FROM = "FerkoMedia <noreply@portretnefilmy.sk>"
+# ADMIN_API_KEY = "vymysli-si-vlastny-tajny-kluc"  # Heslo pre /sprava-fk2026 dashboard

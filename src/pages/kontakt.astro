@@ -130,26 +130,46 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <!-- FAQ -->
   <section class="section sectionAlt">
     <div class="sectionHeader">
-      <h2>Často sa pýtate</h2>
+      <h2>Časté otázky</h2>
     </div>
 
-    <div class="faqList">
-      <details class="faqItem">
-        <summary>Ako dlho trvá výroba portrétneho filmu?</summary>
-        <p>Od natáčania po hotový film to trvá približne 3 týždne. Pri komplexnejších projektoch (Životný príbeh) počítajte s 4-6 týždňami.</p>
-      </details>
-      <details class="faqItem">
-        <summary>Kde natáčate?</summary>
-        <p>Všade, kde sa cítite prirodzene. Môže to byť u vás doma, v kancelárii, v prírode. Žiadne štúdio, žiadna umelosť.</p>
-      </details>
-      <details class="faqItem">
-        <summary>Čo ak neviem, čo povedať pred kamerou?</summary>
-        <p>To je úplne normálne. Pred natáčaním pripravíme scenár a otázky. Nie je to výsluch, je to rozhovor. Postaráme sa, aby ste sa cítili pohodlne.</p>
-      </details>
-      <details class="faqItem">
-        <summary>Aké sú možnosti platby?</summary>
-        <p>Platba kartou, bankovým prevodom alebo QR platbou. Faktúru vystavíme automaticky. Pri väčších projektoch je možné rozložiť platbu.</p>
-      </details>
+    <div class="faqGrid">
+      <div class="faqColumn">
+        <details class="faqItem" open>
+          <summary>Ako dlho trvá výroba portrétneho filmu?</summary>
+          <p>Od natáčania po hotový film to trvá približne 3 týždne. Pri komplexnejších projektoch (Životný príbeh) počítajte s 4-6 týždňami. Radi si s vami vopred dohodneme termín dodania.</p>
+        </details>
+        <details class="faqItem">
+          <summary>Kde natáčate?</summary>
+          <p>Všade, kde sa cítite prirodzene – u vás doma, v kancelárii, v prírode, v kaviarni. Žiadne štúdio, žiadna umelosť. Miesto vyberieme spolu podľa toho, čo najlepšie vystihne váš príbeh.</p>
+        </details>
+        <details class="faqItem">
+          <summary>Čo ak neviem, čo povedať pred kamerou?</summary>
+          <p>To je úplne normálne a väčšina klientov to tak má. Pred natáčaním pripravíme scenár a otázky. Nie je to výsluch, je to príjemný rozhovor. Postaráme sa, aby ste sa cítili pohodlne.</p>
+        </details>
+        <details class="faqItem">
+          <summary>Koľko stojí portrétny film?</summary>
+          <p>Film Osobnosť stojí 1 290 €, Životný príbeh 2 290 €. V cene je konzultácia, natáčanie, post-produkcia a hotový film vo všetkých formátoch. Detaily nájdete v cenníku.</p>
+        </details>
+      </div>
+      <div class="faqColumn">
+        <details class="faqItem">
+          <summary>Aké sú možnosti platby?</summary>
+          <p>Platba kartou online, bankovým prevodom alebo QR platbou. Faktúru vystavíme automaticky. Pri väčších projektoch je možné rozložiť platbu na zálohu a doplatok.</p>
+        </details>
+        <details class="faqItem">
+          <summary>Môžem film používať kdekoľvek?</summary>
+          <p>Áno, film je váš a môžete ho používať bez obmedzení – na webe, sociálnych sieťach, v prezentáciách, na podujatiach. Dostanete ho vo všetkých potrebných formátoch.</p>
+        </details>
+        <details class="faqItem">
+          <summary>Pôsobíte len v Martine?</summary>
+          <p>Sídlime v Martine, ale natáčame po celom Slovensku. Pri vzdialenejších lokáciách sa dohodneme na cestovných nákladoch. Workshopy prebiehajú primárne v Martine.</p>
+        </details>
+        <details class="faqItem">
+          <summary>Ako prebieha objednávka?</summary>
+          <p>Napíšte nám cez formulár alebo zavolajte. Dohodneme si konzultáciu (osobne alebo online), prejdeme vaše predstavy a navrhneme riešenie. Až keď budete spokojní, pošleme zálohovú faktúru.</p>
+        </details>
+      </div>
     </div>
   </section>
 
@@ -333,6 +353,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   }
 
   /* FAQ */
+  .faqGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  @media (max-width: 768px) {
+    .faqGrid { grid-template-columns: 1fr; gap: 0; }
+  }
+  .faqColumn {
+    display: flex;
+    flex-direction: column;
+  }
   .faqList {
     max-width: 700px;
     margin: 0 auto;
@@ -348,6 +382,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
   }
   .faqItem summary::-webkit-details-marker {
     display: none;
@@ -357,6 +392,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     font-size: 1.5rem;
     color: #f97316;
     font-weight: 400;
+    flex-shrink: 0;
   }
   .faqItem[open] summary::after {
     content: "-";

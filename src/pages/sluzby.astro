@@ -83,31 +83,41 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <p class="sectionLead">Nečakajte na agentúru. Príďte na workshop a odíďte s hotovým výsledkom.</p>
     </div>
 
-    <div class="workshopList">
-      <div class="workshopItem">
+    <div class="workshopGrid">
+      <div class="workshopCard">
+        <div class="workshopIcon">W</div>
         <h4>Web za 1 deň</h4>
         <p>Odídete s funkčným webom. WordPress, hosting, doména – všetko nastavíme spolu.</p>
+        <span class="workshopPrice">149 €</span>
       </div>
-      <div class="workshopItem">
+      <div class="workshopCard">
+        <div class="workshopIcon">E</div>
         <h4>E-shop za 1 deň</h4>
         <p>Kompletný e-shop na WooCommerce. Produkty, platby, doprava – pripravený predávať.</p>
+        <span class="workshopPrice">179 €</span>
       </div>
-      <div class="workshopItem">
+      <div class="workshopCard">
+        <div class="workshopIcon">G</div>
         <h4>Google reklama za 1 deň</h4>
         <p>Google Ads bez chaosu. Účet, kampane, kľúčové slová – pochopíte, kam idú peniaze.</p>
+        <span class="workshopPrice">149 €</span>
       </div>
-      <div class="workshopItem">
+      <div class="workshopCard">
+        <div class="workshopIcon">A</div>
         <h4>AI nástroje za 1 deň</h4>
         <p>ChatGPT, Claude, Midjourney. Praktické využitie AI vo vašom biznise.</p>
+        <span class="workshopPrice">129 €</span>
       </div>
-      <div class="workshopItem">
+      <div class="workshopCard">
+        <div class="workshopIcon">S</div>
         <h4>Sociálne siete za 1 deň</h4>
         <p>Obsahový plán, šablóny, natáčanie na mobil. Konzistentný výstup.</p>
+        <span class="workshopPrice">149 €</span>
       </div>
     </div>
 
     <div class="serviceCta">
-      <a class="btn btn--primary" href="/workshopy">Pozrieť workshopy a termíny</a>
+      <a class="btn btn--primary btn--large" href="/workshopy">Rezervovať workshop</a>
     </div>
   </section>
 
@@ -119,26 +129,30 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
 
     <div class="corporateGrid">
-      <div class="corporateItem">
+      <div class="corporateCard">
+        <div class="corporateIcon">EB</div>
         <h4>Employer branding</h4>
-        <p>Príbehy vašich zamestnancov, ktoré pritiahnu talenty.</p>
+        <p>Ukážte, ako vyzerá práca u vás. Príbehy zamestnancov, ktoré pritiahnu nové talenty a posilnia firemnú kultúru.</p>
       </div>
-      <div class="corporateItem">
+      <div class="corporateCard">
+        <div class="corporateIcon">SP</div>
         <h4>Séria portrétov</h4>
-        <p>Predstavte celý tím. Konzistentný štýl, výhodnejšia cena.</p>
+        <p>Predstavte celý tím alebo vedenie. Konzistentný vizuálny štýl, výhodnejšia cena pri viacerých filmoch.</p>
       </div>
-      <div class="corporateItem">
+      <div class="corporateCard">
+        <div class="corporateIcon">FW</div>
         <h4>Firemné workshopy</h4>
-        <p>Privátne školenia pre váš tím. Termín a obsah na mieru.</p>
+        <p>Privátne školenie pre váš tím. Termín, obsah a miesto prispôsobíme vašim potrebám. Ideálne pre onboarding.</p>
       </div>
-      <div class="corporateItem">
+      <div class="corporateCard">
+        <div class="corporateIcon">DS</div>
         <h4>Dlhodobá spolupráca</h4>
-        <p>Pravidelná video produkcia, content stratégia.</p>
+        <p>Pravidelná video produkcia, content stratégia, správa sociálnych sietí. Stabilný partner pre váš marketing.</p>
       </div>
     </div>
 
     <div class="serviceCta">
-      <a class="btn btn--primary" href="/kontakt">Napísať dopyt</a>
+      <a class="btn btn--primary" href="/kontakt">Kontaktovať nás</a>
     </div>
   </section>
 
@@ -282,49 +296,84 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     line-height: 1.5;
   }
 
-  /* Workshop List */
-  .workshopList {
+  /* Workshop Grid */
+  .workshopGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     max-width: 1000px;
     margin: 0 auto;
   }
-  .workshopItem {
+  .workshopCard {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px;
     padding: 1.5rem;
   }
-  .workshopItem h4 {
-    margin-bottom: 0.5rem;
-    color: #f97316;
+  .workshopIcon {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
   }
-  .workshopItem p {
+  .workshopCard h4 {
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+  .workshopCard p {
     color: rgba(255,255,255,0.7);
     font-size: 0.9rem;
     line-height: 1.5;
-    margin: 0;
+    margin-bottom: 1rem;
+  }
+  .workshopPrice {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f97316;
   }
 
   /* Corporate Grid */
   .corporateGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2rem;
-    max-width: 900px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    max-width: 1000px;
     margin: 0 auto;
   }
-  .corporateItem {
-    text-align: center;
+  .corporateCard {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
   }
-  .corporateItem h4 {
+  .corporateIcon {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+  .corporateCard h4 {
     margin-bottom: 0.5rem;
   }
-  .corporateItem p {
-    color: rgba(255,255,255,0.6);
+  .corporateCard p {
+    color: rgba(255,255,255,0.65);
     font-size: 0.9rem;
     line-height: 1.5;
+    margin: 0;
   }
 
   /* Final CTA */
