@@ -177,6 +177,93 @@ const schemaOrg = {
       </div>
     </aside>
 
+    <style>
+      .drawerBackdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 998;
+      }
+      .drawerBackdrop.open {
+        display: block;
+      }
+      .drawer {
+        display: none;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(300px, 80vw);
+        background: #0a0a0a;
+        z-index: 999;
+        overflow-y: auto;
+        border-left: 1px solid rgba(255, 255, 255, 0.15);
+        flex-direction: column;
+      }
+      .drawer.open {
+        display: flex;
+      }
+      .drawerHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: #0a0a0a;
+      }
+      .drawerClose {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 2rem;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .drawerClose:hover {
+        color: #fff;
+      }
+      .drawerLinks {
+        padding: 1rem 0.75rem;
+        background: #0a0a0a;
+        flex: 1;
+      }
+      .drawerLinks a {
+        display: block;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        margin-bottom: 0.25rem;
+        transition: all 0.2s;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .drawerLinks a:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+      .drawerLinks a.isActive {
+        background: #f97316;
+        color: #fff;
+        border-color: #f97316;
+      }
+      .drawerCtas {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        background: #0a0a0a;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    </style>
+
     <main class="container">
       <slot />
     </main>
@@ -198,12 +285,14 @@ const schemaOrg = {
         const backdrop = document.querySelector("[data-drawer-backdrop]");
 
         const open = () => {
-          backdrop.style.display = "block";
-          drawer.style.display = "block";
+          backdrop?.classList.add("open");
+          drawer?.classList.add("open");
+          document.body.style.overflow = "hidden";
         };
         const close = () => {
-          backdrop.style.display = "none";
-          drawer.style.display = "none";
+          backdrop?.classList.remove("open");
+          drawer?.classList.remove("open");
+          document.body.style.overflow = "";
         };
 
         openBtn?.addEventListener("click", open);
