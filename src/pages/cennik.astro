@@ -284,12 +284,27 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </div>
 
       <div id="cardPayment" class="paymentPanel active">
-        <div id="payment-element"></div>
-        <div id="payment-message"></div>
-        <button id="submitPayment" class="btn btn--primary btn--full" disabled>
-          <span id="btnText">Zaplatiť</span>
-          <span id="btnSpinner" class="spinner"></span>
-        </button>
+        <!-- Kontaktné údaje -->
+        <div class="modalForm" id="customerForm">
+          <div class="modalField">
+            <label for="modalName">Meno a priezvisko</label>
+            <input type="text" id="modalName" placeholder="Vaše meno" required />
+          </div>
+          <div class="modalField">
+            <label for="modalEmail">E-mail</label>
+            <input type="email" id="modalEmail" placeholder="vas@email.sk" required />
+          </div>
+          <button type="button" id="continueToPayment" class="btn btn--primary btn--full">Pokračovať na platbu</button>
+        </div>
+        <div id="stripePayment" style="display:none;">
+          <div id="payment-element"></div>
+          <div id="payment-message"></div>
+          <button id="submitPayment" class="btn btn--primary btn--full" disabled>
+            <span id="btnText">Zaplatiť</span>
+            <span id="btnSpinner" class="spinner"></span>
+          </button>
+          <button type="button" id="backToForm" class="btn btn--ghost btn--full" style="margin-top:0.5rem;">← Späť</button>
+        </div>
       </div>
 
       <div id="qrPayment" class="paymentPanel">
@@ -325,8 +340,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           document.querySelectorAll('.paymentPanel').forEach(function(p) { p.classList.remove('active'); });
           this.classList.add('active');
           document.getElementById(tabId + 'Payment').classList.add('active');
-          if (tabId === 'card' && !paymentElement) {
-            initPayment();
+
+          // Reset card payment to form view
+          if (tabId === 'card') {
+            document.getElementById('customerForm').style.display = 'block';
+            document.getElementById('stripePayment').style.display = 'none';
+            if (paymentElement) {
+              paymentElement.unmount();
+              paymentElement = null;
+            }
+            elements = null;
           }
         });
       });
@@ -342,10 +365,17 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           document.getElementById('paymentModal').classList.add('open');
           document.body.style.overflow = 'hidden';
 
+          // Reset to initial state
           document.querySelectorAll('.paymentTab').forEach(function(t) { t.classList.remove('active'); });
           document.querySelectorAll('.paymentPanel').forEach(function(p) { p.classList.remove('active'); });
           document.querySelector('[data-tab="card"]').classList.add('active');
           document.getElementById('cardPayment').classList.add('active');
+
+          // Show customer form, hide stripe payment
+          document.getElementById('customerForm').style.display = 'block';
+          document.getElementById('stripePayment').style.display = 'none';
+          document.getElementById('modalName').value = '';
+          document.getElementById('modalEmail').value = '';
 
           if (paymentElement) {
             paymentElement.unmount();
@@ -354,8 +384,42 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           elements = null;
 
           generateQR();
-          initPayment();
         });
+      });
+
+      // Continue to payment button
+      document.getElementById('continueToPayment').addEventListener('click', function() {
+        var customerName = document.getElementById('modalName').value.trim();
+        var customerEmail = document.getElementById('modalEmail').value.trim();
+
+        if (!customerName) {
+          alert('Vyplňte meno');
+          document.getElementById('modalName').focus();
+          return;
+        }
+
+        if (!customerEmail || !customerEmail.includes('@') || !customerEmail.includes('.')) {
+          alert('Zadajte platný email');
+          document.getElementById('modalEmail').focus();
+          return;
+        }
+
+        // Hide form, show stripe payment
+        document.getElementById('customerForm').style.display = 'none';
+        document.getElementById('stripePayment').style.display = 'block';
+
+        initPayment();
+      });
+
+      // Back to form button
+      document.getElementById('backToForm').addEventListener('click', function() {
+        document.getElementById('customerForm').style.display = 'block';
+        document.getElementById('stripePayment').style.display = 'none';
+        if (paymentElement) {
+          paymentElement.unmount();
+          paymentElement = null;
+        }
+        elements = null;
       });
 
       function generateQR() {
@@ -393,8 +457,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       async function initPayment() {
         if (paymentElement) return;
 
+        var customerName = document.getElementById('modalName').value.trim();
+        var customerEmail = document.getElementById('modalEmail').value.trim();
+
         document.getElementById('submitPayment').disabled = true;
-        document.getElementById('payment-message').textContent = 'Načítavam...';
+        document.getElementById('payment-message').textContent = 'Načítavam platobný formulár...';
 
         try {
           var response = await fetch('/api/create-payment-intent', {
@@ -402,7 +469,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               amount: currentAmount,
-              productName: currentProduct
+              productName: currentProduct,
+              customerName: customerName,
+              customerEmail: customerEmail
             })
           });
 
@@ -449,6 +518,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         var btnText = document.getElementById('btnText');
         var spinner = document.getElementById('btnSpinner');
         var msg = document.getElementById('payment-message');
+        var customerEmail = document.getElementById('modalEmail').value.trim();
 
         btn.disabled = true;
         btnText.style.display = 'none';
@@ -457,7 +527,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
         var result = await stripe.confirmPayment({
           elements: elements,
-          confirmParams: { return_url: window.location.origin + '/dakujem-platba' },
+          confirmParams: {
+            return_url: window.location.origin + '/dakujem-platba',
+            receipt_email: customerEmail
+          },
           redirect: 'if_required'
         });
 
@@ -865,6 +938,31 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     text-align: center;
     margin-bottom: 1rem;
     min-height: 1.25rem;
+  }
+  .modalForm {
+    margin-bottom: 1rem;
+  }
+  .modalField {
+    margin-bottom: 1rem;
+  }
+  .modalField label {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 0.4rem;
+  }
+  .modalField input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+  }
+  .modalField input:focus {
+    outline: none;
+    border-color: #f97316;
   }
   .spinner {
     display: none;
