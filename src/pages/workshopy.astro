@@ -274,7 +274,6 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
             <select id="wsTerm" name="Termín workshopu" required>
               <option value="" selected disabled>Vyberte termín</option>
               {openTerms.map(t => <option value={formatTerm(t)}>{formatTerm(t)}</option>)}
-              <option value="Mám záujem, čakám na termín">Mám záujem, čakám na termín</option>
             </select>
           </div>
 
