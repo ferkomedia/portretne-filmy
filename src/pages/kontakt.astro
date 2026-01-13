@@ -6,7 +6,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <!-- HERO -->
   <section class="heroSection">
     <div class="heroContent">
-    <div class="eyebrow"></div>
       <h1>Porozprávajme sa.</h1>
       <p class="heroLead">Máte otázku? Chcete konzultáciu? Napíšte alebo zavolajte. Odpovieme do 24 hodín.</p>
     </div>
@@ -42,26 +41,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <div class="contactForm" id="objednat">
         <h2>Napíšte nám</h2>
         <form
+          id="kontaktForm"
           name="kontakt"
           method="POST"
           action="/api/form-submit"
-          data-ico-form
         >
           <input type="hidden" name="form-name" value="kontakt" />
-          <input type="hidden" name="Firma - názov" value="" />
-          <input type="hidden" name="Firma - DIČ" value="" />
-          <input type="hidden" name="Firma - IČ DPH" value="" />
-          <input type="hidden" name="Firma - Ulica" value="" />
-          <input type="hidden" name="Firma - Číslo" value="" />
-          <input type="hidden" name="Firma - Mesto" value="" />
-          <input type="hidden" name="Firma - PSČ" value="" />
-          <input type="hidden" name="Firma - Krajina" value="" />
-          <input type="hidden" name="Firma - Adresa (celá)" value="" />
+          <input type="hidden" id="hiddenCompanyName" name="Firma - názov" value="" />
+          <input type="hidden" id="hiddenCompanyDic" name="Firma - DIČ" value="" />
+          <input type="hidden" id="hiddenCompanyIcdph" name="Firma - IČ DPH" value="" />
+          <input type="hidden" id="hiddenCompanyAddress" name="Firma - Adresa" value="" />
 
           <div class="formFields">
             <div class="field">
               <label for="name">Meno a priezvisko</label>
-              <input id="name" name="Meno a priezvisko" required />
+              <input id="name" name="Meno a priezvisko" type="text" required />
             </div>
 
             <div class="field">
@@ -71,7 +65,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
             <div class="field">
               <label for="phone">Telefón</label>
-              <input id="phone" name="Telefón" />
+              <input id="phone" name="Telefón" type="tel" />
             </div>
 
             <div class="field">
@@ -87,7 +81,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <div class="field">
               <label for="ico">IČO (pre faktúru)</label>
               <input id="ico" name="IČO" inputmode="numeric" />
-              <div class="statusLine" data-ico-status></div>
+              <div class="statusLine" id="icoStatus"></div>
             </div>
 
             <div class="field fieldFull">
@@ -96,24 +90,27 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             </div>
           </div>
 
-          <div class="autoFields" data-auto-fields style="display:none;">
-            <div class="autoFieldsInner">
+          <!-- Firemné údaje z IČO -->
+          <div class="autoFields" id="companyFields" style="display:none;">
+            <div class="autoFieldsHeader">Údaje z registra:</div>
+            <div class="autoFieldsGrid">
               <div class="field">
                 <label>Firma</label>
                 <input id="companyName" readonly />
               </div>
               <div class="field">
                 <label>Adresa</label>
-                <input id="companyAddressFull" readonly />
+                <input id="companyAddress" readonly />
+              </div>
+              <div class="field">
+                <label>DIČ</label>
+                <input id="companyDic" readonly />
+              </div>
+              <div class="field">
+                <label>IČ DPH</label>
+                <input id="companyIcdph" readonly />
               </div>
             </div>
-            <input type="hidden" id="companyDic" />
-            <input type="hidden" id="companyIcdph" />
-            <input type="hidden" id="companyStreet" />
-            <input type="hidden" id="companyNumber" />
-            <input type="hidden" id="companyCity" />
-            <input type="hidden" id="companyPsc" />
-            <input type="hidden" id="companyCountry" />
           </div>
 
           <div class="formActions">
@@ -174,7 +171,64 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
   </section>
 
-  <script type="module" src="/scripts/enrich-forms.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const icoInput = document.getElementById('ico');
+      const status = document.getElementById('icoStatus');
+      const companyFields = document.getElementById('companyFields');
+      let icoTimeout;
+
+      icoInput.addEventListener('input', function() {
+        clearTimeout(icoTimeout);
+        const ico = this.value.replace(/\s/g, '');
+
+        if (ico.length < 6) {
+          companyFields.style.display = 'none';
+          status.textContent = '';
+          return;
+        }
+
+        if (ico.length >= 8) {
+          status.textContent = 'Hľadám...';
+          status.className = 'statusLine loading';
+
+          icoTimeout = setTimeout(() => {
+            fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}`)
+              .then(r => r.json())
+              .then(data => {
+                if (data && data.length > 0) {
+                  const company = data[0];
+                  const address = company.formatted_address || '';
+
+                  document.getElementById('companyName').value = company.name || '';
+                  document.getElementById('companyAddress').value = address;
+                  document.getElementById('companyDic').value = company.dic || '';
+                  document.getElementById('companyIcdph').value = company.ic_dph || '';
+
+                  document.getElementById('hiddenCompanyName').value = company.name || '';
+                  document.getElementById('hiddenCompanyDic').value = company.dic || '';
+                  document.getElementById('hiddenCompanyIcdph').value = company.ic_dph || '';
+                  document.getElementById('hiddenCompanyAddress').value = address;
+
+                  companyFields.style.display = 'block';
+                  status.textContent = '✓ Firma nájdená';
+                  status.className = 'statusLine success';
+                } else {
+                  companyFields.style.display = 'none';
+                  status.textContent = 'Firma nenájdená';
+                  status.className = 'statusLine error';
+                }
+              })
+              .catch(() => {
+                companyFields.style.display = 'none';
+                status.textContent = '';
+                status.className = 'statusLine';
+              });
+          }, 600);
+        }
+      });
+    });
+  </script>
 </BaseLayout>
 
 <style>
@@ -185,16 +239,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 6rem 1.5rem 3rem;
+    padding: 4rem 1.5rem 3rem;
     background: radial-gradient(ellipse at top, rgba(249,115,22,0.12) 0%, transparent 60%);
+  }
 
   .heroContent {
     max-width: 600px;
   }
+
   .heroSection h1 {
     font-size: clamp(2rem, 5vw, 3rem);
     margin-bottom: 1rem;
   }
+
   .heroLead {
     font-size: clamp(1rem, 2vw, 1.15rem);
     color: rgba(255,255,255,0.75);
@@ -205,15 +262,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .section {
     padding: 4rem 0;
   }
+
   .sectionAlt {
     background: rgba(255,255,255,0.02);
     margin: 0 -1.5rem;
     padding: 4rem 1.5rem;
   }
+
   .sectionHeader {
     text-align: center;
     margin-bottom: 2.5rem;
   }
+
   .sectionHeader h2 {
     font-size: clamp(1.5rem, 3vw, 2rem);
   }
@@ -225,6 +285,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     gap: 4rem;
     align-items: start;
   }
+
   @media (max-width: 900px) {
     .contactGrid {
       grid-template-columns: 1fr;
@@ -238,6 +299,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     flex-direction: column;
     gap: 2rem;
   }
+
   .contactItem h3 {
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -245,6 +307,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: rgba(255,255,255,0.5);
     margin-bottom: 0.5rem;
   }
+
   .contactLink {
     font-size: 1.5rem;
     font-weight: 600;
@@ -253,15 +316,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     display: block;
     margin-bottom: 0.25rem;
   }
+
   .contactLink:hover {
     color: #fb923c;
   }
+
   .contactItem p {
     color: rgba(255,255,255,0.6);
     font-size: 0.9rem;
     line-height: 1.5;
     margin: 0;
   }
+
   .contactAddress {
     font-size: 1rem;
     color: rgba(255,255,255,0.8);
@@ -274,73 +340,119 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     border-radius: 16px;
     padding: 2rem;
   }
+
   .contactForm h2 {
     font-size: 1.25rem;
     margin-bottom: 1.5rem;
   }
+
   .formFields {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
   }
+
   @media (max-width: 600px) {
-    .formFields { grid-template-columns: 1fr; }
+    .formFields {
+      grid-template-columns: 1fr;
+    }
   }
+
   .field {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
   }
+
   .fieldFull {
     grid-column: 1 / -1;
   }
+
   .field label {
     font-size: 0.85rem;
     color: rgba(255,255,255,0.7);
   }
+
   .field input,
   .field select,
   .field textarea {
+    width: 100%;
     background: rgba(0,0,0,0.3);
     border: 1px solid rgba(255,255,255,0.15);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     color: #fff;
     font-size: 1rem;
+    font-family: inherit;
   }
+
   .field input:focus,
   .field select:focus,
   .field textarea:focus {
     outline: none;
     border-color: #f97316;
   }
-  .statusLine {
-    font-size: 0.8rem;
-    min-height: 1.2em;
-  }
+
+  /* Auto Fields */
   .autoFields {
-    margin-top: 1.25rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    margin-top: 1.5rem;
+    padding: 1rem 1.5rem 1.5rem;
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 12px;
   }
-  .autoFieldsInner {
+
+  .autoFieldsHeader {
+    font-size: 0.85rem;
+    color: #22c55e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .autoFieldsGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }
+
   @media (max-width: 600px) {
-    .autoFieldsInner { grid-template-columns: 1fr; }
+    .autoFieldsGrid {
+      grid-template-columns: 1fr;
+    }
   }
+
   .autoFields input {
     background: rgba(34,197,94,0.1);
     border-color: rgba(34,197,94,0.3);
   }
+
+  /* Status Line */
+  .statusLine {
+    font-size: 0.8rem;
+    min-height: 1.2em;
+    margin-top: 0.25rem;
+  }
+
+  .statusLine.loading {
+    color: #f97316;
+  }
+
+  .statusLine.success {
+    color: #22c55e;
+  }
+
+  .statusLine.error {
+    color: #ef4444;
+  }
+
+  /* Form Actions */
   .formActions {
     margin-top: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
   }
+
   .checkRow {
     display: flex;
     align-items: flex-start;
@@ -349,8 +461,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: rgba(255,255,255,0.7);
     cursor: pointer;
   }
+
   .checkRow input {
     margin-top: 0.2rem;
+    width: auto;
   }
 
   /* FAQ */
@@ -361,20 +475,23 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     max-width: 1000px;
     margin: 0 auto;
   }
+
   @media (max-width: 768px) {
-    .faqGrid { grid-template-columns: 1fr; gap: 0; }
+    .faqGrid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
   }
+
   .faqColumn {
     display: flex;
     flex-direction: column;
   }
-  .faqList {
-    max-width: 700px;
-    margin: 0 auto;
-  }
+
   .faqItem {
     border-bottom: 1px solid rgba(255,255,255,0.1);
   }
+
   .faqItem summary {
     padding: 1.25rem 0;
     font-weight: 600;
@@ -385,9 +502,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     align-items: center;
     gap: 1rem;
   }
+
   .faqItem summary::-webkit-details-marker {
     display: none;
   }
+
   .faqItem summary::after {
     content: "+";
     font-size: 1.5rem;
@@ -395,9 +514,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     font-weight: 400;
     flex-shrink: 0;
   }
+
   .faqItem[open] summary::after {
-    content: "-";
+    content: "−";
   }
+
   .faqItem p {
     padding: 0 0 1.25rem;
     color: rgba(255,255,255,0.7);
