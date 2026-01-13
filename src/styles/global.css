@@ -123,38 +123,25 @@ p {
 /* Hamburger */
 .hamburger {
     display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
     background: none;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    padding: 0.5rem;
+    padding: 0.75rem;
     cursor: pointer;
-    color: #fff;
+    width: 44px;
+    height: 44px;
 }
 
-.hamburgerIcon {
+.hamburger span {
     display: block;
-    width: 24px;
+    width: 22px;
     height: 2px;
     background: #fff;
-    position: relative;
-}
-
-.hamburgerIcon::before,
-.hamburgerIcon::after {
-    content: "";
-    position: absolute;
-    width: 24px;
-    height: 2px;
-    background: #fff;
-    left: 0;
-}
-
-.hamburgerIcon::before {
-    top: -7px;
-}
-
-.hamburgerIcon::after {
-    top: 7px;
+    border-radius: 2px;
 }
 
 /* ===========================================
