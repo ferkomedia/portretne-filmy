@@ -427,19 +427,22 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
           status.className = 'statusLine loading';
 
           icoTimeout = setTimeout(() => {
-            fetch(`/api/ico-lookup?ico=${ico}`)
+            fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}`)
               .then(r => r.json())
               .then(data => {
-                if (data.success) {
-                  document.getElementById('wsCompanyName').value = data.name || '';
-                  document.getElementById('wsCompanyAddress').value = data.address || '';
-                  document.getElementById('wsCompanyDic').value = data.dic || '';
-                  document.getElementById('wsCompanyIcdph').value = data.icDph || '';
+                if (data && data.length > 0) {
+                  const company = data[0];
+                  const address = company.formatted_address || '';
 
-                  document.getElementById('hiddenCompanyName').value = data.name || '';
-                  document.getElementById('hiddenCompanyDic').value = data.dic || '';
-                  document.getElementById('hiddenCompanyIcdph').value = data.icDph || '';
-                  document.getElementById('hiddenCompanyAddress').value = data.address || '';
+                  document.getElementById('wsCompanyName').value = company.name || '';
+                  document.getElementById('wsCompanyAddress').value = address;
+                  document.getElementById('wsCompanyDic').value = company.dic || '';
+                  document.getElementById('wsCompanyIcdph').value = company.ic_dph || '';
+
+                  document.getElementById('hiddenCompanyName').value = company.name || '';
+                  document.getElementById('hiddenCompanyDic').value = company.dic || '';
+                  document.getElementById('hiddenCompanyIcdph').value = company.ic_dph || '';
+                  document.getElementById('hiddenCompanyAddress').value = address;
 
                   companyFields.style.display = 'block';
                   status.textContent = '✓ Firma nájdená';
