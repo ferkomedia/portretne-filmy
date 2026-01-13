@@ -22,11 +22,7 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
-    /* Space for fixed header */
     padding-top: 64px;
-
-    /* iOS bounce / overscroll jemnejšie */
     overscroll-behavior-y: none;
 }
 
@@ -38,7 +34,7 @@ a {
 img {
     max-width: 100%;
     height: auto;
-    display: block; /* eliminuje medzeru pod obrázkom */
+    display: block;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -67,11 +63,8 @@ p {
     left: 0;
     right: 0;
     z-index: 100;
-
-    /* Fallback background + blur (blur len kde je podporovaný) */
     background: rgba(10, 10, 10, 0.92);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-
     transition: transform 0.3s ease;
     will-change: transform;
 }
@@ -104,7 +97,7 @@ p {
     font-size: 1.1rem;
     color: #fff;
     flex-shrink: 0;
-    min-width: 0; /* dovolí ellipsis na .brandText */
+    min-width: 0;
 }
 
 .brandDot {
@@ -160,17 +153,13 @@ p {
     justify-content: center;
     align-items: center;
     gap: 5px;
-
     background: none;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-
     cursor: pointer;
     width: 44px;
     height: 44px;
     flex-shrink: 0;
-
-    /* lepší tap na mobile */
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -183,13 +172,8 @@ p {
     transition: transform 0.2s, opacity 0.2s;
 }
 
-/* Voliteľné: animácia hamburger -> X, keď pridáš .isOpen na button */
-.hamburger.isOpen span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.isOpen span:nth-child(2) { opacity: 0; }
-.hamburger.isOpen span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
 /* ===========================================
-   MOBILE DRAWER
+   MOBILE DRAWER - OPRAVENÉ: .open namiesto .isOpen
    =========================================== */
 
 .drawerBackdrop {
@@ -198,9 +182,10 @@ p {
     inset: 0;
     background: rgba(0, 0, 0, 0.8);
     z-index: 998;
+}
 
-    opacity: 0;
-    transition: opacity 0.2s ease;
+.drawerBackdrop.open {
+    display: block;
 }
 
 .drawer {
@@ -209,34 +194,18 @@ p {
     top: 0;
     right: 0;
     bottom: 0;
-
-    width: min(320px, 82vw);
+    width: min(300px, 80vw);
     background: #0f0f0f;
-
     z-index: 999;
     overflow-y: auto;
-
     border-left: 1px solid rgba(255, 255, 255, 0.1);
-
     flex-direction: column;
-
-    transform: translateX(100%);
-    transition: transform 0.25s ease;
-
-    /* na mobile nech je to „pevné“ aj pri scroll bugu */
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Otvorenie: pridaj .isOpen na backdrop + drawer */
-.drawerBackdrop.isOpen {
-    display: block;
-    opacity: 1;
-}
-
-.drawer.isOpen {
+.drawer.open {
     display: flex;
-    transform: translateX(0);
 }
 
 .drawerHeader {
@@ -261,7 +230,6 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -282,7 +250,7 @@ p {
     color: rgba(255, 255, 255, 0.8);
     border-radius: 10px;
     margin-bottom: 0.25rem;
-    transition: background 0.2s, color 0.2s, transform 0.2s;
+    transition: background 0.2s, color 0.2s;
     background: rgba(255, 255, 255, 0.02);
 }
 
@@ -345,18 +313,14 @@ p {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
-
     font-weight: 600;
     font-size: 0.95rem;
-
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s;
     border: none;
     text-decoration: none;
-
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -364,7 +328,6 @@ p {
     outline: none;
 }
 
-/* prístupný focus len pri klávesnici */
 .btn:focus-visible,
 .navLink:focus-visible,
 .drawerLinks a:focus-visible,
@@ -439,5 +402,117 @@ select:focus-visible {
 }
 
 /* ===========================================
-   LISTS
+   LINKS
    =========================================== */
+
+.link {
+    color: #f97316;
+    transition: color 0.2s;
+}
+
+.link:hover {
+    color: #fb923c;
+}
+
+/* ===========================================
+   FOOTER
+   =========================================== */
+
+.footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+.footerInner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 480px) {
+    .footerInner {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* ===========================================
+   FORMS
+   =========================================== */
+
+input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #f97316;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===========================================
+   UTILITIES
+   =========================================== */
+
+.text-center { text-align: center; }
+.text-muted { color: rgba(255, 255, 255, 0.6); }
+.text-orange { color: #f97316; }
+.text-green { color: #22c55e; }
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}

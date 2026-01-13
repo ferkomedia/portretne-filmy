@@ -10,22 +10,16 @@ interface Props {
 }
 
 const {
-  title = "Portrétny film",
-  description = "Profesionálne portrétne filmy, ktoré zachytia vašu osobnosť a životný príbeh. Objednajte si portrétny film na mieru.",
-  image = "/images/og-default.jpg",
+  title = "Portrétny film | Profesionálna video produkcia",
+  description = "Vytvárame autentické portrétne filmy, firemné videá a ponúkame praktické workshopy. Príbehy, ktoré predávajú.",
+  image = "/og-default.jpg",
   type = "website",
   noindex = false,
 } = Astro.props;
 
-const path = Astro.url.pathname;
 const siteUrl = "https://portretnefilmy.sk";
-const canonical = `${siteUrl}${path}`;
-const ogImage = image.startsWith("http") ? image : `${siteUrl}${image}`;
-
-const isActive = (href: string) => {
-  if (href === "/") return path === "/";
-  return path.startsWith(href);
-};
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
+const ogImage = new URL(image, siteUrl).href;
 
 const nav = [
   { href: "/", label: "Domov" },
@@ -36,24 +30,33 @@ const nav = [
   { href: "/kontakt", label: "Kontakt" },
 ];
 
-// Schema.org JSON-LD
+const isActive = (href: string) =>
+  Astro.url.pathname === href || (href !== "/" && Astro.url.pathname.startsWith(href));
+
 const schemaOrg = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "LocalBusiness",
       "@id": `${siteUrl}/#business`,
-      name: "FerkoMedia - Portrétny film",
-      description: description,
+      name: "Portrétny film – FerkoMedia",
       url: siteUrl,
-      logo: `${siteUrl}/favicon.png`,
+      telephone: "+421949460832",
       email: "info@ferkomedia.sk",
       address: {
         "@type": "PostalAddress",
+        streetAddress: "Mudroňova 5",
         addressLocality: "Martin",
+        postalCode: "036 01",
         addressCountry: "SK",
       },
-      sameAs: [],
+      geo: { "@type": "GeoCoordinates", latitude: 49.0636, longitude: 18.9214 },
+      priceRange: "€€",
+      image: ogImage,
+      sameAs: [
+        "https://www.facebook.com/portretnyfilm",
+        "https://www.instagram.com/portretnyfilm",
+      ],
     },
     {
       "@type": "WebSite",
@@ -176,93 +179,6 @@ const schemaOrg = {
         <a class="btn btn--ghost" href="/workshopy#rezervacia">Rezervovať workshop</a>
       </div>
     </aside>
-
-    <style>
-      .drawerBackdrop {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.85);
-        z-index: 998;
-      }
-      .drawerBackdrop.open {
-        display: block;
-      }
-      .drawer {
-        display: none;
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        width: min(300px, 80vw);
-        background: #0a0a0a;
-        z-index: 999;
-        overflow-y: auto;
-        border-left: 1px solid rgba(255, 255, 255, 0.15);
-        flex-direction: column;
-      }
-      .drawer.open {
-        display: flex;
-      }
-      .drawerHeader {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        background: #0a0a0a;
-      }
-      .drawerClose {
-        background: none;
-        border: none;
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 2rem;
-        cursor: pointer;
-        padding: 0;
-        line-height: 1;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .drawerClose:hover {
-        color: #fff;
-      }
-      .drawerLinks {
-        padding: 1rem 0.75rem;
-        background: #0a0a0a;
-        flex: 1;
-      }
-      .drawerLinks a {
-        display: block;
-        padding: 0.875rem 1rem;
-        font-size: 1rem;
-        color: rgba(255, 255, 255, 0.8);
-        border-radius: 10px;
-        margin-bottom: 0.25rem;
-        transition: all 0.2s;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-      .drawerLinks a:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: #fff;
-      }
-      .drawerLinks a.isActive {
-        background: #f97316;
-        color: #fff;
-        border-color: #f97316;
-      }
-      .drawerCtas {
-        padding: 1.25rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        background: #0a0a0a;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-      }
-    </style>
 
     <main class="container">
       <slot />
