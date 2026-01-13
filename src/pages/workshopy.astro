@@ -227,75 +227,62 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     </div>
   </section>
 
-  <!-- REZERVAČNÝ FORMULÁR -->
+  <!-- REZERVAČNÝ FORMULÁR S PLATBOU -->
   <section class="section sectionAlt" id="rezervacia">
     <div class="sectionHeader">
-      <h2>Rezervácia</h2>
-      <p class="sectionLead">Vyplňte formulár a ozveme sa vám s potvrdením.</p>
+      <h2>Rezervácia s platbou</h2>
+      <p class="sectionLead">Vyplňte údaje a zaplaťte online. Miesto máte ihneď rezervované.</p>
     </div>
 
     <div class="formCard">
-      <form
-        name="workshopy"
-        method="POST"
-        action="/api/form-submit"
-        data-domain-form
-        data-ico-form
-      >
+      <form id="workshopForm">
         <input type="hidden" name="form-name" value="workshopy" />
-        <input type="hidden" name="Firma - názov" value="" />
-        <input type="hidden" name="Firma - DIČ" value="" />
-        <input type="hidden" name="Firma - IČ DPH" value="" />
-        <input type="hidden" name="Firma - Ulica" value="" />
-        <input type="hidden" name="Firma - Číslo" value="" />
-        <input type="hidden" name="Firma - Mesto" value="" />
-        <input type="hidden" name="Firma - PSČ" value="" />
-        <input type="hidden" name="Firma - Krajina" value="" />
-        <input type="hidden" name="Firma - Adresa (celá)" value="" />
+        <input type="hidden" id="hiddenCompanyName" name="Firma - názov" value="" />
+        <input type="hidden" id="hiddenCompanyDic" name="Firma - DIČ" value="" />
+        <input type="hidden" id="hiddenCompanyIcdph" name="Firma - IČ DPH" value="" />
+        <input type="hidden" id="hiddenCompanyAddress" name="Firma - Adresa" value="" />
 
         <div class="formGrid">
           <div class="field">
-            <label for="wsName">Meno a priezvisko</label>
+            <label for="wsName">Meno a priezvisko *</label>
             <input id="wsName" name="Meno a priezvisko" required />
           </div>
 
           <div class="field">
-            <label for="wsEmail">E-mail</label>
+            <label for="wsEmail">E-mail *</label>
             <input id="wsEmail" type="email" name="E-mail" required />
           </div>
 
           <div class="field">
             <label for="wsPhone">Telefón</label>
-            <input id="wsPhone" name="Telefón" />
+            <input id="wsPhone" name="Telefón" type="tel" />
           </div>
 
           <div class="field">
-            <label for="wsTerm">Termín workshopu</label>
+            <label for="wsTerm">Termín workshopu *</label>
             <select id="wsTerm" name="Termín workshopu" required>
-              <option value="" selected disabled>Vyberte termín</option>
-              {openTerms.map(t => <option value={formatTerm(t)}>{formatTerm(t)}</option>)}
+              <option value="" data-price="0" selected disabled>Vyberte termín</option>
+              {openTerms.map(t => (
+                <option value={formatTerm(t)} data-price={t.price}>{formatTerm(t)}</option>
+              ))}
             </select>
           </div>
 
           <div class="field">
-            <label for="wsIco">IČO (pre faktúru)</label>
+            <label for="wsIco">IČO (pre faktúru, voliteľné)</label>
             <input id="wsIco" name="IČO" inputmode="numeric" />
-            <div class="statusLine" data-ico-status></div>
-          </div>
-
-          <div class="field">
-            <label for="wsDomain">Doména (ak máte)</label>
-            <input id="wsDomain" name="Doména (.sk)" placeholder="mojadomena.sk" />
-            <div class="statusLine" data-domain-status></div>
+            <div class="statusLine" id="icoStatus"></div>
           </div>
 
           <div class="field fieldFull">
             <label for="wsNote">Poznámka</label>
-            <textarea id="wsNote" name="Poznámka" rows="3"></textarea>
+            <textarea id="wsNote" name="Poznámka" rows="2"></textarea>
           </div>
         </div>
 
-        <div class="autoFields" data-auto-fields style="display:none;">
+        <!-- Firemné údaje z IČO -->
+        <div class="autoFields" id="companyFields" style="display:none;">
+          <div class="autoFieldsHeader">Údaje z registra:</div>
           <div class="autoFieldsGrid">
             <div class="field">
               <label>Firma</label>
@@ -303,7 +290,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
             </div>
             <div class="field">
               <label>Adresa</label>
-              <input id="wsCompanyAddressFull" readonly />
+              <input id="wsCompanyAddress" readonly />
             </div>
             <div class="field">
               <label>DIČ</label>
@@ -314,25 +301,289 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
               <input id="wsCompanyIcdph" readonly />
             </div>
           </div>
-          <input type="hidden" id="wsCompanyStreet" />
-          <input type="hidden" id="wsCompanyNumber" />
-          <input type="hidden" id="wsCompanyCity" />
-          <input type="hidden" id="wsCompanyPsc" />
-          <input type="hidden" id="wsCompanyCountry" />
+        </div>
+
+        <!-- Cena a tlačidlo -->
+        <div class="priceDisplay" id="priceDisplay" style="display:none;">
+          <span>Cena:</span>
+          <strong id="selectedPrice">0 €</strong>
         </div>
 
         <div class="formActions">
           <label class="checkRow">
-            <input type="checkbox" name="GDPR súhlas" required />
-            <span>Súhlasím so spracovaním osobných údajov za účelom vybavenia rezervácie.</span>
+            <input type="checkbox" id="gdprCheck" required />
+            <span>Súhlasím so spracovaním osobných údajov za účelom rezervácie a fakturácie.</span>
           </label>
-          <button class="btn btn--primary btn--large" type="submit">Rezervovať miesto</button>
+          <button class="btn btn--primary btn--large" type="submit" id="submitBtn" disabled>
+            Pokračovať na platbu
+          </button>
         </div>
       </form>
     </div>
   </section>
 
-  <script type="module" src="/scripts/enrich-forms.js"></script>
+  <!-- PLATOBNÝ MODAL -->
+  <div id="paymentModal" class="paymentModal">
+    <div class="paymentModalContent">
+      <button class="paymentModalClose" id="closePaymentModal">&times;</button>
+
+      <div class="paymentModalHeader">
+        <h3 id="paymentProductName">Workshop</h3>
+        <div class="paymentModalPrice" id="paymentPrice">0 €</div>
+      </div>
+
+      <div class="paymentModalInfo">
+        <p><strong id="paymentCustomerName">-</strong></p>
+        <p id="paymentCustomerEmail">-</p>
+      </div>
+
+      <div id="payment-element"></div>
+      <div id="payment-message"></div>
+
+      <button id="payNowBtn" class="btn btn--primary btn--full btn--large" disabled>
+        <span id="payBtnText">Zaplatiť</span>
+        <span id="payBtnSpinner" class="spinner" style="display:none;"></span>
+      </button>
+    </div>
+  </div>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const stripe = Stripe('pk_live_51SIajzK7AvTQZ0XNgrY5daEJeZX4ew0fxpRaVwgahpvPAamiISdRB0SpwlPYtbrvnsJritP542yNLaZximzBZwZo007qtYg79p');
+      let elements = null;
+      let paymentElement = null;
+
+      // Form elements
+      const form = document.getElementById('workshopForm');
+      const termSelect = document.getElementById('wsTerm');
+      const nameInput = document.getElementById('wsName');
+      const emailInput = document.getElementById('wsEmail');
+      const phoneInput = document.getElementById('wsPhone');
+      const icoInput = document.getElementById('wsIco');
+      const noteInput = document.getElementById('wsNote');
+      const gdprCheck = document.getElementById('gdprCheck');
+      const submitBtn = document.getElementById('submitBtn');
+      const priceDisplay = document.getElementById('priceDisplay');
+      const selectedPriceEl = document.getElementById('selectedPrice');
+
+      // Modal elements
+      const modal = document.getElementById('paymentModal');
+      const closeModalBtn = document.getElementById('closePaymentModal');
+      const payNowBtn = document.getElementById('payNowBtn');
+
+      let currentPrice = 0;
+      let currentProductName = '';
+
+      // Update price when term changes
+      termSelect.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        currentPrice = parseInt(selected.dataset.price) || 0;
+        currentProductName = selected.value;
+
+        if (currentPrice > 0) {
+          priceDisplay.style.display = 'flex';
+          selectedPriceEl.textContent = currentPrice + ' €';
+        } else {
+          priceDisplay.style.display = 'none';
+        }
+        checkFormValidity();
+      });
+
+      // Check form validity
+      function checkFormValidity() {
+        const isValid = nameInput.value.trim() &&
+                        emailInput.value.trim() &&
+                        termSelect.value &&
+                        currentPrice > 0 &&
+                        gdprCheck.checked;
+        submitBtn.disabled = !isValid;
+      }
+
+      [nameInput, emailInput, termSelect, gdprCheck].forEach(el => {
+        el.addEventListener('change', checkFormValidity);
+        el.addEventListener('input', checkFormValidity);
+      });
+
+      // IČO lookup
+      let icoTimeout;
+      icoInput.addEventListener('input', function() {
+        clearTimeout(icoTimeout);
+        const ico = this.value.replace(/\s/g, '');
+        const status = document.getElementById('icoStatus');
+        const companyFields = document.getElementById('companyFields');
+
+        if (ico.length < 6) {
+          companyFields.style.display = 'none';
+          status.textContent = '';
+          return;
+        }
+
+        if (ico.length >= 8) {
+          status.textContent = 'Hľadám...';
+          status.className = 'statusLine loading';
+
+          icoTimeout = setTimeout(() => {
+            fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}&private_access_token=a0a7c8923ba95bf5770c50d71c40f77ebbc0000074d817c01caf02eb7e91d710`)
+              .then(r => r.json())
+              .then(data => {
+                if (data && data.length > 0) {
+                  const company = data[0];
+                  const address = company.formatted_address || '';
+
+                  document.getElementById('wsCompanyName').value = company.name || '';
+                  document.getElementById('wsCompanyAddress').value = address;
+                  document.getElementById('wsCompanyDic').value = company.dic || '';
+                  document.getElementById('wsCompanyIcdph').value = company.ic_dph || '';
+
+                  // Hidden fields
+                  document.getElementById('hiddenCompanyName').value = company.name || '';
+                  document.getElementById('hiddenCompanyDic').value = company.dic || '';
+                  document.getElementById('hiddenCompanyIcdph').value = company.ic_dph || '';
+                  document.getElementById('hiddenCompanyAddress').value = address;
+
+                  companyFields.style.display = 'block';
+                  status.textContent = '✓ Firma nájdená';
+                  status.className = 'statusLine success';
+                } else {
+                  companyFields.style.display = 'none';
+                  status.textContent = 'Firma nenájdená';
+                  status.className = 'statusLine error';
+                }
+              })
+              .catch(() => {
+                status.textContent = 'Chyba pri hľadaní';
+                status.className = 'statusLine error';
+              });
+          }, 500);
+        }
+      });
+
+      // Form submit - open payment modal
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (!currentPrice || currentPrice <= 0) {
+          alert('Vyberte termín workshopu');
+          return;
+        }
+
+        // Show modal
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // Fill modal info
+        document.getElementById('paymentProductName').textContent = currentProductName.split('–')[1]?.trim() || currentProductName;
+        document.getElementById('paymentPrice').textContent = currentPrice + ' €';
+        document.getElementById('paymentCustomerName').textContent = nameInput.value;
+        document.getElementById('paymentCustomerEmail').textContent = emailInput.value;
+
+        // Initialize Stripe payment
+        await initStripePayment();
+      });
+
+      // Initialize Stripe
+      async function initStripePayment() {
+        document.getElementById('payment-message').textContent = 'Načítavam platobný formulár...';
+        payNowBtn.disabled = true;
+
+        try {
+          const response = await fetch('/api/create-payment-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: currentPrice * 100,
+              productName: currentProductName,
+              customerName: nameInput.value,
+              customerEmail: emailInput.value,
+              customerPhone: phoneInput.value || '',
+              companyIco: icoInput.value || '',
+              companyName: document.getElementById('hiddenCompanyName').value || '',
+              companyDic: document.getElementById('hiddenCompanyDic').value || '',
+              companyIcDph: document.getElementById('hiddenCompanyIcdph').value || '',
+              companyAddress: document.getElementById('hiddenCompanyAddress').value || '',
+              note: noteInput.value || ''
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.error) {
+            document.getElementById('payment-message').textContent = data.error;
+            return;
+          }
+
+          // Create Stripe elements
+          const appearance = {
+            theme: 'night',
+            variables: {
+              colorPrimary: '#f97316',
+              colorBackground: '#1a1a1a',
+              colorText: '#ffffff',
+              colorDanger: '#ef4444',
+              fontFamily: 'system-ui, sans-serif',
+              borderRadius: '8px'
+            }
+          };
+
+          elements = stripe.elements({ clientSecret: data.clientSecret, appearance, locale: 'sk' });
+          paymentElement = elements.create('payment');
+          paymentElement.mount('#payment-element');
+
+          document.getElementById('payment-message').textContent = '';
+
+          paymentElement.on('ready', function() {
+            payNowBtn.disabled = false;
+          });
+
+        } catch (err) {
+          document.getElementById('payment-message').textContent = 'Chyba: ' + err.message;
+        }
+      }
+
+      // Pay button
+      payNowBtn.addEventListener('click', async function() {
+        this.disabled = true;
+        document.getElementById('payBtnText').style.display = 'none';
+        document.getElementById('payBtnSpinner').style.display = 'inline-block';
+        document.getElementById('payment-message').textContent = '';
+
+        const result = await stripe.confirmPayment({
+          elements: elements,
+          confirmParams: {
+            return_url: window.location.origin + '/dakujem-platba',
+            receipt_email: emailInput.value
+          },
+          redirect: 'if_required'
+        });
+
+        if (result.error) {
+          document.getElementById('payment-message').textContent = result.error.message;
+          this.disabled = false;
+          document.getElementById('payBtnText').style.display = 'inline';
+          document.getElementById('payBtnSpinner').style.display = 'none';
+        } else {
+          window.location.href = '/dakujem-platba';
+        }
+      });
+
+      // Close modal
+      function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+        if (paymentElement) {
+          paymentElement.unmount();
+          paymentElement = null;
+        }
+        elements = null;
+      }
+
+      closeModalBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+      });
+    });
+  </script>
 </BaseLayout>
 
 <style>
@@ -751,6 +1002,146 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
   }
   .checkRow input {
     margin-top: 0.2rem;
+  }
+
+  /* Price Display */
+  .priceDisplay {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .priceDisplay span {
+    color: rgba(255,255,255,0.7);
+  }
+  .priceDisplay strong {
+    font-size: 1.5rem;
+    color: #22c55e;
+  }
+
+  /* Auto Fields */
+  .autoFields {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 12px;
+    padding: 1rem 1.5rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .autoFieldsHeader {
+    font-size: 0.85rem;
+    color: #22c55e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .autoFieldsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  @media (max-width: 600px) {
+    .autoFieldsGrid { grid-template-columns: 1fr; }
+  }
+
+  /* Status Line */
+  .statusLine {
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+  }
+  .statusLine.loading { color: #f97316; }
+  .statusLine.success { color: #22c55e; }
+  .statusLine.error { color: #ef4444; }
+
+  /* Payment Modal */
+  .paymentModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .paymentModal.open {
+    display: flex;
+  }
+  .paymentModalContent {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 450px;
+    width: 100%;
+    position: relative;
+  }
+  .paymentModalClose {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.75rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .paymentModalClose:hover { color: #fff; }
+  .paymentModalHeader {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .paymentModalHeader h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: rgba(255,255,255,0.9);
+  }
+  .paymentModalPrice {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #f97316;
+  }
+  .paymentModalInfo {
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .paymentModalInfo p {
+    margin: 0.25rem 0;
+    color: rgba(255,255,255,0.7);
+  }
+  .paymentModalInfo strong {
+    color: #fff;
+  }
+  #payment-element {
+    margin-bottom: 1rem;
+  }
+  #payment-message {
+    color: #ef4444;
+    text-align: center;
+    margin-bottom: 1rem;
+    min-height: 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   /* Buttons */
