@@ -19,6 +19,7 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    padding-top: 64px; /* Space for fixed header */
 }
 
 a {
@@ -174,7 +175,7 @@ p {
     top: 0;
     right: 0;
     bottom: 0;
-    width: min(320px, 85vw);
+    width: min(300px, 80vw);
     background: #0f0f0f;
     z-index: 999;
     overflow-y: auto;
@@ -271,6 +272,10 @@ p {
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    .container {
+        padding: 0 1rem;
+    }
 }
 
 /* ===========================================
@@ -303,9 +308,10 @@ p {
 }
 
 .btn--primary:disabled {
-    background: #666;
+    background: #555;
     cursor: not-allowed;
     transform: none;
+    opacity: 0.7;
 }
 
 .btn--ghost {
@@ -331,6 +337,13 @@ p {
 .btn--small {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+    .btn--large {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.95rem;
+    }
 }
 
 /* ===========================================

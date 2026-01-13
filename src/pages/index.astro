@@ -9,7 +9,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <!-- HERO -->
   <section class="heroFull">
     <div class="heroContent">
-    <div class="eyebrow"></div>
       <h1>Ľudia nekupujú produkty.<br/>Kupujú príbehy.</h1>
       <p class="heroLead">Portrétny film zachytí to, čo robí práve vás výnimočným – vašu energiu, hodnoty a osobnosť. Nie je to o minútach. Je to o momente, keď sa niekto zastaví a povie: „Tomuto človeku verím."</p>
       <div class="heroCtas">
@@ -142,7 +141,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <div class="benefitsGrid">
       <div class="benefitItem">
         <div class="benefitIcon"></div>
-        <h4>Autentické bez pózy</h4>
+        <h4>Žiadna umelosť</h4>
         <p>Nevytvárame reklamy. Vytvárame autentické príbehy, ktoré rezonujú.</p>
       </div>
       <div class="benefitItem">
@@ -196,8 +195,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <h2>Pripravení začať?</h2>
       <p>Napíšte nám. Radi zodpovieme všetky otázky a poradíme, čo je pre vás najlepšie. Nezáväzne, bezplatne.</p>
       <div class="finalCtaButtons">
-        <a class="btn btn--primary btn--large" href="/cennik">Pozrieť cenník</a>
-        <a class="btn btn--ghost btn--large" href="/kontakt">Napísať správu</a>
+        <a class="btn btn--primary btn--large" href="/kontakt">Napísať správu</a>
+        <a class="btn btn--ghost btn--large" href="/cennik">Pozrieť cenník</a>
       </div>
       <p class="finalCtaNote">Odpovieme do 24 hodín</p>
     </div>
@@ -208,31 +207,31 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 <style>
   /* Hero Full */
   .heroFull {
-    min-height: 90vh;
+    min-height: calc(100vh - 64px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 4rem 1.5rem;
+    padding: 3rem 1.5rem;
     position: relative;
     background: radial-gradient(ellipse at top, rgba(249,115,22,0.15) 0%, transparent 60%);
   }
   .heroContent {
-    max-width: 900px;
+    max-width: 850px;
   }
   .heroFull h1 {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
+    font-size: clamp(1.75rem, 5vw, 3.5rem);
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
     font-weight: 700;
   }
   .heroLead {
-    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
     color: rgba(255,255,255,0.8);
     line-height: 1.7;
-    max-width: 700px;
-    margin: 0 auto 2.5rem;
+    max-width: 650px;
+    margin: 0 auto 2rem;
   }
   .heroCtas {
     display: flex;
@@ -258,6 +257,26 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   @keyframes bounce {
     0%, 100% { transform: translateX(-50%) translateY(0); }
     50% { transform: translateX(-50%) translateY(10px); }
+  }
+
+  @media (max-width: 640px) {
+    .heroFull {
+      min-height: calc(100vh - 64px);
+      padding: 2rem 1rem;
+    }
+    .heroFull h1 {
+      font-size: 1.75rem;
+    }
+    .heroLead {
+      font-size: 0.95rem;
+    }
+    .heroScroll {
+      bottom: 1rem;
+    }
+    .heroCtas .btn--large {
+      padding: 0.875rem 1.5rem;
+      font-size: 0.9rem;
+    }
   }
 
   /* Split Section */

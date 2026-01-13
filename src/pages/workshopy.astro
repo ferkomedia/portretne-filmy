@@ -11,7 +11,6 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
   <!-- HERO -->
   <section class="heroFull">
     <div class="heroContent">
-    <div class="eyebrow"></div>
       <h1>Online kurz dokončí 3% ľudí.<br/>Z workshopu odídete s výsledkom.</h1>
       <p class="heroLead">Žiadne videá, ktoré nikdy nedopozeriete. Žiadne skripty, ktoré nikdy neotvoríte. Jeden deň, praktická práca na vašom projekte, osobná spätná väzba.</p>
       <div class="heroCtas">
@@ -428,67 +427,35 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
           status.className = 'statusLine loading';
 
           icoTimeout = setTimeout(() => {
-            fetch(`https://www.finstat.sk/api/autocomplete?query=${ico}&apiKey=free`)
-              .then(r => {
-                if (!r.ok) throw new Error('API error');
-                return r.json();
-              })
+            fetch(`/api/ico-lookup?ico=${ico}`)
+              .then(r => r.json())
               .then(data => {
-                // Try FinStat first
-                if (data && data.Results && data.Results.length > 0) {
-                  const company = data.Results[0];
-                  document.getElementById('wsCompanyName').value = company.Name || '';
-                  document.getElementById('wsCompanyAddress').value = company.Address || '';
-                  document.getElementById('wsCompanyDic').value = company.Dic || '';
-                  document.getElementById('wsCompanyIcdph').value = company.IcDph || '';
+                if (data.success) {
+                  document.getElementById('wsCompanyName').value = data.name || '';
+                  document.getElementById('wsCompanyAddress').value = data.address || '';
+                  document.getElementById('wsCompanyDic').value = data.dic || '';
+                  document.getElementById('wsCompanyIcdph').value = data.icDph || '';
 
-                  document.getElementById('hiddenCompanyName').value = company.Name || '';
-                  document.getElementById('hiddenCompanyDic').value = company.Dic || '';
-                  document.getElementById('hiddenCompanyIcdph').value = company.IcDph || '';
-                  document.getElementById('hiddenCompanyAddress').value = company.Address || '';
+                  document.getElementById('hiddenCompanyName').value = data.name || '';
+                  document.getElementById('hiddenCompanyDic').value = data.dic || '';
+                  document.getElementById('hiddenCompanyIcdph').value = data.icDph || '';
+                  document.getElementById('hiddenCompanyAddress').value = data.address || '';
 
                   companyFields.style.display = 'block';
                   status.textContent = '✓ Firma nájdená';
                   status.className = 'statusLine success';
                 } else {
-                  throw new Error('Not found');
+                  companyFields.style.display = 'none';
+                  status.textContent = 'Firma nenájdená';
+                  status.className = 'statusLine error';
                 }
               })
               .catch(() => {
-                // Fallback to slovensko.digital API without token
-                fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}`)
-                  .then(r => r.json())
-                  .then(data => {
-                    if (data && data.length > 0) {
-                      const company = data[0];
-                      const address = company.formatted_address || '';
-
-                      document.getElementById('wsCompanyName').value = company.name || '';
-                      document.getElementById('wsCompanyAddress').value = address;
-                      document.getElementById('wsCompanyDic').value = company.dic || '';
-                      document.getElementById('wsCompanyIcdph').value = company.ic_dph || '';
-
-                      document.getElementById('hiddenCompanyName').value = company.name || '';
-                      document.getElementById('hiddenCompanyDic').value = company.dic || '';
-                      document.getElementById('hiddenCompanyIcdph').value = company.ic_dph || '';
-                      document.getElementById('hiddenCompanyAddress').value = address;
-
-                      companyFields.style.display = 'block';
-                      status.textContent = '✓ Firma nájdená';
-                      status.className = 'statusLine success';
-                    } else {
-                      companyFields.style.display = 'none';
-                      status.textContent = 'Firma nenájdená - skúste zadať ručne';
-                      status.className = 'statusLine error';
-                    }
-                  })
-                  .catch(() => {
-                    companyFields.style.display = 'none';
-                    status.textContent = 'IČO overíme neskôr';
-                    status.className = 'statusLine';
-                  });
+                companyFields.style.display = 'none';
+                status.textContent = '';
+                status.className = 'statusLine';
               });
-          }, 500);
+          }, 600);
         }
       });
 
@@ -622,31 +589,31 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
 <style>
   /* Hero Full */
   .heroFull {
-    min-height: 90vh;
+    min-height: calc(100vh - 64px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 4rem 1.5rem;
+    padding: 3rem 1.5rem;
     position: relative;
     background: radial-gradient(ellipse at top, rgba(249,115,22,0.15) 0%, transparent 60%);
   }
   .heroContent {
-    max-width: 900px;
+    max-width: 850px;
   }
   .heroFull h1 {
-    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
+    font-size: clamp(1.75rem, 5vw, 3.5rem);
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
     font-weight: 700;
   }
   .heroLead {
-    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
     color: rgba(255,255,255,0.8);
     line-height: 1.7;
-    max-width: 700px;
-    margin: 0 auto 2.5rem;
+    max-width: 650px;
+    margin: 0 auto 2rem;
   }
   .heroCtas {
     display: flex;
@@ -672,6 +639,22 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
   @keyframes bounce {
     0%, 100% { transform: translateX(-50%) translateY(0); }
     50% { transform: translateX(-50%) translateY(10px); }
+  }
+
+  @media (max-width: 640px) {
+    .heroFull {
+      min-height: calc(100vh - 64px);
+      padding: 2rem 1rem;
+    }
+    .heroFull h1 {
+      font-size: 1.75rem;
+    }
+    .heroLead {
+      font-size: 0.95rem;
+    }
+    .heroScroll {
+      bottom: 1rem;
+    }
   }
 
   /* Section */

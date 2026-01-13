@@ -1,101 +1,1195 @@
-// functions/ico-lookup.js
-export async function onRequest(context) {
-  const url = new URL(context.request.url);
-  const ico = url.searchParams.get("ico")?.replace(/\s+/g, "");
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import terms from "../data/workshop-terms.json";
 
-  const headers = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-  };
+const openTerms = (terms || []).filter(t => (t.status || "").toLowerCase() === "open");
+const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} €`;
+---
 
-  if (!ico || !/^\d{6,8}$/.test(ico)) {
-    return new Response(JSON.stringify({ ok: false, error: "Invalid ICO" }), { headers });
-  }
+    <BaseLayout title="Workshopy | Naučte sa to za jeden deň" description="Praktické jednodňové workshopy. Web, e-shop, Google reklama, AI nástroje. Odídete s hotovým výsledkom, nie s teóriou.">
 
-  try {
-    const searchUrl = `https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?zmenene-od=2000-01-01&pokracovat-za-id=1&max-zaznamov=1&ico=${ico}`;
-    const searchRes = await fetch(searchUrl);
-    
-    if (!searchRes.ok) {
-      return new Response(JSON.stringify({ ok: false, error: "API error" }), { headers });
-    }
+      <!-- HERO -->
+      <section class="heroFull">
+        <div class="heroContent">
+          <h1>Online kurz dokončí 3% ľudí.<br/>Z workshopu odídete s výsledkom.</h1>
+          <p class="heroLead">Žiadne videá, ktoré nikdy nedopozeriete. Žiadne skripty, ktoré nikdy neotvoríte. Jeden deň, praktická práca na vašom projekte, osobná spätná väzba.</p>
+          <div class="heroCtas">
+            <a class="btn btn--primary btn--large" href="#terminy">Pozrieť termíny</a>
+          </div>
+        </div>
+        <div class="heroScroll">
+          <span class="scrollArrow"></span>
+        </div>
+      </section>
 
-    const searchData = await searchRes.json();
+      <!-- PREČO WORKSHOP -->
+      <section class="section sectionAlt">
+        <div class="comparisonGrid">
+          <div class="comparisonCol">
+            <h3>Online kurz</h3>
+            <ul class="comparisonList negative">
+              <li>Sám doma pred obrazovkou</li>
+              <li>Nikto vás nekontroluje</li>
+              <li>Otázky riešite sami</li>
+              <li>Prokrastinácia vyhráva</li>
+              <li>Dokončí 3% ľudí</li>
+            </ul>
+          </div>
+          <div class="comparisonCol highlighted">
+            <h3>Workshop</h3>
+            <ul class="comparisonList positive">
+              <li>Lektor vedľa vás celý deň</li>
+              <li>Pracujete na vlastnom projekte</li>
+              <li>Okamžitá spätná väzba</li>
+              <li>Odchádzate s hotovým výsledkom</li>
+              <li>Kontakty na ľudí s podobnými cieľmi</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-    if (!searchData.id || searchData.id.length === 0) {
-      return new Response(JSON.stringify({ ok: true, found: false }), { headers });
-    }
+      <!-- WORKSHOPY -->
+      <section class="section" id="workshopy">
+        <div class="sectionHeader">
+          <h2>Vyberte si workshop</h2>
+        </div>
 
-    const detailUrl = `https://www.registeruz.sk/cruz-public/api/uctovna-jednotka?id=${searchData.id[0]}`;
-    const detailRes = await fetch(detailUrl);
+        <div class="workshopGrid">
+          <div class="workshopCard">
+            <h3>Web za 1 deň</h3>
+            <p>Odídete s funkčným webom. WordPress, hosting, doména, základné SEO – všetko nastavíme spolu. Nemusíte vedieť programovať.</p>
+            <div class="workshopResult">
+              <span class="resultLabel">Výsledok:</span>
+              <span>Váš web online, pripravený na obsah</span>
+            </div>
+            <div class="workshopPrice">149 €</div>
+            <a class="btn btn--primary btn--full" href="#rezervacia">Rezervovať miesto</a>
+          </div>
 
-    if (!detailRes.ok) {
-      return new Response(JSON.stringify({ ok: false, error: "Detail API error" }), { headers });
-    }
+          <div class="workshopCard">
+            <h3>E-shop za 1 deň</h3>
+            <p>Kompletný e-shop na WooCommerce. Produkty, platobná brána, doprava, faktúry. Odídete s funkčným obchodom, pripravený predávať.</p>
+            <div class="workshopResult">
+              <span class="resultLabel">Výsledok:</span>
+              <span>Funkčný e-shop, prvé produkty nahraté</span>
+            </div>
+            <div class="workshopPrice">179 €</div>
+            <a class="btn btn--primary btn--full" href="#rezervacia">Rezervovať miesto</a>
+          </div>
 
-    const company = await detailRes.json();
+          <div class="workshopCard">
+            <h3>Google reklama za 1 deň</h3>
+            <p>Google Ads bez chaosu. Nastavíme účet, konverzie, kampane, kľúčové slová. Pochopíte, kam idú vaše peniaze a ako to optimalizovať.</p>
+            <div class="workshopResult">
+              <span class="resultLabel">Výsledok:</span>
+              <span>Prvé kampane bežia, viete čítať dáta</span>
+            </div>
+            <div class="workshopPrice">149 €</div>
+            <a class="btn btn--primary btn--full" href="#rezervacia">Rezervovať miesto</a>
+          </div>
 
-    // Parsuj ulicu a číslo
-    let street = "";
-    let number = "";
-    const ulica = company.ulica || "";
-    
-    // Skús rôzne formáty: "Ulica 123", "Ulica 123/45", "Ulica 7608/12"
-    const match = ulica.match(/^(.+?)\s+(\d+(?:\/\d+)?[A-Za-z]?)$/);
-    if (match) {
-      street = match[1].trim();
-      number = match[2].trim();
-    } else {
-      street = ulica;
-    }
+          <div class="workshopCard">
+            <h3>AI nástroje za 1 deň</h3>
+            <p>ChatGPT, Claude, Midjourney, automatizácie. Praktické využitie AI vo vašom biznise – texty, nápady, procesy, úspora času.</p>
+            <div class="workshopResult">
+              <span class="resultLabel">Výsledok:</span>
+              <span>AI workflow pre váš biznis</span>
+            </div>
+            <div class="workshopPrice">129 €</div>
+            <a class="btn btn--primary btn--full" href="#rezervacia">Rezervovať miesto</a>
+          </div>
 
-    const city = company.mesto || "";
-    const psc = company.psc || "";
-    const dic = company.dic || "";
-    
-    // Skús získať IČ DPH z VIES ak máme DIČ
-    let icdph = "";
-    if (dic) {
-      try {
-        const viesUrl = `https://ec.europa.eu/taxation_customs/vies/rest-api/ms/SK/vat/${dic}`;
-        const viesRes = await fetch(viesUrl, { 
-          headers: { "Accept": "application/json" }
-        });
-        if (viesRes.ok) {
-          const viesData = await viesRes.json();
-          if (viesData.isValid) {
-            icdph = "SK" + dic;
-          }
-        }
-      } catch (e) {
-        // VIES nedostupný, pokračuj bez IČ DPH
+          <div class="workshopCard">
+            <h3>Sociálne siete za 1 deň</h3>
+            <p>Obsahový plán, šablóny, natáčanie na mobil. Konzistentný výstup bez toho, aby vám to zabralo celé dni.</p>
+            <div class="workshopResult">
+              <span class="resultLabel">Výsledok:</span>
+              <span>Mesačný plán + prvé príspevky hotové</span>
+            </div>
+            <div class="workshopPrice">149 €</div>
+            <a class="btn btn--primary btn--full" href="#rezervacia">Rezervovať miesto</a>
+          </div>
+
+          <div class="workshopCard workshopCardCustom">
+            <h3>Na mieru</h3>
+            <p>Potrebujete kombináciu? Web + reklama? E-shop + sociálne siete? Napíšte a vyskladáme deň presne podľa vašich potrieb.</p>
+            <a class="btn btn--ghost" href="/kontakt">Kontaktovať nás</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- TERMÍNY -->
+      <section class="section sectionAlt" id="terminy">
+        <div class="sectionHeader">
+          <h2>Najbližšie termíny</h2>
+        </div>
+
+        {openTerms.length === 0 ? (
+            <div class="noTermsBox">
+              <p>Termíny doplníme čoskoro. Nechajte nám kontakt a dáme vám vedieť.</p>
+              <a class="btn btn--primary" href="#rezervacia">Mám záujem</a>
+            </div>
+        ) : (
+            <div class="termsGrid">
+              {openTerms.map(t => (
+                  <div class="termCard">
+                    <div class="termDate">{t.date}</div>
+                    <h3>{t.title}</h3>
+                    <div class="termMeta">
+                      <span>{t.city}</span>
+                      <span>Kapacita: {t.capacity}</span>
+                    </div>
+                    <div class="termPrice">{t.price} €</div>
+                    <a class="btn btn--primary btn--full" href="#rezervacia">Rezervovať</a>
+                  </div>
+              ))}
+            </div>
+        )}
+      </section>
+
+      <!-- AKO TO PREBIEHA -->
+      <section class="section">
+        <div class="sectionHeader">
+          <h2>Ako to prebieha</h2>
+        </div>
+
+        <div class="processGrid">
+          <div class="processStep">
+            <div class="processNumber">1</div>
+            <h4>Ráno</h4>
+            <p>Stretneme sa, predstavíme cieľ dňa. Každý povie, na čom pracuje. Začíname.</p>
+          </div>
+          <div class="processStep">
+            <div class="processNumber">2</div>
+            <h4>Dopoludnie</h4>
+            <p>Praktická práca na vašom projekte. Lektor je k dispozícii, pomáha, odpovedá.</p>
+          </div>
+          <div class="processStep">
+            <div class="processNumber">3</div>
+            <h4>Obed</h4>
+            <p>Spoločný obed. Neformálne diskusie, networking s ostatnými účastníkmi.</p>
+          </div>
+          <div class="processStep">
+            <div class="processNumber">4</div>
+            <h4>Popoludnie</h4>
+            <p>Dokončenie projektu, finálne úpravy, Q&A. Odchádzate s hotovým výsledkom.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MIESTO -->
+      <section class="section sectionAlt">
+        <div class="placeGrid">
+          <div class="placeInfo">
+            <h3>Kde a kedy</h3>
+            <p>Workshopy prebiehajú na ulici Červenej armády 1 v Martine. Pracuje sa na vlastnom notebooku.</p>
+            <ul class="placeList">
+              <li>Malá skupina do 12 ľudí</li>
+              <li>Káva, občerstvenie a obed v cene</li>
+            </ul>
+          </div>
+          <div class="placeNote">
+            <h4>Firemný workshop?</h4>
+            <p>Privátne školenie pre váš tím. Termín, obsah a miesto prispôsobíme vašim potrebám.</p>
+            <a class="btn btn--ghost" href="/kontakt">Kontaktovať nás</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="section">
+        <div class="sectionHeader">
+          <h2>Časté otázky</h2>
+        </div>
+
+        <div class="faqList">
+          <details class="faqItem">
+            <summary>Musím mať nejaké skúsenosti?</summary>
+            <p>Nie. Dôležité je vedieť, čo chcete dosiahnuť. Technické veci vás naučíme.</p>
+          </details>
+          <details class="faqItem">
+            <summary>Čo si mám priniesť?</summary>
+            <p>Vlastný notebook s nabíjačkou. Všetko ostatné (softvér, prístupy, materiály) pripravíme my.</p>
+          </details>
+          <details class="faqItem">
+            <summary>Čo ak niečo nestihnem dokončiť?</summary>
+            <p>Dostanete materiály a checklist. Väčšina účastníkov odchádza s hotovým výsledkom, ale ak by niečo zostalo, poradíme ako dokončiť.</p>
+          </details>
+          <details class="faqItem">
+            <summary>Môžem zrušiť rezerváciu?</summary>
+            <p>Áno. Stačí nám dať vedieť aspoň týždeň vopred. Ak nemôžete prísť, môžete poslať náhradníka.</p>
+          </details>
+          <details class="faqItem">
+            <summary>Vystavíte faktúru?</summary>
+            <p>Samozrejme. Pri rezervácii uveďte IČO a fakturačné údaje doplníme automaticky.</p>
+          </details>
+          <details class="faqItem">
+            <summary>Koľko ľudí bude na workshope?</summary>
+            <p>Maximálne 12. Chceme, aby každý dostal pozornosť a pomoc, keď ju potrebuje.</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- REZERVAČNÝ FORMULÁR S PLATBOU -->
+      <section class="section sectionAlt" id="rezervacia">
+        <div class="sectionHeader">
+          <h2>Rezervácia s platbou</h2>
+          <p class="sectionLead">Vyplňte údaje a zaplaťte online. Miesto máte ihneď rezervované.</p>
+        </div>
+
+        <div class="formCard">
+          <form id="workshopForm">
+            <input type="hidden" name="form-name" value="workshopy" />
+            <input type="hidden" id="hiddenCompanyName" name="Firma - názov" value="" />
+            <input type="hidden" id="hiddenCompanyDic" name="Firma - DIČ" value="" />
+            <input type="hidden" id="hiddenCompanyIcdph" name="Firma - IČ DPH" value="" />
+            <input type="hidden" id="hiddenCompanyAddress" name="Firma - Adresa" value="" />
+
+            <div class="formGrid">
+              <div class="field">
+                <label for="wsName">Meno a priezvisko *</label>
+                <input id="wsName" name="Meno a priezvisko" required />
+              </div>
+
+              <div class="field">
+                <label for="wsEmail">E-mail *</label>
+                <input id="wsEmail" type="email" name="E-mail" required />
+              </div>
+
+              <div class="field">
+                <label for="wsPhone">Telefón</label>
+                <input id="wsPhone" name="Telefón" type="tel" />
+              </div>
+
+              <div class="field">
+                <label for="wsTerm">Termín workshopu *</label>
+                <select id="wsTerm" name="Termín workshopu" required>
+                  <option value="" data-price="0" selected disabled>Vyberte termín</option>
+                  {openTerms.map(t => (
+                      <option value={formatTerm(t)} data-price={t.price}>{formatTerm(t)}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="wsIco">IČO (pre faktúru, voliteľné)</label>
+                <input id="wsIco" name="IČO" inputmode="numeric" />
+                <div class="statusLine" id="icoStatus"></div>
+              </div>
+
+              <div class="field fieldFull">
+                <label for="wsNote">Poznámka</label>
+                <textarea id="wsNote" name="Poznámka" rows="2"></textarea>
+              </div>
+            </div>
+
+            <!-- Firemné údaje z IČO -->
+            <div class="autoFields" id="companyFields" style="display:none;">
+              <div class="autoFieldsHeader">Údaje z registra:</div>
+              <div class="autoFieldsGrid">
+                <div class="field">
+                  <label>Firma</label>
+                  <input id="wsCompanyName" readonly />
+                </div>
+                <div class="field">
+                  <label>Adresa</label>
+                  <input id="wsCompanyAddress" readonly />
+                </div>
+                <div class="field">
+                  <label>DIČ</label>
+                  <input id="wsCompanyDic" readonly />
+                </div>
+                <div class="field">
+                  <label>IČ DPH</label>
+                  <input id="wsCompanyIcdph" readonly />
+                </div>
+              </div>
+            </div>
+
+            <!-- Cena a tlačidlo -->
+            <div class="priceDisplay" id="priceDisplay" style="display:none;">
+              <span>Cena:</span>
+              <strong id="selectedPrice">0 €</strong>
+            </div>
+
+            <div class="formActions">
+              <label class="checkRow">
+                <input type="checkbox" id="gdprCheck" required />
+                <span>Súhlasím so spracovaním osobných údajov za účelom rezervácie a fakturácie.</span>
+              </label>
+              <button class="btn btn--primary btn--large" type="submit" id="submitBtn" disabled>
+                Pokračovať na platbu
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- PLATOBNÝ MODAL -->
+      <div id="paymentModal" class="paymentModal">
+        <div class="paymentModalContent">
+          <button class="paymentModalClose" id="closePaymentModal">&times;</button>
+
+          <div class="paymentModalHeader">
+            <h3 id="paymentProductName">Workshop</h3>
+            <div class="paymentModalPrice" id="paymentPrice">0 €</div>
+          </div>
+
+          <div class="paymentModalInfo">
+            <p><strong id="paymentCustomerName">-</strong></p>
+            <p id="paymentCustomerEmail">-</p>
+          </div>
+
+          <div id="payment-element"></div>
+          <div id="payment-message"></div>
+
+          <button id="payNowBtn" class="btn btn--primary btn--full btn--large" disabled>
+            <span id="payBtnText">Zaplatiť</span>
+            <span id="payBtnSpinner" class="spinner" style="display:none;"></span>
+          </button>
+        </div>
+      </div>
+
+      <script src="https://js.stripe.com/v3/"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const stripe = Stripe('pk_live_51SIajzK7AvTQZ0XNgrY5daEJeZX4ew0fxpRaVwgahpvPAamiISdRB0SpwlPYtbrvnsJritP542yNLaZximzBZwZo007qtYg79p');
+        let elements = null;
+        let paymentElement = null;
+
+        // Form elements
+        const form = document.getElementById('workshopForm');
+        const termSelect = document.getElementById('wsTerm');
+        const nameInput = document.getElementById('wsName');
+        const emailInput = document.getElementById('wsEmail');
+        const phoneInput = document.getElementById('wsPhone');
+        const icoInput = document.getElementById('wsIco');
+        const noteInput = document.getElementById('wsNote');
+        const gdprCheck = document.getElementById('gdprCheck');
+        const submitBtn = document.getElementById('submitBtn');
+        const priceDisplay = document.getElementById('priceDisplay');
+        const selectedPriceEl = document.getElementById('selectedPrice');
+
+        // Modal elements
+        const modal = document.getElementById('paymentModal');
+        const closeModalBtn = document.getElementById('closePaymentModal');
+        const payNowBtn = document.getElementById('payNowBtn');
+
+        let currentPrice = 0;
+        let currentProductName = '';
+
+        // Update price when term changes
+        termSelect.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        currentPrice = parseInt(selected.dataset.price) || 0;
+        currentProductName = selected.value;
+
+        if (currentPrice > 0) {
+        priceDisplay.style.display = 'flex';
+        selectedPriceEl.textContent = currentPrice + ' €';
+      } else {
+        priceDisplay.style.display = 'none';
       }
-    }
+        checkFormValidity();
+      });
 
-    let addressFull = "";
-    const parts = [];
-    if (ulica) parts.push(ulica);
-    if (psc || city) parts.push((psc ? psc + " " : "") + city);
-    addressFull = parts.join(", ");
+        // Check form validity
+        function checkFormValidity() {
+        const isValid = nameInput.value.trim() &&
+        emailInput.value.trim() &&
+        termSelect.value &&
+        currentPrice > 0 &&
+        gdprCheck.checked;
+        submitBtn.disabled = !isValid;
+      }
 
-    return new Response(JSON.stringify({
-      ok: true,
-      found: true,
-      company: {
-        name: company.nazovUJ || "",
-        ico: company.ico || ico,
-        dic: dic,
-        icdph: icdph,
-        street: street,
-        number: number,
-        city: city,
-        psc: psc,
-        country: "Slovensko",
-        addressFull: addressFull,
+        [nameInput, emailInput, termSelect, gdprCheck].forEach(el => {
+        el.addEventListener('change', checkFormValidity);
+        el.addEventListener('input', checkFormValidity);
+      });
+
+        // IČO lookup
+        let icoTimeout;
+        icoInput.addEventListener('input', function() {
+        clearTimeout(icoTimeout);
+        const ico = this.value.replace(/\s/g, '');
+        const status = document.getElementById('icoStatus');
+        const companyFields = document.getElementById('companyFields');
+
+        if (ico.length < 6) {
+        companyFields.style.display = 'none';
+        status.textContent = '';
+        return;
+      }
+
+        if (ico.length >= 8) {
+        status.textContent = 'Hľadám...';
+        status.className = 'statusLine loading';
+
+        icoTimeout = setTimeout(() => {
+        fetch(`/api/ico-lookup?ico=${ico}`)
+        .then(r => r.json())
+        .then(data => {
+        if (data.success) {
+        document.getElementById('wsCompanyName').value = data.name || '';
+        document.getElementById('wsCompanyAddress').value = data.address || '';
+        document.getElementById('wsCompanyDic').value = data.dic || '';
+        document.getElementById('wsCompanyIcdph').value = data.icDph || '';
+
+        document.getElementById('hiddenCompanyName').value = data.name || '';
+        document.getElementById('hiddenCompanyDic').value = data.dic || '';
+        document.getElementById('hiddenCompanyIcdph').value = data.icDph || '';
+        document.getElementById('hiddenCompanyAddress').value = data.address || '';
+
+        companyFields.style.display = 'block';
+        status.textContent = '✓ Firma nájdená';
+        status.className = 'statusLine success';
+      } else {
+        companyFields.style.display = 'none';
+        status.textContent = 'Firma nenájdená';
+        status.className = 'statusLine error';
+      }
+      })
+        .catch(() => {
+        companyFields.style.display = 'none';
+        status.textContent = '';
+        status.className = 'statusLine';
+      });
+      }, 600);
+      }
+      });
+
+        // Form submit - open payment modal
+        form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (!currentPrice || currentPrice <= 0) {
+        alert('Vyberte termín workshopu');
+        return;
+      }
+
+        // Show modal
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // Fill modal info
+        document.getElementById('paymentProductName').textContent = currentProductName.split('–')[1]?.trim() || currentProductName;
+        document.getElementById('paymentPrice').textContent = currentPrice + ' €';
+        document.getElementById('paymentCustomerName').textContent = nameInput.value;
+        document.getElementById('paymentCustomerEmail').textContent = emailInput.value;
+
+        // Initialize Stripe payment
+        await initStripePayment();
+      });
+
+        // Initialize Stripe
+        async function initStripePayment() {
+        document.getElementById('payment-message').textContent = 'Načítavam platobný formulár...';
+        payNowBtn.disabled = true;
+
+        try {
+        const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        amount: currentPrice * 100,
+        productName: currentProductName,
+        customerName: nameInput.value,
+        customerEmail: emailInput.value,
+        customerPhone: phoneInput.value || '',
+        companyIco: icoInput.value || '',
+        companyName: document.getElementById('hiddenCompanyName').value || '',
+        companyDic: document.getElementById('hiddenCompanyDic').value || '',
+        companyIcDph: document.getElementById('hiddenCompanyIcdph').value || '',
+        companyAddress: document.getElementById('hiddenCompanyAddress').value || '',
+        note: noteInput.value || ''
+      })
+      });
+
+        const data = await response.json();
+
+        if (data.error) {
+        document.getElementById('payment-message').textContent = data.error;
+        return;
+      }
+
+        // Create Stripe elements
+        const appearance = {
+        theme: 'night',
+        variables: {
+        colorPrimary: '#f97316',
+        colorBackground: '#1a1a1a',
+        colorText: '#ffffff',
+        colorDanger: '#ef4444',
+        fontFamily: 'system-ui, sans-serif',
+        borderRadius: '8px'
+      }
+      };
+
+        elements = stripe.elements({ clientSecret: data.clientSecret, appearance, locale: 'sk' });
+        paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+
+        document.getElementById('payment-message').textContent = '';
+
+        paymentElement.on('ready', function() {
+        payNowBtn.disabled = false;
+      });
+
+      } catch (err) {
+        document.getElementById('payment-message').textContent = 'Chyba: ' + err.message;
+      }
+      }
+
+        // Pay button
+        payNowBtn.addEventListener('click', async function() {
+        this.disabled = true;
+        document.getElementById('payBtnText').style.display = 'none';
+        document.getElementById('payBtnSpinner').style.display = 'inline-block';
+        document.getElementById('payment-message').textContent = '';
+
+        const result = await stripe.confirmPayment({
+        elements: elements,
+        confirmParams: {
+        return_url: window.location.origin + '/dakujem-platba',
+        receipt_email: emailInput.value
       },
-    }), { headers });
+        redirect: 'if_required'
+      });
 
-  } catch (err) {
-    return new Response(JSON.stringify({ ok: false, error: err.message }), { headers });
-  }
+        if (result.error) {
+        document.getElementById('payment-message').textContent = result.error.message;
+        this.disabled = false;
+        document.getElementById('payBtnText').style.display = 'inline';
+        document.getElementById('payBtnSpinner').style.display = 'none';
+      } else {
+        window.location.href = '/dakujem-platba';
+      }
+      });
+
+        // Close modal
+        function closeModal() {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+        if (paymentElement) {
+        paymentElement.unmount();
+        paymentElement = null;
+      }
+        elements = null;
+      }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+      });
+      });
+      </script>
+    </BaseLayout>
+
+<style>
+  /* Hero Full */
+  .heroFull {
+    min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  position: relative;
+  background: radial-gradient(ellipse at top, rgba(249,115,22,0.15) 0%, transparent 60%);
 }
+  .heroContent {
+    max-width: 850px;
+}
+  .heroFull h1 {
+    font-size: clamp(1.75rem, 5vw, 3.5rem);
+  line-height: 1.15;
+  margin-bottom: 1.25rem;
+  font-weight: 700;
+}
+  .heroLead {
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+  color: rgba(255,255,255,0.8);
+  line-height: 1.7;
+  max-width: 650px;
+  margin: 0 auto 2rem;
+}
+  .heroCtas {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+  .heroScroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: bounce 2s infinite;
+}
+  .scrollArrow {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid rgba(255,255,255,0.4);
+  border-bottom: 2px solid rgba(255,255,255,0.4);
+  transform: rotate(45deg);
+}
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(10px); }
+}
+
+  @media (max-width: 640px) {
+  .heroFull {
+  min-height: calc(100vh - 64px);
+  padding: 2rem 1rem;
+}
+  .heroFull h1 {
+  font-size: 1.75rem;
+}
+  .heroLead {
+  font-size: 0.95rem;
+}
+  .heroScroll {
+  bottom: 1rem;
+}
+}
+
+  /* Section */
+  .section {
+  padding: 5rem 0;
+}
+  .sectionAlt {
+  background: rgba(255,255,255,0.02);
+  margin: 0 -1.5rem;
+  padding: 5rem 1.5rem;
+}
+  .sectionHeader {
+    text-align: center;
+  max-width: 600px;
+  margin: 0 auto 3rem;
+}
+  .sectionHeader h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+  margin-bottom: 0.75rem;
+}
+  .sectionLead {
+  color: rgba(255,255,255,0.7);
+  font-size: 1rem;
+}
+
+  /* Comparison */
+  .comparisonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+  @media (max-width: 600px) {
+  .comparisonGrid { grid-template-columns: 1fr; }
+}
+  .comparisonCol {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 2rem;
+}
+  .comparisonCol.highlighted {
+  background: rgba(34,197,94,0.08);
+  border-color: rgba(34,197,94,0.3);
+}
+  .comparisonCol h3 {
+    font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+  .comparisonList {
+    list-style: none;
+  padding: 0;
+  margin: 0;
+}
+  .comparisonList li {
+  padding: 0.6rem 0 0.6rem 1.75rem;
+  position: relative;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.8);
+}
+  .comparisonList.negative li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.85rem;
+  width: 10px;
+  height: 2px;
+  background: rgba(255,255,255,0.3);
+}
+  .comparisonList.positive li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7rem;
+  width: 8px;
+  height: 12px;
+  border-right: 2px solid #22c55e;
+  border-bottom: 2px solid #22c55e;
+  transform: rotate(45deg);
+}
+
+  /* Workshop Grid */
+  .workshopGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+  .workshopCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 2rem;
+}
+  .workshopCard h3 {
+    font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+  .workshopCard > p {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+  .workshopResult {
+  background: rgba(34,197,94,0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+  .resultLabel {
+  color: #22c55e;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+  .workshopPrice {
+    font-size: 1.75rem;
+  font-weight: 700;
+  color: #f97316;
+}
+  .workshopCardCustom {
+    border-style: dashed;
+  display: flex;
+  flex-direction: column;
+}
+  .workshopCardCustom p {
+  flex: 1;
+}
+
+  /* Terms */
+  .noTermsBox {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 3rem;
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+  .noTermsBox p {
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 1.5rem;
+}
+  .termsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+  .termCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+  .termDate {
+    font-size: 0.85rem;
+  color: #f97316;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+  .termCard h3 {
+    font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+}
+  .termMeta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 1rem;
+}
+  .termPrice {
+    font-size: 1.5rem;
+  font-weight: 700;
+  color: #22c55e;
+  margin-bottom: 1rem;
+}
+
+  /* Process */
+  .processGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+  .processStep {
+    text-align: center;
+}
+  .processNumber {
+  width: 44px;
+  height: 44px;
+  background: #f97316;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 auto 1rem;
+}
+  .processStep h4 {
+    margin-bottom: 0.5rem;
+}
+  .processStep p {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+  /* Place */
+  .placeGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+  @media (max-width: 700px) {
+  .placeGrid { grid-template-columns: 1fr; gap: 2rem; }
+}
+  .placeInfo h3 {
+    margin-bottom: 1rem;
+}
+  .placeInfo > p {
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+  .placeList {
+    list-style: none;
+  padding: 0;
+  margin: 0;
+}
+  .placeList li {
+  padding: 0.4rem 0 0.4rem 1.5rem;
+  position: relative;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.7);
+}
+  .placeList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.75rem;
+  width: 6px;
+  height: 6px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+  .placeNote {
+  background: rgba(249,115,22,0.08);
+  border: 1px solid rgba(249,115,22,0.25);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+  .placeNote h4 {
+  color: #f97316;
+  margin-bottom: 0.75rem;
+}
+  .placeNote p {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+  /* FAQ */
+  .faqList {
+    max-width: 700px;
+  margin: 0 auto;
+}
+  .faqItem {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+  .faqItem summary {
+  padding: 1.25rem 0;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+  .faqItem summary::-webkit-details-marker {
+  display: none;
+}
+  .faqItem summary::after {
+  content: "+";
+  font-size: 1.5rem;
+  color: #f97316;
+  font-weight: 400;
+}
+  .faqItem[open] summary::after {
+  content: "-";
+}
+  .faqItem p {
+  padding: 0 0 1.25rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+  margin: 0;
+}
+
+  /* Form */
+  .formCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+  .formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+  @media (max-width: 600px) {
+  .formGrid { grid-template-columns: 1fr; }
+}
+  .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+  .fieldFull {
+    grid-column: 1 / -1;
+}
+  .field label {
+    font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+}
+  .field input,
+  .field select,
+  .field textarea {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  font-size: 1rem;
+}
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+  outline: none;
+  border-color: #f97316;
+}
+  .statusLine {
+    font-size: 0.8rem;
+  min-height: 1.2em;
+}
+  .autoFields {
+    margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+  .autoFieldsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+  @media (max-width: 600px) {
+  .autoFieldsGrid { grid-template-columns: 1fr; }
+}
+  .autoFields input {
+  background: rgba(34,197,94,0.1);
+  border-color: rgba(34,197,94,0.3);
+}
+  .formActions {
+    margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+  .checkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+}
+  .checkRow input {
+    margin-top: 0.2rem;
+}
+
+  /* Price Display */
+  .priceDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+  .priceDisplay span {
+  color: rgba(255,255,255,0.7);
+}
+  .priceDisplay strong {
+    font-size: 1.5rem;
+  color: #22c55e;
+}
+
+  /* Auto Fields */
+  .autoFields {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+  .autoFieldsHeader {
+    font-size: 0.85rem;
+  color: #22c55e;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+  .autoFieldsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+  @media (max-width: 600px) {
+  .autoFieldsGrid { grid-template-columns: 1fr; }
+}
+
+  /* Status Line */
+  .statusLine {
+    font-size: 0.8rem;
+  margin-top: 0.4rem;
+  min-height: 1.2em;
+}
+  .statusLine.loading { color: #f97316; }
+  .statusLine.success { color: #22c55e; }
+  .statusLine.error { color: #ef4444; }
+
+  /* Payment Modal */
+  .paymentModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+  .paymentModal.open {
+  display: flex;
+}
+  .paymentModalContent {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 450px;
+  width: 100%;
+  position: relative;
+}
+  .paymentModalClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.75rem;
+  cursor: pointer;
+  line-height: 1;
+}
+  .paymentModalClose:hover { color: #fff; }
+  .paymentModalHeader {
+    text-align: center;
+  margin-bottom: 1.5rem;
+}
+  .paymentModalHeader h3 {
+    font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255,255,255,0.9);
+}
+  .paymentModalPrice {
+    font-size: 2.25rem;
+  font-weight: 700;
+  color: #f97316;
+}
+  .paymentModalInfo {
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+  .paymentModalInfo p {
+  margin: 0.25rem 0;
+  color: rgba(255,255,255,0.7);
+}
+  .paymentModalInfo strong {
+  color: #fff;
+}
+  #payment-element {
+    margin-bottom: 1rem;
+}
+  #payment-message {
+  color: #ef4444;
+  text-align: center;
+  margin-bottom: 1rem;
+  min-height: 1.25rem;
+  font-size: 0.9rem;
+}
+
+  /* Spinner */
+  .spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+  @keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+  /* Buttons */
+  .btn--large {
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+}
+  .btn--full {
+  width: 100%;
+  text-align: center;
+}
+</style>
