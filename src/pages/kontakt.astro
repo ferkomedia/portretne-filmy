@@ -193,22 +193,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           status.className = 'statusLine loading';
 
           icoTimeout = setTimeout(() => {
-            fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}`)
+            fetch('/api/ico-lookup?ico=' + ico)
               .then(r => r.json())
               .then(data => {
-                if (data && data.length > 0) {
-                  const company = data[0];
-                  const address = company.formatted_address || '';
+                if (data && data.success) {
+                  document.getElementById('companyName').value = data.name || '';
+                  document.getElementById('companyAddress').value = data.address || '';
+                  document.getElementById('companyDic').value = data.dic || '';
+                  document.getElementById('companyIcdph').value = data.icDph || '';
 
-                  document.getElementById('companyName').value = company.name || '';
-                  document.getElementById('companyAddress').value = address;
-                  document.getElementById('companyDic').value = company.dic || '';
-                  document.getElementById('companyIcdph').value = company.ic_dph || '';
-
-                  document.getElementById('hiddenCompanyName').value = company.name || '';
-                  document.getElementById('hiddenCompanyDic').value = company.dic || '';
-                  document.getElementById('hiddenCompanyIcdph').value = company.ic_dph || '';
-                  document.getElementById('hiddenCompanyAddress').value = address;
+                  document.getElementById('hiddenCompanyName').value = data.name || '';
+                  document.getElementById('hiddenCompanyDic').value = data.dic || '';
+                  document.getElementById('hiddenCompanyIcdph').value = data.icDph || '';
+                  document.getElementById('hiddenCompanyAddress').value = data.address || '';
 
                   companyFields.style.display = 'block';
                   status.textContent = '✓ Firma nájdená';
