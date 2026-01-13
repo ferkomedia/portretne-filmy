@@ -364,4 +364,3 @@ export async function onRequestOptions() {
         },
     });
 }
-
