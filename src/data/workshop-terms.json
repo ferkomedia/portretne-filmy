@@ -14,6 +14,14 @@
     "price": 179,
     "capacity": 10,
     "status": "open"
+  },
+  {
+    "title": "Sociálne siete za 1 deň",
+    "date": "30.01.2026",
+    "city": "Martin",
+    "price": 149,
+    "capacity": 12,
+    "status": "open"
   }
 ]
 

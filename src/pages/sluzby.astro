@@ -7,10 +7,17 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 >
 
   <!-- HERO -->
-  <section class="heroSection">
+  <section class="heroFull">
     <div class="heroContent">
       <h1>Vytvárame príbehy,<br/>ktoré pracujú za vás.</h1>
       <p class="heroLead">Či už budujete osobný brand, zachytávate rodinné dedičstvo, alebo sa chcete naučiť nové zručnosti – máme pre vás riešenie.</p>
+      <div class="heroCtas">
+        <a class="btn btn--primary btn--large" href="/cennik">Pozrieť cenník</a>
+        <a class="btn btn--ghost btn--large" href="#filmy">Naše služby</a>
+      </div>
+    </div>
+    <div class="heroScroll">
+      <span class="scrollArrow"></span>
     </div>
   </section>
 
@@ -129,26 +136,30 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
 
     <div class="corporateGrid">
-      <div class="corporateCard">
+      <a href="/blog/employer-branding" class="corporateCard">
         <div class="corporateIcon">EB</div>
         <h4>Employer branding</h4>
         <p>Ukážte, ako vyzerá práca u vás. Príbehy zamestnancov, ktoré pritiahnu nové talenty a posilnia firemnú kultúru.</p>
-      </div>
-      <div class="corporateCard">
+        <span class="cardLink">Zistiť viac →</span>
+      </a>
+      <a href="/blog/seria-portretov" class="corporateCard">
         <div class="corporateIcon">SP</div>
         <h4>Séria portrétov</h4>
         <p>Predstavte celý tím alebo vedenie. Konzistentný vizuálny štýl, výhodnejšia cena pri viacerých filmoch.</p>
-      </div>
-      <div class="corporateCard">
+        <span class="cardLink">Zistiť viac →</span>
+      </a>
+      <a href="/blog/firemne-workshopy" class="corporateCard">
         <div class="corporateIcon">FW</div>
         <h4>Firemné workshopy</h4>
         <p>Privátne školenie pre váš tím. Termín, obsah a miesto prispôsobíme vašim potrebám. Ideálne pre onboarding.</p>
-      </div>
-      <div class="corporateCard">
+        <span class="cardLink">Zistiť viac →</span>
+      </a>
+      <a href="/blog/dlhodoba-spolupraca" class="corporateCard">
         <div class="corporateIcon">DS</div>
         <h4>Dlhodobá spolupráca</h4>
         <p>Pravidelná video produkcia, content stratégia, správa sociálnych sietí. Stabilný partner pre váš marketing.</p>
-      </div>
+        <span class="cardLink">Zistiť viac →</span>
+      </a>
     </div>
 
     <div class="serviceCta">
@@ -171,28 +182,58 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 </BaseLayout>
 
 <style>
-  /* Hero */
-  .heroSection {
-    min-height: 50vh;
+  /* Hero Full */
+  .heroFull {
+    min-height: 90vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 6rem 1.5rem 4rem;
-    background: radial-gradient(ellipse at top, rgba(249,115,22,0.12) 0%, transparent 60%);
+    padding: 4rem 1.5rem;
+    position: relative;
+    background: radial-gradient(ellipse at top, rgba(249,115,22,0.15) 0%, transparent 60%);
   }
   .heroContent {
-    max-width: 800px;
+    max-width: 900px;
   }
-  .heroSection h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    line-height: 1.15;
+  .heroFull h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    line-height: 1.1;
     margin-bottom: 1.5rem;
+    font-weight: 700;
   }
   .heroLead {
-    font-size: clamp(1.05rem, 2vw, 1.25rem);
-    color: rgba(255,255,255,0.75);
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    color: rgba(255,255,255,0.8);
     line-height: 1.7;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+  }
+  .heroCtas {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .heroScroll {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+  }
+  .scrollArrow {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid rgba(255,255,255,0.4);
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+    transform: rotate(45deg);
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
   }
 
   /* Sections */
@@ -210,7 +251,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     margin: 0 auto 3rem;
   }
   .sectionHeader h2 {
-    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
     margin-bottom: 1rem;
   }
   .sectionLead {
@@ -342,7 +383,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   /* Corporate Grid */
   .corporateGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     max-width: 1000px;
     margin: 0 auto;
@@ -352,6 +393,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 12px;
     padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+    display: block;
+  }
+  .corporateCard:hover {
+    border-color: #f97316;
+    background: rgba(249,115,22,0.05);
+    transform: translateY(-4px);
   }
   .corporateIcon {
     width: 44px;
@@ -368,12 +418,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   }
   .corporateCard h4 {
     margin-bottom: 0.5rem;
+    color: #fff;
   }
   .corporateCard p {
     color: rgba(255,255,255,0.65);
     font-size: 0.9rem;
     line-height: 1.5;
-    margin: 0;
+    margin-bottom: 1rem;
+  }
+  .cardLink {
+    color: #f97316;
+    font-size: 0.9rem;
+    font-weight: 600;
   }
 
   /* Final CTA */
@@ -405,5 +461,17 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .btn--large {
     padding: 1rem 2rem;
     font-size: 1.05rem;
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .serviceGrid,
+    .workshopGrid,
+    .corporateGrid {
+      grid-template-columns: 1fr;
+    }
+    .processGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
