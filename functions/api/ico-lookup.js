@@ -14,49 +14,76 @@ export async function onRequest(context) {
     }
 
     if (!ico || ico.length < 8) {
-        return new Response(JSON.stringify({ success: false, error: 'Invalid ICO' }), {
-            status: 400,
-            headers: corsHeaders
-        });
+        return new Response(JSON.stringify({
+            success: false,
+            error: 'IČO musí mať aspoň 8 znakov'
+        }), { status: 400, headers: corsHeaders });
     }
 
+    const cleanIco = ico.replace(/\s/g, '');
+
     try {
-        const response = await fetch(
-            'https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=' + ico,
-            {
+        // Method 1: Direct lookup by CIN (IČO)
+        const directUrl = `https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/cin/${cleanIco}`;
+
+        let response = await fetch(directUrl, {
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'PortretneFilmy/1.0'
+            }
+        });
+
+        let data = null;
+        let company = null;
+
+        if (response.ok) {
+            data = await response.json();
+            if (data && data.name) {
+                company = data;
+            }
+        }
+
+        // Method 2: Search if direct lookup failed
+        if (!company) {
+            const searchUrl = `https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${cleanIco}&per_page=5`;
+
+            response = await fetch(searchUrl, {
                 headers: {
                     'Accept': 'application/json',
                     'User-Agent': 'PortretneFilmy/1.0'
                 }
+            });
+
+            if (response.ok) {
+                data = await response.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    // Find exact match by CIN
+                    company = data.find(c => c.cin === cleanIco) || data[0];
+                }
             }
-        );
+        }
 
-        const data = await response.json();
-
-        if (data && data.length > 0) {
-            const company = data[0];
+        if (company && company.name) {
             return new Response(JSON.stringify({
                 success: true,
                 name: company.name || '',
                 address: company.formatted_address || '',
                 dic: company.dic || '',
                 icDph: company.ic_dph || '',
-                ico: company.cin || ico
+                ico: company.cin || cleanIco
             }), { headers: corsHeaders });
         }
 
         return new Response(JSON.stringify({
             success: false,
-            error: 'Company not found'
+            error: 'Firma s týmto IČO nebola nájdená',
+            debug: { ico: cleanIco, apiResponse: data }
         }), { headers: corsHeaders });
 
     } catch (err) {
         return new Response(JSON.stringify({
             success: false,
-            error: 'Lookup failed'
-        }), {
-            status: 500,
-            headers: corsHeaders
-        });
+            error: 'Chyba pri vyhľadávaní: ' + err.message
+        }), { headers: corsHeaders });
     }
 }
