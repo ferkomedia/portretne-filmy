@@ -597,6 +597,24 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     line-height: 1.6;
   }
 
+  /* Grids */
+  .grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  .grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  @media (max-width: 900px) {
+    .grid3 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+
   /* Use Cases */
   .useCases {
     display: grid;
@@ -633,8 +651,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     color: rgba(255,255,255,0.7);
   }
 
-  /* Cards */
+  /* Cards - Base */
+  .card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+  }
+
+  /* Cards - Pricing */
   .cardPricing {
+    position: relative;
     display: flex;
     flex-direction: column;
     text-align: center;

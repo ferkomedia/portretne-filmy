@@ -9,13 +9,16 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
 <BaseLayout title="Workshopy | Naučte sa to za jeden deň" description="Praktické jednodňové workshopy. Web, e-shop, Google reklama, AI nástroje. Odídete s hotovým výsledkom, nie s teóriou.">
 
   <!-- HERO -->
-  <section class="heroSection">
+  <section class="heroFull">
     <div class="heroContent">
       <h1>Online kurz dokončí 3% ľudí.<br/>Z workshopu odídete s výsledkom.</h1>
       <p class="heroLead">Žiadne videá, ktoré nikdy nedopozeriete. Žiadne skripty, ktoré nikdy neotvoríte. Jeden deň, praktická práca na vašom projekte, osobná spätná väzba.</p>
       <div class="heroCtas">
         <a class="btn btn--primary btn--large" href="#terminy">Pozrieť termíny</a>
       </div>
+    </div>
+    <div class="heroScroll">
+      <span class="scrollArrow"></span>
     </div>
   </section>
 
@@ -424,36 +427,65 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
           status.className = 'statusLine loading';
 
           icoTimeout = setTimeout(() => {
-            fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}&private_access_token=a0a7c8923ba95bf5770c50d71c40f77ebbc0000074d817c01caf02eb7e91d710`)
-              .then(r => r.json())
+            fetch(`https://www.finstat.sk/api/autocomplete?query=${ico}&apiKey=free`)
+              .then(r => {
+                if (!r.ok) throw new Error('API error');
+                return r.json();
+              })
               .then(data => {
-                if (data && data.length > 0) {
-                  const company = data[0];
-                  const address = company.formatted_address || '';
+                // Try FinStat first
+                if (data && data.Results && data.Results.length > 0) {
+                  const company = data.Results[0];
+                  document.getElementById('wsCompanyName').value = company.Name || '';
+                  document.getElementById('wsCompanyAddress').value = company.Address || '';
+                  document.getElementById('wsCompanyDic').value = company.Dic || '';
+                  document.getElementById('wsCompanyIcdph').value = company.IcDph || '';
 
-                  document.getElementById('wsCompanyName').value = company.name || '';
-                  document.getElementById('wsCompanyAddress').value = address;
-                  document.getElementById('wsCompanyDic').value = company.dic || '';
-                  document.getElementById('wsCompanyIcdph').value = company.ic_dph || '';
-
-                  // Hidden fields
-                  document.getElementById('hiddenCompanyName').value = company.name || '';
-                  document.getElementById('hiddenCompanyDic').value = company.dic || '';
-                  document.getElementById('hiddenCompanyIcdph').value = company.ic_dph || '';
-                  document.getElementById('hiddenCompanyAddress').value = address;
+                  document.getElementById('hiddenCompanyName').value = company.Name || '';
+                  document.getElementById('hiddenCompanyDic').value = company.Dic || '';
+                  document.getElementById('hiddenCompanyIcdph').value = company.IcDph || '';
+                  document.getElementById('hiddenCompanyAddress').value = company.Address || '';
 
                   companyFields.style.display = 'block';
                   status.textContent = '✓ Firma nájdená';
                   status.className = 'statusLine success';
                 } else {
-                  companyFields.style.display = 'none';
-                  status.textContent = 'Firma nenájdená';
-                  status.className = 'statusLine error';
+                  throw new Error('Not found');
                 }
               })
               .catch(() => {
-                status.textContent = 'Chyba pri hľadaní';
-                status.className = 'statusLine error';
+                // Fallback to slovensko.digital API without token
+                fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}`)
+                  .then(r => r.json())
+                  .then(data => {
+                    if (data && data.length > 0) {
+                      const company = data[0];
+                      const address = company.formatted_address || '';
+
+                      document.getElementById('wsCompanyName').value = company.name || '';
+                      document.getElementById('wsCompanyAddress').value = address;
+                      document.getElementById('wsCompanyDic').value = company.dic || '';
+                      document.getElementById('wsCompanyIcdph').value = company.ic_dph || '';
+
+                      document.getElementById('hiddenCompanyName').value = company.name || '';
+                      document.getElementById('hiddenCompanyDic').value = company.dic || '';
+                      document.getElementById('hiddenCompanyIcdph').value = company.ic_dph || '';
+                      document.getElementById('hiddenCompanyAddress').value = address;
+
+                      companyFields.style.display = 'block';
+                      status.textContent = '✓ Firma nájdená';
+                      status.className = 'statusLine success';
+                    } else {
+                      companyFields.style.display = 'none';
+                      status.textContent = 'Firma nenájdená - skúste zadať ručne';
+                      status.className = 'statusLine error';
+                    }
+                  })
+                  .catch(() => {
+                    companyFields.style.display = 'none';
+                    status.textContent = 'IČO overíme neskôr';
+                    status.className = 'statusLine';
+                  });
               });
           }, 500);
         }
@@ -587,35 +619,58 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
 </BaseLayout>
 
 <style>
-  /* Hero */
-  .heroSection {
-    min-height: 55vh;
+  /* Hero Full */
+  .heroFull {
+    min-height: 90vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 6rem 1.5rem 4rem;
-    background: radial-gradient(ellipse at top, rgba(249,115,22,0.12) 0%, transparent 60%);
+    padding: 4rem 1.5rem;
+    position: relative;
+    background: radial-gradient(ellipse at top, rgba(249,115,22,0.15) 0%, transparent 60%);
   }
   .heroContent {
-    max-width: 800px;
+    max-width: 900px;
   }
-  .heroSection h1 {
-    font-size: clamp(1.75rem, 4.5vw, 3rem);
-    line-height: 1.2;
+  .heroFull h1 {
+    font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+    line-height: 1.1;
     margin-bottom: 1.5rem;
+    font-weight: 700;
   }
   .heroLead {
-    font-size: clamp(1rem, 2vw, 1.15rem);
-    color: rgba(255,255,255,0.75);
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    color: rgba(255,255,255,0.8);
     line-height: 1.7;
-    margin-bottom: 2rem;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
   }
   .heroCtas {
     display: flex;
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
+  }
+  .heroScroll {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+  }
+  .scrollArrow {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-right: 2px solid rgba(255,255,255,0.4);
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+    transform: rotate(45deg);
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(10px); }
   }
 
   /* Section */
