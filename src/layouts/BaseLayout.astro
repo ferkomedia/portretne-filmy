@@ -145,7 +145,7 @@ const schemaOrg = {
             <a class="btn btn--primary" href="tel:+421949460832">0949 460 832</a>
           </div>
 
-          <button class="hamburger" type="button" aria-label="Otvoriť menu" data-drawer-open>
+          <button class="hamburger" type="button" aria-expanded="false" data-drawer-open>
             <span></span><span></span><span></span>
           </button>
         </nav>
@@ -225,5 +225,30 @@ const schemaOrg = {
         });
       }
     </script>
+    <script is:inline>
+      const btn = document.querySelector('[data-drawer-open]');
+      const drawer = document.querySelector('[data-drawer]');
+      const backdrop = document.querySelector('[data-drawer-backdrop]');
+      const closeBtn = document.querySelector('[data-drawer-close]');
+
+      function openDrawer() {
+        drawer.classList.add('isOpen');
+        backdrop.classList.add('isOpen');
+        document.body.classList.add('noScroll');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeDrawer() {
+        drawer.classList.remove('isOpen');
+        backdrop.classList.remove('isOpen');
+        document.body.classList.remove('noScroll');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+
+      btn.addEventListener('click', openDrawer);
+      backdrop.addEventListener('click', closeDrawer);
+      closeBtn.addEventListener('click', closeDrawer);
+    </script>
+
   </body>
 </html>
