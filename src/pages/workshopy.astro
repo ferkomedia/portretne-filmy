@@ -270,9 +270,22 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
               ))}
             </select>
           </div>
-
           <div class="field">
-            <label for="wsIco">IČO (pre faktúru, voliteľné)</label>
+            <label for="wsDomain">Doména (voliteľné)</label>
+            <div style="position: relative;">
+              <input
+                id="wsDomain"
+                name="Doména"
+                type="text"
+                placeholder="moja-firma"
+                style="padding-right: 45px;"
+              />
+              <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.5); pointer-events: none;">.sk</span>
+            </div>
+            <div class="statusLine" id="domainStatus"></div>
+          </div>
+          <div class="field">
+            <label for="wsIco">IČO (voliteľné)</label>
             <input id="wsIco" name="IČO" inputmode="numeric" />
             <div class="statusLine" id="icoStatus"></div>
           </div>
@@ -407,7 +420,50 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
         el.addEventListener('change', checkFormValidity);
         el.addEventListener('input', checkFormValidity);
       });
+      // Domain check
+      let domainTimeout;
+      const domainInput = document.getElementById('wsDomain');
+      const domainStatus = document.getElementById('domainStatus');
 
+      if (domainInput) {
+        domainInput.addEventListener('input', function() {
+          clearTimeout(domainTimeout);
+          let domain = this.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+
+          if (domain.length < 2) {
+            domainStatus.textContent = '';
+            return;
+          }
+
+          domainStatus.textContent = 'Kontrolujem...';
+          domainStatus.className = 'statusLine loading';
+
+          domainTimeout = setTimeout(() => {
+            const fullDomain = domain + '.sk';
+
+            fetch(`/api/domain-check?domain=${encodeURIComponent(fullDomain)}`)
+              .then(r => r.json())
+              .then(data => {
+                if (data.ok) {
+                  if (data.available) {
+                    domainStatus.textContent = '✓ Doména je voľná';
+                    domainStatus.className = 'statusLine success';
+                  } else {
+                    domainStatus.textContent = '✗ Doména je obsadená';
+                    domainStatus.className = 'statusLine error';
+                  }
+                } else {
+                  domainStatus.textContent = 'Chyba pri kontrole';
+                  domainStatus.className = 'statusLine error';
+                }
+              })
+              .catch(() => {
+                domainStatus.textContent = 'Chyba pri kontrole';
+                domainStatus.className = 'statusLine error';
+              });
+          }, 800);
+        });
+      }
       // IČO lookup
       let icoTimeout;
       icoInput.addEventListener('input', function() {
