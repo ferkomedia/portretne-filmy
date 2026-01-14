@@ -408,7 +408,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
         el.addEventListener('input', checkFormValidity);
       });
 
-      // IČO lookup - using local API proxy
+      // IČO lookup - priame volanie API z browsera
       let icoTimeout;
       icoInput.addEventListener('input', function() {
         clearTimeout(icoTimeout);
@@ -427,19 +427,21 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
           status.className = 'statusLine loading';
 
           icoTimeout = setTimeout(() => {
-            fetch('/api/ico-lookup?ico=' + ico)
+            fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}&per_page=5`)
               .then(r => r.json())
               .then(data => {
-                if (data && data.success) {
-                  document.getElementById('wsCompanyName').value = data.name || '';
-                  document.getElementById('wsCompanyAddress').value = data.address || '';
-                  document.getElementById('wsCompanyDic').value = data.dic || '';
-                  document.getElementById('wsCompanyIcdph').value = data.icDph || '';
+                if (Array.isArray(data) && data.length > 0) {
+                  const c = data.find(item => item.cin === ico) || data[0];
 
-                  document.getElementById('hiddenCompanyName').value = data.name || '';
-                  document.getElementById('hiddenCompanyDic').value = data.dic || '';
-                  document.getElementById('hiddenCompanyIcdph').value = data.icDph || '';
-                  document.getElementById('hiddenCompanyAddress').value = data.address || '';
+                  document.getElementById('wsCompanyName').value = c.name || '';
+                  document.getElementById('wsCompanyAddress').value = c.formatted_address || '';
+                  document.getElementById('wsCompanyDic').value = c.dic || '';
+                  document.getElementById('wsCompanyIcdph').value = c.ic_dph || '';
+
+                  document.getElementById('hiddenCompanyName').value = c.name || '';
+                  document.getElementById('hiddenCompanyDic').value = c.dic || '';
+                  document.getElementById('hiddenCompanyIcdph').value = c.ic_dph || '';
+                  document.getElementById('hiddenCompanyAddress').value = c.formatted_address || '';
 
                   companyFields.style.display = 'block';
                   status.textContent = '✓ Firma nájdená';
@@ -452,8 +454,8 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
               })
               .catch(() => {
                 companyFields.style.display = 'none';
-                status.textContent = '';
-                status.className = 'statusLine';
+                status.textContent = 'Chyba pri načítaní';
+                status.className = 'statusLine error';
               });
           }, 600);
         }

@@ -193,19 +193,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           status.className = 'statusLine loading';
 
           icoTimeout = setTimeout(() => {
-            fetch('/api/ico-lookup?ico=' + ico)
+            fetch(`https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${ico}&per_page=5`)
               .then(r => r.json())
               .then(data => {
-                if (data && data.success) {
-                  document.getElementById('companyName').value = data.name || '';
-                  document.getElementById('companyAddress').value = data.address || '';
-                  document.getElementById('companyDic').value = data.dic || '';
-                  document.getElementById('companyIcdph').value = data.icDph || '';
+                if (Array.isArray(data) && data.length > 0) {
+                  const c = data.find(item => item.cin === ico) || data[0];
 
-                  document.getElementById('hiddenCompanyName').value = data.name || '';
-                  document.getElementById('hiddenCompanyDic').value = data.dic || '';
-                  document.getElementById('hiddenCompanyIcdph').value = data.icDph || '';
-                  document.getElementById('hiddenCompanyAddress').value = data.address || '';
+                  document.getElementById('companyName').value = c.name || '';
+                  document.getElementById('companyAddress').value = c.formatted_address || '';
+                  document.getElementById('companyDic').value = c.dic || '';
+                  document.getElementById('companyIcdph').value = c.ic_dph || '';
+
+                  document.getElementById('hiddenCompanyName').value = c.name || '';
+                  document.getElementById('hiddenCompanyDic').value = c.dic || '';
+                  document.getElementById('hiddenCompanyIcdph').value = c.ic_dph || '';
+                  document.getElementById('hiddenCompanyAddress').value = c.formatted_address || '';
 
                   companyFields.style.display = 'block';
                   status.textContent = '✓ Firma nájdená';
@@ -218,8 +220,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               })
               .catch(() => {
                 companyFields.style.display = 'none';
-                status.textContent = '';
-                status.className = 'statusLine';
+                status.textContent = 'Chyba pri načítaní';
+                status.className = 'statusLine error';
               });
           }, 600);
         }
