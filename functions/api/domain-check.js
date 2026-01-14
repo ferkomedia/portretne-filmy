@@ -1,4 +1,4 @@
-// functions/domain-check.js
+// functions/api/domain-check.js
 export async function onRequest(context) {
     const url = new URL(context.request.url);
     const domain = url.searchParams.get("domain")?.trim().toLowerCase();
