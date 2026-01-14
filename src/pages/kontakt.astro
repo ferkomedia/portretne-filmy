@@ -193,21 +193,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           status.className = 'statusLine loading';
 
           icoTimeout = setTimeout(() => {
-            fetch(`https://rpvs.gov.sk/rpvs/Partner/partner/search?ico=${ico}`)
+            fetch(`/api/ico-lookup?ico=${ico}`)
               .then(r => r.json())
-              .then(apiData => {
-                const data = apiData?.items || [];
+              .then(data => {
+                if (data.ok && data.found && data.company) {
+                  const c = data.company;
+                  const address = `${c.street || ''} ${c.cislo || ''}, ${c.psc || ''} ${c.city || ''}`.trim();
 
-                if (Array.isArray(data) && data.length > 0) {
-                  const c = data[0];
-                  const address = c.ulica ? `${c.ulica} ${c.cislo || ''}, ${c.psc || ''} ${c.obec || ''}`.trim() : '';
-
-                  document.getElementById('companyName').value = c.nazov || c.obchodneMeno || '';
+                  document.getElementById('companyName').value = c.name || '';
                   document.getElementById('companyAddress').value = address;
                   document.getElementById('companyDic').value = c.dic || '';
                   document.getElementById('companyIcdph').value = c.icDph || '';
 
-                  document.getElementById('hiddenCompanyName').value = c.nazov || c.obchodneMeno || '';
+                  document.getElementById('hiddenCompanyName').value = c.name || '';
                   document.getElementById('hiddenCompanyDic').value = c.dic || '';
                   document.getElementById('hiddenCompanyIcdph').value = c.icDph || '';
                   document.getElementById('hiddenCompanyAddress').value = address;

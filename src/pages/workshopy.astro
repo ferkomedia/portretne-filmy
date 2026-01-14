@@ -408,7 +408,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
         el.addEventListener('input', checkFormValidity);
       });
 
-      // IČO lookup - RPVS API
+      // IČO lookup
       let icoTimeout;
       icoInput.addEventListener('input', function() {
         clearTimeout(icoTimeout);
@@ -427,21 +427,19 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
           status.className = 'statusLine loading';
 
           icoTimeout = setTimeout(() => {
-            fetch(`https://rpvs.gov.sk/rpvs/Partner/partner/search?ico=${ico}`)
+            fetch(`/api/ico-lookup?ico=${ico}`)
               .then(r => r.json())
-              .then(apiData => {
-                const data = apiData?.items || [];
+              .then(data => {
+                if (data.ok && data.found && data.company) {
+                  const c = data.company;
+                  const address = `${c.street || ''} ${c.cislo || ''}, ${c.psc || ''} ${c.city || ''}`.trim();
 
-                if (Array.isArray(data) && data.length > 0) {
-                  const c = data[0];
-                  const address = c.ulica ? `${c.ulica} ${c.cislo || ''}, ${c.psc || ''} ${c.obec || ''}`.trim() : '';
-
-                  document.getElementById('wsCompanyName').value = c.nazov || c.obchodneMeno || '';
+                  document.getElementById('wsCompanyName').value = c.name || '';
                   document.getElementById('wsCompanyAddress').value = address;
                   document.getElementById('wsCompanyDic').value = c.dic || '';
                   document.getElementById('wsCompanyIcdph').value = c.icDph || '';
 
-                  document.getElementById('hiddenCompanyName').value = c.nazov || c.obchodneMeno || '';
+                  document.getElementById('hiddenCompanyName').value = c.name || '';
                   document.getElementById('hiddenCompanyDic').value = c.dic || '';
                   document.getElementById('hiddenCompanyIcdph').value = c.icDph || '';
                   document.getElementById('hiddenCompanyAddress').value = address;
@@ -590,7 +588,6 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     });
   </script>
 </BaseLayout>
-
 <style>
   /* Hero Full */
   .heroFull {

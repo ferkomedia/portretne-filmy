@@ -61,7 +61,8 @@ export async function onRequest(context) {
                 city: firma.mesto || '',
                 street: firma.ulica || '',
                 cislo: firma.cislo || '',
-                psc: firma.psc || ''
+                psc: firma.psc || '',
+                icDph: firma.icDph || ''
             }
         }), { headers });
 
