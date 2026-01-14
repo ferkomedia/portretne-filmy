@@ -13,7 +13,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <h1>Partner, nie dodávateľ.<br/>Dlhodobá spolupráca.</h1>
       <p class="heroLead">Pravidelný video obsah, konzistentná komunikácia, jeden tím, ktorý pozná vašu značku. Žiadne vysvetľovanie zakaždým od začiatku.</p>
       <div class="heroCtas">
-        <a class="btn btn--primary btn--large" href="/kontakt">Poďme sa porozprávať</a>
+        <a class="btn btn--primary btn--large" href="#objednavka">Objednať konzultáciu</a>
         <a class="btn btn--ghost btn--large" href="/portfolio">Pozrieť projekty</a>
       </div>
     </div>
@@ -113,8 +113,95 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     </div>
   </section>
 
+  <!-- OBJEDNÁVKOVÝ FORMULÁR -->
+  <section class="section sectionAlt" id="objednavka">
+    <div class="sectionHeader">
+      <h2>Objednať nezáväznú konzultáciu</h2>
+      <p class="sectionLead">Vyplňte formulár a ozveme sa vám do 24 hodín s návrhom spolupráce.</p>
+    </div>
+
+    <div class="formCard">
+      <form id="orderForm" method="POST" action="/api/form-submit">
+        <input type="hidden" name="form-name" value="dlhodoba-spolupraca" />
+        <input type="hidden" id="hiddenCompanyName" name="Firma - názov" value="" />
+        <input type="hidden" id="hiddenCompanyDic" name="Firma - DIČ" value="" />
+        <input type="hidden" id="hiddenCompanyIcdph" name="Firma - IČ DPH" value="" />
+        <input type="hidden" id="hiddenCompanyAddress" name="Firma - Adresa" value="" />
+
+        <div class="formGrid">
+          <div class="field">
+            <label for="package">Balíček *</label>
+            <select id="package" name="Balíček" required>
+              <option value="" selected disabled>Vyberte balíček</option>
+              <option value="Štart - od 990 € / mesiac">Štart - od 990 € / mesiac</option>
+              <option value="Rast - od 1 990 € / mesiac">Rast - od 1 990 € / mesiac</option>
+              <option value="Premium - od 3 990 € / mesiac">Premium - od 3 990 € / mesiac</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="orderName">Meno a priezvisko *</label>
+            <input id="orderName" name="Meno a priezvisko" required />
+          </div>
+
+          <div class="field">
+            <label for="orderEmail">E-mail *</label>
+            <input id="orderEmail" type="email" name="E-mail" required />
+          </div>
+
+          <div class="field">
+            <label for="orderPhone">Telefón *</label>
+            <input id="orderPhone" name="Telefón" type="tel" required />
+          </div>
+
+          <div class="field">
+            <label for="orderIco">IČO (voliteľné)</label>
+            <input id="orderIco" name="IČO" inputmode="numeric" />
+            <div class="statusLine" id="orderIcoStatus"></div>
+          </div>
+
+          <div class="field fieldFull">
+            <label for="orderNote">Poznámka</label>
+            <textarea id="orderNote" name="Poznámka" rows="3" placeholder="Napíšte nám viac o vašich potrebách..."></textarea>
+          </div>
+        </div>
+
+        <!-- Firemné údaje z IČO -->
+        <div class="autoFields" id="orderCompanyFields" style="display:none;">
+          <div class="autoFieldsHeader">Údaje z registra:</div>
+          <div class="autoFieldsGrid">
+            <div class="field">
+              <label>Firma</label>
+              <input id="orderCompanyName" readonly />
+            </div>
+            <div class="field">
+              <label>Adresa</label>
+              <input id="orderCompanyAddress" readonly />
+            </div>
+            <div class="field">
+              <label>DIČ</label>
+              <input id="orderCompanyDic" readonly />
+            </div>
+            <div class="field">
+              <label>IČ DPH</label>
+              <input id="orderCompanyIcdph" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="formActions">
+          <label class="checkRow">
+            <input type="checkbox" name="GDPR súhlas" required />
+            <span>Súhlasím so spracovaním osobných údajov</span>
+          </label>
+          <button class="btn btn--primary btn--large" type="submit">Odoslať nezáväznú objednávku</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
   <!-- VÝHODY -->
-  <section class="section sectionAlt">
+  <section class="section">
     <div class="sectionHeader">
       <h2>Prečo dlhodobá spolupráca?</h2>
     </div>
@@ -144,16 +231,79 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   </section>
 
   <!-- CTA -->
-  <section class="section">
+  <section class="section sectionAlt">
     <div class="finalCta">
-      <h2>Hľadáte spoľahlivého partnera?</h2>
-      <p>Porozprávajme sa o vašich potrebách a navrhneme spoluprácu na mieru.</p>
+      <h2>Máte otázky?</h2>
+      <p>Radi vám povieme viac o našich službách a navrhneme riešenie na mieru.</p>
       <div class="ctaButtons">
-        <a class="btn btn--primary btn--large" href="/kontakt">Nezáväzná konzultácia</a>
+        <a class="btn btn--primary btn--large" href="/kontakt">Kontaktovať nás</a>
         <a class="btn btn--ghost btn--large" href="/sluzby#firmy">Späť na služby</a>
       </div>
     </div>
   </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const icoInput = document.getElementById('orderIco');
+      const status = document.getElementById('orderIcoStatus');
+      const companyFields = document.getElementById('orderCompanyFields');
+      let icoTimeout;
+
+      if (icoInput) {
+        icoInput.addEventListener('input', function() {
+          clearTimeout(icoTimeout);
+          const ico = this.value.replace(/\s/g, '');
+
+          if (ico.length < 6) {
+            companyFields.style.display = 'none';
+            status.textContent = '';
+            return;
+          }
+
+          if (ico.length >= 8) {
+            status.textContent = 'Hľadám...';
+            status.className = 'statusLine loading';
+
+            icoTimeout = setTimeout(() => {
+              fetch(`https://rpvs.gov.sk/rpvs/Partner/partner/search?ico=${ico}`)
+                .then(r => r.json())
+                .then(apiData => {
+                  const data = apiData?.items || [];
+
+                  if (Array.isArray(data) && data.length > 0) {
+                    const c = data[0];
+                    const address = c.ulica ? `${c.ulica} ${c.cislo || ''}, ${c.psc || ''} ${c.obec || ''}`.trim() : '';
+
+                    document.getElementById('orderCompanyName').value = c.nazov || c.obchodneMeno || '';
+                    document.getElementById('orderCompanyAddress').value = address;
+                    document.getElementById('orderCompanyDic').value = c.dic || '';
+                    document.getElementById('orderCompanyIcdph').value = c.icDph || '';
+
+                    document.getElementById('hiddenCompanyName').value = c.nazov || c.obchodneMeno || '';
+                    document.getElementById('hiddenCompanyDic').value = c.dic || '';
+                    document.getElementById('hiddenCompanyIcdph').value = c.icDph || '';
+                    document.getElementById('hiddenCompanyAddress').value = address;
+
+                    companyFields.style.display = 'block';
+                    status.textContent = '✓ Firma nájdená';
+                    status.className = 'statusLine success';
+                  } else {
+                    companyFields.style.display = 'none';
+                    status.textContent = 'Firma nenájdená';
+                    status.className = 'statusLine error';
+                  }
+                })
+                .catch(() => {
+                  companyFields.style.display = 'none';
+                  status.textContent = 'Chyba pri načítaní';
+                  status.className = 'statusLine error';
+                });
+            }, 600);
+          }
+        });
+      }
+    });
+  </script>
 
 </BaseLayout>
 
@@ -345,6 +495,106 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     font-size: 0.85rem;
     border-top: 1px solid rgba(255,255,255,0.08);
     padding-top: 1rem;
+  }
+
+  /* Form */
+  .formCard {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  @media (max-width: 600px) {
+    .formGrid { grid-template-columns: 1fr; }
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .fieldFull {
+    grid-column: 1 / -1;
+  }
+  .field label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: #f97316;
+  }
+  .statusLine {
+    font-size: 0.8rem;
+    min-height: 1.2em;
+    margin-top: 0.25rem;
+  }
+  .statusLine.loading { color: #f97316; }
+  .statusLine.success { color: #22c55e; }
+  .statusLine.error { color: #ef4444; }
+  .autoFields {
+    margin-top: 1.5rem;
+    padding: 1rem 1.5rem 1.5rem;
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 12px;
+  }
+  .autoFieldsHeader {
+    font-size: 0.85rem;
+    color: #22c55e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .autoFieldsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  @media (max-width: 600px) {
+    .autoFieldsGrid { grid-template-columns: 1fr; }
+  }
+  .autoFields input {
+    background: rgba(34,197,94,0.1);
+    border-color: rgba(34,197,94,0.3);
+  }
+  .formActions {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  .checkRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+  }
+  .checkRow input {
+    margin-top: 0.2rem;
+    width: auto;
   }
 
   /* Benefit Grid */
