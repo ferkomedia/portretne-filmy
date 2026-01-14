@@ -12,13 +12,13 @@ export async function onRequest(context) {
     }
 
     if (!ico || ico.length < 6) {
-        return new Response(JSON.stringify({ ok: true, found: false }), { headers });
+        return new Response(JSON.stringify({ success: false }), { headers });
     }
 
     const cleanIco = ico.replace(/\s/g, '');
 
     try {
-        // Skús prvé API
+        // Prvé API - slovensko.digital
         const res = await fetch(
             `https://autoform.ekosystem.slovensko.digital/api/corporate_bodies/search?q=${cleanIco}&per_page=5`
         );
@@ -29,19 +29,11 @@ export async function onRequest(context) {
                 const c = data.find(item => item.cin === cleanIco) || data[0];
 
                 return new Response(JSON.stringify({
-                    ok: true,
-                    found: true,
-                    company: {
-                        name: c.name || '',
-                        addressFull: c.formatted_address || '',
-                        dic: c.dic || '',
-                        icdph: c.ic_dph || '',
-                        street: c.street || '',
-                        streetNumber: c.street_number || '',
-                        city: c.municipality || '',
-                        postalCode: c.postal_code || '',
-                        country: 'Slovensko'
-                    }
+                    success: true,
+                    name: c.name || '',
+                    address: c.formatted_address || '',
+                    dic: c.dic || '',
+                    icDph: c.ic_dph || ''
                 }), { headers });
             }
         }
@@ -49,7 +41,7 @@ export async function onRequest(context) {
         console.error('First API failed:', e);
     }
 
-    // Fallback na Register UZ
+    // Fallback - Register UZ
     try {
         const res1 = await fetch(`https://www.registeruz.sk/cruz-public/api/uctovne-jednotky?ico=${cleanIco}`);
 
@@ -61,26 +53,20 @@ export async function onRequest(context) {
                 const res2 = await fetch(`https://www.registeruz.sk/cruz-public/api/uctovna-jednotka?id=${id}`);
                 const firma = await res2.json();
 
+                const fullAddress = `${firma.ulica || ''} ${firma.cislo || ''}, ${firma.psc || ''} ${firma.mesto || ''}`.trim();
+
                 return new Response(JSON.stringify({
-                    ok: true,
-                    found: true,
-                    company: {
-                        name: firma.nazovUJ || '',
-                        addressFull: `${firma.ulica || ''} ${firma.cislo || ''}, ${firma.psc || ''} ${firma.mesto || ''}`.trim(),
-                        dic: firma.dic || '',
-                        icdph: firma.icDph || '',
-                        street: firma.ulica || '',
-                        streetNumber: firma.cislo || '',
-                        city: firma.mesto || '',
-                        postalCode: firma.psc || '',
-                        country: 'Slovensko'
-                    }
+                    success: true,
+                    name: firma.nazovUJ || '',
+                    address: fullAddress,
+                    dic: firma.dic || '',
+                    icDph: firma.icDph || ''
                 }), { headers });
             }
         }
     } catch (e) {
-        return new Response(JSON.stringify({ ok: false, error: e.message }), { headers });
+        console.error('Fallback API failed:', e);
     }
 
-    return new Response(JSON.stringify({ ok: true, found: false }), { headers });
+    return new Response(JSON.stringify({ success: false }), { headers });
 }
