@@ -6,7 +6,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <section class="heroSection">
     <div class="heroContent">
       <h1>Správa FerkoMedia</h1>
-      <p class="heroLead">Faktúry, workshopy, email marketing</p>
+      <p class="heroLead">Faktúry, workshopy, email marketing, social media</p>
     </div>
   </section>
 
@@ -16,6 +16,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <button class="adminTab active" data-tab="invoices">Faktúry</button>
       <button class="adminTab" data-tab="workshops">Workshopy</button>
       <button class="adminTab" data-tab="email">Email Marketing</button>
+      <button class="adminTab" data-tab="social">Social Media</button>
     </div>
 
     <!-- FAKTÚRY TAB -->
@@ -156,7 +157,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     <!-- EMAIL MARKETING TAB -->
     <div class="tabContent" id="tab-email">
-      <!-- Stats -->
       <div class="statsGrid">
         <div class="statCard">
           <span class="statValue" id="emailStatTotal">-</span>
@@ -176,34 +176,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         </div>
       </div>
 
-      <!-- Sub-tabs -->
       <div class="subTabs">
         <button class="subTab active" data-subtab="contacts">Kontakty</button>
         <button class="subTab" data-subtab="campaigns">Kampane</button>
         <button class="subTab" data-subtab="templates">Šablóny</button>
-        <button class="subTab" data-subtab="tags">Tagy</button>
-        <button class="subTab" data-subtab="automation">Automatizácia</button>
       </div>
 
-      <!-- CONTACTS SUBTAB -->
       <div class="subTabContent active" id="subtab-contacts">
         <div class="emailControls">
           <input type="text" id="searchContacts" placeholder="Hľadať kontakty..." class="searchInput" />
-          <select id="filterSource" class="filterSelect">
-            <option value="">Všetky zdroje</option>
-            <option value="workshop">Workshop</option>
-            <option value="kontakt">Kontakt</option>
-            <option value="dlhodoba-spolupraca">Dlhodobá spolupráca</option>
-          </select>
-          <select id="filterTag" class="filterSelect">
-            <option value="">Všetky tagy</option>
-            <option value="VIP">VIP</option>
-            <option value="Záujemca">Záujemca</option>
-            <option value="Kúpil">Kúpil</option>
-          </select>
           <button class="btn btn--primary" id="loadContacts">Načítať kontakty</button>
           <button class="btn btn--ghost" id="exportContacts">Export CSV</button>
-          <button class="btn btn--ghost" id="importContactsBtn">📥 Import CSV</button>
         </div>
 
         <div class="tableWrapper">
@@ -214,354 +197,546 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 <th>Meno</th>
                 <th>Email</th>
                 <th>Zdroj</th>
-                <th>Tagy</th>
                 <th>Dátum</th>
                 <th>Akcie</th>
               </tr>
             </thead>
             <tbody id="contactsTableBody">
               <tr>
-                <td colspan="7" class="emptyState">Klikni na "Načítať kontakty"</td>
+                <td colspan="6" class="emptyState">Klikni na "Načítať kontakty"</td>
               </tr>
             </tbody>
           </table>
         </div>
-
-        <div id="selectedActions" style="display:none; margin-top:1rem; padding:1rem; background:rgba(249,115,22,0.1); border-radius:8px;">
-          <span id="selectedCount">0</span> označených kontaktov
-          <button class="btn btn--primary btn--small" id="sendToSelected" style="margin-left:1rem;">Odoslať kampaň</button>
-          <button class="btn btn--ghost btn--small" id="addTagToSelected">Pridať tag</button>
-          <button class="btn btn--ghost btn--small" id="deleteSelected">Vymazať</button>
-        </div>
       </div>
 
-      <!-- CAMPAIGNS SUBTAB -->
       <div class="subTabContent" id="subtab-campaigns">
         <button class="btn btn--primary" id="createCampaignBtn" style="margin-bottom:2rem;">+ Vytvoriť novú kampaň</button>
-
-        <div id="campaignForm" style="display:none;" class="formCard">
-          <h3>Nová kampaň</h3>
-          <form id="newCampaignForm">
-            <div class="formGrid">
-              <div class="field fieldFull">
-                <label for="campaignName">Názov kampane</label>
-                <input id="campaignName" type="text" placeholder="Napr. Zimná ponuka 2026" required />
-              </div>
-
-              <div class="field fieldFull">
-                <label for="campaignSubject">Predmet emailu (môžeš použiť &#123;meno&#125;, &#123;email&#125;)</label>
-                <input id="campaignSubject" type="text" placeholder="Ahoj, máme pre teba novinky!" required />
-              </div>
-
-              <div class="field fieldFull">
-                <label for="campaignTemplate">Šablóna</label>
-                <select id="campaignTemplate" required>
-                  <option value="">Vyber šablónu</option>
-                  <option value="newsletter">Newsletter</option>
-                  <option value="workshop-promo">Workshop propagácia</option>
-                  <option value="custom">Vlastný text</option>
-                </select>
-              </div>
-
-              <div class="field fieldFull" id="customContentField" style="display:none;">
-                <label for="campaignContent">Obsah emailu (HTML) - môžeš použiť &#123;meno&#125;, &#123;email&#125;</label>
-                <textarea id="campaignContent" rows="10" placeholder="<h1>Ahoj!</h1><p>Text...</p>"></textarea>
-              </div>
-
-              <div class="field fieldFull">
-                <label for="campaignSegment">Komu odoslať?</label>
-                <select id="campaignSegment">
-                  <option value="all">Všetkým kontaktom</option>
-                  <option value="workshop">Len workshopom</option>
-                  <option value="kontakt">Len kontaktu</option>
-                  <option value="selected">Označeným kontaktom</option>
-                  <option value="tag">Podľa tagu</option>
-                </select>
-              </div>
-
-              <div class="field fieldFull" id="tagSegmentField" style="display:none;">
-                <label for="campaignTag">Vyber tag</label>
-                <select id="campaignTag">
-                  <option value="VIP">VIP</option>
-                  <option value="Záujemca">Záujemca</option>
-                  <option value="Kúpil">Kúpil</option>
-                </select>
-              </div>
-
-              <div class="field fieldFull">
-                <label for="campaignSchedule">Odoslanie</label>
-                <select id="campaignSchedule">
-                  <option value="now">Odoslať hneď</option>
-                  <option value="scheduled">Naplánovať na neskôr</option>
-                </select>
-              </div>
-
-              <div class="field fieldFull" id="scheduleTimeField" style="display:none;">
-                <label for="campaignDateTime">Dátum a čas odoslania</label>
-                <input id="campaignDateTime" type="datetime-local" />
-              </div>
-            </div>
-
-            <div class="formActions">
-              <button type="button" class="btn btn--ghost" id="previewEmailBtn">👁️ Náhľad</button>
-              <button type="button" class="btn btn--ghost" id="sendTestEmailBtn">📧 Test email</button>
-              <button type="submit" class="btn btn--primary">Vytvoriť a odoslať</button>
-              <button type="button" class="btn btn--ghost" id="cancelCampaign">Zrušiť</button>
-            </div>
-          </form>
-        </div>
-
-        <h3 style="margin-top:2rem;">História kampaní</h3>
-        <div class="tableWrapper">
-          <table class="invoiceTable">
-            <thead>
-              <tr>
-                <th>Názov</th>
-                <th>Predmet</th>
-                <th>Odoslaných</th>
-                <th>Open Rate</th>
-                <th>Click Rate</th>
-                <th>Dátum</th>
-                <th>Akcie</th>
-              </tr>
-            </thead>
-            <tbody id="campaignsTableBody">
-              <tr>
-                <td colspan="7" class="emptyState">Žiadne kampane</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <p class="help">Email kampane - funkcionalita v príprave</p>
       </div>
 
-      <!-- TEMPLATES SUBTAB -->
       <div class="subTabContent" id="subtab-templates">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-          <h3>Email šablóny</h3>
-          <button class="btn btn--primary" id="createCustomTemplateBtn">+ Vytvoriť vlastnú šablónu</button>
-        </div>
+        <h3>Email šablóny</h3>
+        <p class="help">Šablóny - funkcionalita v príprave</p>
+      </div>
+    </div>
 
-        <div class="templatesGrid">
-          <div class="templateCard">
-            <h4>Newsletter</h4>
-            <p>Základná šablóna pre newsletter s novinkami a ponukami.</p>
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn btn--ghost btn--small" onclick="previewTemplate('newsletter')">Náhľad</button>
-              <button class="btn btn--ghost btn--small" onclick="useTemplate('newsletter')">Použiť</button>
-            </div>
-          </div>
-          <div class="templateCard">
-            <h4>Workshop propagácia</h4>
-            <p>Šablóna na propagáciu nadchádzajúcich workshopov.</p>
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn btn--ghost btn--small" onclick="previewTemplate('workshop-promo')">Náhľad</button>
-              <button class="btn btn--ghost btn--small" onclick="useTemplate('workshop-promo')">Použiť</button>
-            </div>
-          </div>
-          <div class="templateCard">
-            <h4>Vlastný</h4>
-            <p>Vytvor si vlastný email s HTML kódom.</p>
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn btn--ghost btn--small" onclick="selectCustomTemplate()">Použiť</button>
-            </div>
-          </div>
-          <div id="customTemplatesContainer"></div>
+    <!-- SOCIAL MEDIA TAB -->
+    <div class="tabContent" id="tab-social">
+      <!-- Social Stats -->
+      <div class="statsGrid">
+        <div class="statCard">
+          <span class="statValue" id="socialStatPosts">24</span>
+          <span class="statLabel">Naplánovaných príspevkov</span>
+        </div>
+        <div class="statCard">
+          <span class="statValue" id="socialStatDrafts">8</span>
+          <span class="statLabel">Konceptov</span>
+        </div>
+        <div class="statCard">
+          <span class="statValue" id="socialStatPublished">156</span>
+          <span class="statLabel">Publikovaných tento mesiac</span>
+        </div>
+        <div class="statCard">
+          <span class="statValue" id="socialStatEngagement">12.4k</span>
+          <span class="statLabel">Celkový engagement</span>
         </div>
       </div>
 
-      <!-- TAGS SUBTAB -->
-      <div class="subTabContent" id="subtab-tags">
-        <h3>Správa tagov</h3>
-        <div class="formCard">
-          <form id="createTagForm">
-            <div class="formGrid">
-              <div class="field">
-                <label for="tagName">Názov tagu</label>
-                <input id="tagName" type="text" placeholder="Napr. VIP, Záujemca" required />
-              </div>
-              <div class="field">
-                <label for="tagColor">Farba</label>
-                <select id="tagColor">
-                  <option value="blue">Modrá</option>
-                  <option value="green">Zelená</option>
-                  <option value="orange">Oranžová</option>
-                  <option value="purple">Fialová</option>
-                  <option value="red">Červená</option>
-                </select>
-              </div>
-            </div>
-            <div class="formActions">
-              <button type="submit" class="btn btn--primary">Vytvoriť tag</button>
-            </div>
-          </form>
-        </div>
+      <!-- Social Sub-tabs -->
+      <div class="subTabs">
+        <button class="subTab active" data-subtab="social-composer">Composer</button>
+        <button class="subTab" data-subtab="social-calendar">Kalendár</button>
+        <button class="subTab" data-subtab="social-queue">Fronta</button>
+        <button class="subTab" data-subtab="social-analytics">Štatistiky</button>
+        <button class="subTab" data-subtab="social-media">Média</button>
+        <button class="subTab" data-subtab="social-accounts">Účty</button>
+      </div>
 
-        <h4 style="margin-top:2rem;">Existujúce tagy</h4>
-        <div class="tagsGrid" id="existingTags">
-          <div class="tagItem">
-            <span class="tagBadge tagBadge--blue">VIP</span>
-            <span class="tagCount">12 kontaktov</span>
-            <button class="btn btn--ghost btn--small" onclick="deleteTag('VIP')">Vymazať</button>
+      <!-- COMPOSER SUBTAB -->
+      <div class="subTabContent active" id="subtab-social-composer">
+        <div class="composerLayout">
+          <!-- Left: Composer -->
+          <div class="composerPanel">
+            <h3>Vytvoriť príspevok</h3>
+
+            <!-- Platform Selection -->
+            <div class="platformSelector">
+              <label class="platformBtn" data-platform="facebook">
+                <input type="checkbox" name="platforms" value="facebook" checked />
+                <span class="platformIcon">📘</span>
+                <span>Facebook</span>
+              </label>
+              <label class="platformBtn" data-platform="instagram">
+                <input type="checkbox" name="platforms" value="instagram" checked />
+                <span class="platformIcon">📷</span>
+                <span>Instagram</span>
+              </label>
+              <label class="platformBtn" data-platform="linkedin">
+                <input type="checkbox" name="platforms" value="linkedin" />
+                <span class="platformIcon">💼</span>
+                <span>LinkedIn</span>
+              </label>
+              <label class="platformBtn" data-platform="twitter">
+                <input type="checkbox" name="platforms" value="twitter" />
+                <span class="platformIcon">🐦</span>
+                <span>Twitter/X</span>
+              </label>
+            </div>
+
+            <!-- Text Editor -->
+            <div class="field fieldFull">
+              <label>Text príspevku</label>
+              <textarea id="postContent" rows="8" placeholder="Napíš svoj príspevok..."></textarea>
+              <div class="textStats">
+                <span id="charCount">0</span> / <span id="charLimit">2200</span> znakov
+              </div>
+            </div>
+
+            <!-- Media Upload -->
+            <div class="field fieldFull">
+              <label>Obrázky / Video</label>
+              <div class="mediaUploadZone" id="mediaUploadZone">
+                <div class="uploadPlaceholder">
+                  <span class="uploadIcon">📁</span>
+                  <p>Klikni alebo presuň súbory sem</p>
+                  <input type="file" id="mediaUpload" accept="image/*,video/*" multiple hidden />
+                </div>
+                <div class="uploadedMedia" id="uploadedMedia"></div>
+              </div>
+            </div>
+
+            <!-- Hashtag Suggestions -->
+            <div class="field fieldFull">
+              <label>Hashtag návrhy</label>
+              <div class="hashtagSuggestions">
+                <button class="hashtagTag" onclick="addHashtag('#portret')">#portret</button>
+                <button class="hashtagTag" onclick="addHashtag('#video')">#video</button>
+                <button class="hashtagTag" onclick="addHashtag('#marketing')">#marketing</button>
+                <button class="hashtagTag" onclick="addHashtag('#business')">#business</button>
+                <button class="hashtagTag" onclick="addHashtag('#slovensko')">#slovensko</button>
+                <button class="btn btn--ghost btn--small" onclick="generateHashtags()">🤖 AI návrhy</button>
+              </div>
+            </div>
+
+            <!-- Scheduling -->
+            <div class="schedulingPanel">
+              <div class="field">
+                <label>
+                  <input type="radio" name="scheduleType" value="now" checked />
+                  Publikovať teraz
+                </label>
+              </div>
+              <div class="field">
+                <label>
+                  <input type="radio" name="scheduleType" value="schedule" />
+                  Naplánovať
+                </label>
+                <input type="datetime-local" id="scheduleDateTime" disabled />
+              </div>
+              <div class="field">
+                <label>
+                  <input type="radio" name="scheduleType" value="queue" />
+                  Pridať do fronty
+                </label>
+              </div>
+              <div class="field">
+                <label>
+                  <input type="radio" name="scheduleType" value="draft" />
+                  Uložiť ako koncept
+                </label>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="composerActions">
+              <button class="btn btn--primary" id="publishPostBtn">📤 Publikovať</button>
+              <button class="btn btn--ghost" id="saveDraftBtn">💾 Uložiť koncept</button>
+              <button class="btn btn--ghost" id="clearComposerBtn">🗑️ Vymazať</button>
+            </div>
           </div>
-          <div class="tagItem">
-            <span class="tagBadge tagBadge--green">Záujemca</span>
-            <span class="tagCount">34 kontaktov</span>
-            <button class="btn btn--ghost btn--small" onclick="deleteTag('Záujemca')">Vymazať</button>
-          </div>
-          <div class="tagItem">
-            <span class="tagBadge tagBadge--orange">Kúpil</span>
-            <span class="tagCount">89 kontaktov</span>
-            <button class="btn btn--ghost btn--small" onclick="deleteTag('Kúpil')">Vymazať</button>
+
+          <!-- Right: Preview -->
+          <div class="previewPanel">
+            <h3>Náhľad</h3>
+            <div class="previewTabs">
+              <button class="previewTab active" data-preview="facebook">Facebook</button>
+              <button class="previewTab" data-preview="instagram">Instagram</button>
+              <button class="previewTab" data-preview="linkedin">LinkedIn</button>
+              <button class="previewTab" data-preview="twitter">Twitter</button>
+            </div>
+
+            <!-- Facebook Preview -->
+            <div class="previewContent active" id="preview-facebook">
+              <div class="socialPreview facebookPreview">
+                <div class="previewHeader">
+                  <div class="previewAvatar">FM</div>
+                  <div class="previewMeta">
+                    <strong>FerkoMedia</strong>
+                    <span class="previewTime">Práve teraz</span>
+                  </div>
+                </div>
+                <div class="previewText" id="fbPreviewText">Tvoj text sa zobrazí tu...</div>
+                <div class="previewMedia" id="fbPreviewMedia"></div>
+                <div class="previewStats">
+                  <span>👍 Páči sa mi to</span>
+                  <span>💬 Komentovať</span>
+                  <span>↗️ Zdieľať</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instagram Preview -->
+            <div class="previewContent" id="preview-instagram">
+              <div class="socialPreview instagramPreview">
+                <div class="previewHeader">
+                  <div class="previewAvatar">FM</div>
+                  <div class="previewMeta">
+                    <strong>ferkomedia</strong>
+                  </div>
+                </div>
+                <div class="previewMedia" id="igPreviewMedia"></div>
+                <div class="previewStats">
+                  <span>❤️ Páči sa mi to</span>
+                  <span>💬 Komentovať</span>
+                  <span>📤 Zdieľať</span>
+                </div>
+                <div class="previewText" id="igPreviewText">Tvoj text sa zobrazí tu...</div>
+              </div>
+            </div>
+
+            <!-- LinkedIn Preview -->
+            <div class="previewContent" id="preview-linkedin">
+              <div class="socialPreview linkedinPreview">
+                <div class="previewHeader">
+                  <div class="previewAvatar">FM</div>
+                  <div class="previewMeta">
+                    <strong>FerkoMedia</strong>
+                    <span class="previewTime">Práve teraz</span>
+                  </div>
+                </div>
+                <div class="previewText" id="liPreviewText">Tvoj text sa zobrazí tu...</div>
+                <div class="previewMedia" id="liPreviewMedia"></div>
+                <div class="previewStats">
+                  <span>👍 Súhlas</span>
+                  <span>💬 Komentovať</span>
+                  <span>↗️ Zdieľať</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Twitter Preview -->
+            <div class="previewContent" id="preview-twitter">
+              <div class="socialPreview twitterPreview">
+                <div class="previewHeader">
+                  <div class="previewAvatar">FM</div>
+                  <div class="previewMeta">
+                    <strong>FerkoMedia</strong>
+                    <span class="previewHandle">@ferkomedia</span>
+                  </div>
+                </div>
+                <div class="previewText" id="twPreviewText">Tvoj text sa zobrazí tu...</div>
+                <div class="previewMedia" id="twPreviewMedia"></div>
+                <div class="previewStats">
+                  <span>💬 Odpovedať</span>
+                  <span>🔄 Retweetovať</span>
+                  <span>❤️ Páči sa mi to</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Best Time Suggestion -->
+            <div class="bestTimeCard">
+              <h4>⏰ Najlepší čas na publikovanie</h4>
+              <p>Dnes: <strong>18:00 - 20:00</strong></p>
+              <p>Zajtra: <strong>12:00 - 14:00</strong></p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- AUTOMATION SUBTAB -->
-      <div class="subTabContent" id="subtab-automation">
-        <h3>Automatické kampane</h3>
-        <button class="btn btn--primary" id="createAutomationBtn" style="margin-bottom:2rem;">+ Vytvoriť automatizáciu</button>
+      <!-- CALENDAR SUBTAB -->
+      <div class="subTabContent" id="subtab-social-calendar">
+        <div class="calendarHeader">
+          <h3>Kalendár príspevkov</h3>
+          <div class="calendarControls">
+            <button class="btn btn--ghost" onclick="prevMonth()">← Predošlý</button>
+            <span id="currentMonth">Január 2026</span>
+            <button class="btn btn--ghost" onclick="nextMonth()">Ďalší →</button>
+          </div>
+        </div>
 
-        <div class="automationCards">
-          <div class="automationCard">
-            <div class="automationHeader">
-              <h4>Welcome email</h4>
-              <label class="toggle">
-                <input type="checkbox" checked />
-                <span class="slider"></span>
-              </label>
+        <div class="calendar">
+          <div class="calendarGrid">
+            <div class="calendarDay dayHeader">Po</div>
+            <div class="calendarDay dayHeader">Ut</div>
+            <div class="calendarDay dayHeader">St</div>
+            <div class="calendarDay dayHeader">Št</div>
+            <div class="calendarDay dayHeader">Pi</div>
+            <div class="calendarDay dayHeader">So</div>
+            <div class="calendarDay dayHeader">Ne</div>
+
+            <!-- Days will be generated by JS -->
+            <div class="calendarDay">13</div>
+            <div class="calendarDay">14</div>
+            <div class="calendarDay today">
+              15
+              <div class="calendarPosts">
+                <div class="calendarPost fb">📘 10:00</div>
+                <div class="calendarPost ig">📷 14:00</div>
+              </div>
             </div>
-            <p>Automaticky odošle welcome email novým kontaktom</p>
-            <div class="automationStats">
-              <span>Trigger: Nový kontakt</span>
-              <span>Odoslaných: 156</span>
+            <div class="calendarDay">16</div>
+            <div class="calendarDay">17</div>
+            <div class="calendarDay">18</div>
+            <div class="calendarDay">19</div>
+          </div>
+        </div>
+
+        <div class="scheduledPosts">
+          <h4>Naplánované príspevky na dnes</h4>
+          <div class="postsList">
+            <div class="postItem">
+              <div class="postPlatforms">
+                <span class="platformBadge fb">📘</span>
+                <span class="platformBadge ig">📷</span>
+              </div>
+              <div class="postContent">
+                <strong>10:00</strong> - Nové workshopy pre rok 2026...
+              </div>
+              <div class="postActions">
+                <button class="btn btn--ghost btn--small">✏️ Upraviť</button>
+                <button class="btn btn--ghost btn--small">🗑️ Vymazať</button>
+              </div>
             </div>
-            <button class="btn btn--ghost btn--small" onclick="editAutomation('welcome')">Upraviť</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUEUE SUBTAB -->
+      <div class="subTabContent" id="subtab-social-queue">
+        <h3>Fronta príspevkov</h3>
+        <p class="help">Automatické publikovanie podľa nastaveného rozvrhu</p>
+
+        <div class="queueSettings">
+          <h4>Nastavenie fronty</h4>
+          <div class="formGrid">
+            <div class="field">
+              <label>Publikovať v pondelok</label>
+              <input type="time" value="09:00" />
+              <input type="time" value="17:00" />
+            </div>
+            <div class="field">
+              <label>Publikovať v utorok</label>
+              <input type="time" value="09:00" />
+              <input type="time" value="17:00" />
+            </div>
+          </div>
+          <button class="btn btn--primary">💾 Uložiť nastavenia</button>
+        </div>
+
+        <div class="queueList">
+          <h4>Príspevky vo fronte (8)</h4>
+          <div class="postsList">
+            <div class="postItem draggable">
+              <span class="dragHandle">⋮⋮</span>
+              <div class="postPlatforms">
+                <span class="platformBadge fb">📘</span>
+              </div>
+              <div class="postContent">
+                <strong>1.</strong> Workshop o AI nástrojoch začína už budúci týždeň...
+              </div>
+              <div class="postActions">
+                <button class="btn btn--ghost btn--small">✏️</button>
+                <button class="btn btn--ghost btn--small">🗑️</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS SUBTAB -->
+      <div class="subTabContent" id="subtab-social-analytics">
+        <h3>Štatistiky a Analytics</h3>
+
+        <div class="analyticsDateRange">
+          <select>
+            <option>Posledných 7 dní</option>
+            <option>Posledných 30 dní</option>
+            <option>Tento mesiac</option>
+            <option>Vlastné obdobie</option>
+          </select>
+        </div>
+
+        <div class="statsGrid">
+          <div class="statCard">
+            <span class="statValue">45.2k</span>
+            <span class="statLabel">Celkový dosah</span>
+            <span class="statChange positive">+12%</span>
+          </div>
+          <div class="statCard">
+            <span class="statValue">3.8k</span>
+            <span class="statLabel">Engagement</span>
+            <span class="statChange positive">+8%</span>
+          </div>
+          <div class="statCard">
+            <span class="statValue">892</span>
+            <span class="statLabel">Nových followerov</span>
+            <span class="statChange positive">+15%</span>
+          </div>
+          <div class="statCard">
+            <span class="statValue">4.2%</span>
+            <span class="statLabel">Engagement Rate</span>
+            <span class="statChange negative">-2%</span>
+          </div>
+        </div>
+
+        <div class="analyticsChart">
+          <h4>Engagement v čase</h4>
+          <div class="chartPlaceholder">
+            <p>📊 Graf engagement-u (integrácia s Chart.js)</p>
+          </div>
+        </div>
+
+        <div class="topPosts">
+          <h4>Top príspevky tento mesiac</h4>
+          <div class="postsList">
+            <div class="postItem">
+              <div class="postPlatforms">
+                <span class="platformBadge ig">📷</span>
+              </div>
+              <div class="postContent">
+                <strong>15.1.2026</strong> - Before & After portrétu...
+                <div class="postStats">
+                  ❤️ 234 · 💬 45 · 📤 12
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEDIA LIBRARY SUBTAB -->
+      <div class="subTabContent" id="subtab-social-media">
+        <h3>Knižnica médií</h3>
+        <button class="btn btn--primary" style="margin-bottom:1rem;">📤 Nahrať súbory</button>
+
+        <div class="mediaFilters">
+          <select>
+            <option>Všetky typy</option>
+            <option>Obrázky</option>
+            <option>Videá</option>
+          </select>
+          <select>
+            <option>Všetky kategórie</option>
+            <option>Workshopy</option>
+            <option>Portréty</option>
+            <option>Eventy</option>
+          </select>
+        </div>
+
+        <div class="mediaGrid">
+          <div class="mediaItem">
+            <div class="mediaThumb" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+            <div class="mediaInfo">
+              <span class="mediaName">workshop-promo.jpg</span>
+              <span class="mediaDate">14.1.2026</span>
+            </div>
+          </div>
+          <div class="mediaItem">
+            <div class="mediaThumb" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+            <div class="mediaInfo">
+              <span class="mediaName">portret-cliente.jpg</span>
+              <span class="mediaDate">12.1.2026</span>
+            </div>
+          </div>
+          <div class="mediaItem">
+            <div class="mediaThumb" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+            <div class="mediaInfo">
+              <span class="mediaName">office-team.jpg</span>
+              <span class="mediaDate">10.1.2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCOUNTS SUBTAB -->
+      <div class="subTabContent" id="subtab-social-accounts">
+        <h3>Pripojené účty</h3>
+        <button class="btn btn--primary" style="margin-bottom:2rem;">➕ Pripojiť nový účet</button>
+
+        <div class="accountsList">
+          <div class="accountCard connected">
+            <div class="accountHeader">
+              <span class="platformIcon large">📘</span>
+              <div class="accountInfo">
+                <h4>Facebook Page</h4>
+                <p>FerkoMedia - Portrétne filmy</p>
+              </div>
+              <span class="statusBadge active">Aktívny</span>
+            </div>
+            <div class="accountStats">
+              <div><strong>12.4k</strong> Páči sa mi to</div>
+              <div><strong>11.8k</strong> Sledujúcich</div>
+            </div>
+            <div class="accountActions">
+              <button class="btn btn--ghost btn--small">⚙️ Nastavenia</button>
+              <button class="btn btn--ghost btn--small">🔌 Odpojiť</button>
+            </div>
           </div>
 
-          <div class="automationCard">
-            <div class="automationHeader">
-              <h4>Workshop follow-up</h4>
-              <label class="toggle">
-                <input type="checkbox" checked />
-                <span class="slider"></span>
-              </label>
+          <div class="accountCard connected">
+            <div class="accountHeader">
+              <span class="platformIcon large">📷</span>
+              <div class="accountInfo">
+                <h4>Instagram Business</h4>
+                <p>@ferkomedia</p>
+              </div>
+              <span class="statusBadge active">Aktívny</span>
             </div>
-            <p>Odošle email 3 dni po workshope</p>
-            <div class="automationStats">
-              <span>Trigger: Po workshope (+3 dni)</span>
-              <span>Odoslaných: 89</span>
+            <div class="accountStats">
+              <div><strong>8.9k</strong> Sledujúcich</div>
+              <div><strong>432</strong> Príspevkov</div>
             </div>
-            <button class="btn btn--ghost btn--small" onclick="editAutomation('followup')">Upraviť</button>
+            <div class="accountActions">
+              <button class="btn btn--ghost btn--small">⚙️ Nastavenia</button>
+              <button class="btn btn--ghost btn--small">🔌 Odpojiť</button>
+            </div>
           </div>
 
-          <div class="automationCard">
-            <div class="automationHeader">
-              <h4>Re-engagement</h4>
-              <label class="toggle">
-                <input type="checkbox" />
-                <span class="slider"></span>
-              </label>
+          <div class="accountCard">
+            <div class="accountHeader">
+              <span class="platformIcon large">💼</span>
+              <div class="accountInfo">
+                <h4>LinkedIn Page</h4>
+                <p>FerkoMedia</p>
+              </div>
+              <span class="statusBadge inactive">Nepripojený</span>
             </div>
-            <p>Aktivuje kontakty po 30 dňoch nečinnosti</p>
-            <div class="automationStats">
-              <span>Trigger: 30 dní bez aktivity</span>
-              <span>Odoslaných: 23</span>
+            <div class="accountActions">
+              <button class="btn btn--primary btn--small">🔗 Pripojiť účet</button>
             </div>
-            <button class="btn btn--ghost btn--small" onclick="editAutomation('reengagement')">Upraviť</button>
+          </div>
+
+          <div class="accountCard">
+            <div class="accountHeader">
+              <span class="platformIcon large">🐦</span>
+              <div class="accountInfo">
+                <h4>Twitter / X</h4>
+                <p>@ferkomedia</p>
+              </div>
+              <span class="statusBadge inactive">Nepripojený</span>
+            </div>
+            <div class="accountActions">
+              <button class="btn btn--primary btn--small">🔗 Pripojiť účet</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- MODALS -->
-  <!-- Import CSV Modal -->
-  <div id="importModal" class="modal" style="display:none;">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>Import kontaktov z CSV</h3>
-        <button class="modalClose" onclick="closeModal('importModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <p class="help">CSV súbor musí obsahovať stĺpce: meno, email, zdroj (voliteľné)</p>
-        <input type="file" id="csvFileInput" accept=".csv" />
-        <div id="csvPreview" style="display:none; margin-top:1rem;">
-          <h4>Náhľad (prvých 5 riadkov):</h4>
-          <div class="tableWrapper">
-            <table class="invoiceTable" id="csvPreviewTable"></table>
-          </div>
-        </div>
-      </div>
-      <div class="modalFooter">
-        <button class="btn btn--ghost" onclick="closeModal('importModal')">Zrušiť</button>
-        <button class="btn btn--primary" id="confirmImportBtn">Importovať</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Email Preview Modal -->
-  <div id="previewModal" class="modal" style="display:none;">
-    <div class="modalContent modalLarge">
-      <div class="modalHeader">
-        <h3>Náhľad emailu</h3>
-        <button class="modalClose" onclick="closeModal('previewModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <div class="emailPreview" id="emailPreviewContent">
-          <div class="emailPreviewHeader">
-            <strong>Od:</strong> FerkoMedia &lt;noreply@portretnefilmy.sk&gt;<br>
-            <strong>Predmet:</strong> <span id="previewSubject"></span>
-          </div>
-          <div class="emailPreviewBody" id="previewBody"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Contact Notes Modal -->
-  <div id="notesModal" class="modal" style="display:none;">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>Poznámky ku kontaktu</h3>
-        <button class="modalClose" onclick="closeModal('notesModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <p><strong>Email:</strong> <span id="notesContactEmail"></span></p>
-        <textarea id="contactNotes" rows="6" placeholder="Pridaj poznámky..." style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.3); color:white;"></textarea>
-        <div id="notesHistory" style="margin-top:1rem;">
-          <h4>História poznámok:</h4>
-          <div class="notesList"></div>
-        </div>
-      </div>
-      <div class="modalFooter">
-        <button class="btn btn--ghost" onclick="closeModal('notesModal')">Zrušiť</button>
-        <button class="btn btn--primary" id="saveNotesBtn">Uložiť</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Tag Modal -->
-  <div id="addTagModal" class="modal" style="display:none;">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>Pridať tag</h3>
-        <button class="modalClose" onclick="closeModal('addTagModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <select id="selectTagToAdd" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.3); color:white;">
-          <option value="VIP">VIP</option>
-          <option value="Záujemca">Záujemca</option>
-          <option value="Kúpil">Kúpil</option>
-        </select>
-      </div>
-      <div class="modalFooter">
-        <button class="btn btn--ghost" onclick="closeModal('addTagModal')">Zrušiť</button>
-        <button class="btn btn--primary" id="confirmAddTagBtn">Pridať</button>
-      </div>
-    </div>
-  </div>
-
-<script>
+  <script>
     const adminPassword = "MyFilmy2026@";
 
     // Tab switching
@@ -605,21 +780,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       document.getElementById('jsonOutput').style.display = 'block';
     });
 
-    // Invoice loading
+    // Invoice loading (simplified)
     let currentOffset = 0;
     const limit = 50;
     let allInvoices = [];
 
     document.getElementById('loadInvoices').addEventListener('click', loadInvoices);
-    document.getElementById('loadMore')?.addEventListener('click', () => {
-      currentOffset += limit;
-      loadInvoices(true);
-    });
-
-    document.getElementById('searchInvoice').addEventListener('input', function() {
-      const query = this.value.toLowerCase();
-      filterInvoices(query);
-    });
 
     async function loadInvoices(append = false) {
       const btn = document.getElementById('loadInvoices');
@@ -651,19 +817,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           document.getElementById('statMonthRevenue').textContent = (data.stats.monthlyRevenue || 0).toLocaleString('sk-SK') + ' €';
         }
 
-        if (append) {
-          allInvoices = [...allInvoices, ...data.invoices];
-        } else {
-          allInvoices = data.invoices;
-        }
-
+        allInvoices = data.invoices || [];
         renderInvoices(allInvoices);
-
-        if (data.invoices.length === limit && currentOffset + limit < data.total) {
-          document.getElementById('loadMoreWrapper').style.display = 'block';
-        } else {
-          document.getElementById('loadMoreWrapper').style.display = 'none';
-        }
 
       } catch (err) {
         alert('Chyba pri načítaní: ' + err.message);
@@ -699,28 +854,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       `).join('');
     }
 
-    function filterInvoices(query) {
-      if (!query) {
-        renderInvoices(allInvoices);
-        return;
-      }
-
-      const filtered = allInvoices.filter(inv =>
-        inv.customerName?.toLowerCase().includes(query) ||
-        inv.customerEmail?.toLowerCase().includes(query) ||
-        inv.companyName?.toLowerCase().includes(query) ||
-        inv.companyIco?.includes(query) ||
-        inv.id?.toLowerCase().includes(query) ||
-        inv.productName?.toLowerCase().includes(query)
-      );
-
-      renderInvoices(filtered);
-    }
-
-    // EMAIL MARKETING FUNCTIONALITY
-    let allContacts = [];
-    let selectedContacts = [];
-
+    // Email Marketing (simplified)
     async function loadEmailStats() {
       try {
         const response = await fetch('/api/contacts/stats', {
@@ -739,10 +873,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     }
 
-    document.getElementById('loadContacts')?.addEventListener('click', loadContacts);
-
-    async function loadContacts() {
-      const btn = document.getElementById('loadContacts');
+    document.getElementById('loadContacts')?.addEventListener('click', async function() {
+      const btn = this;
       btn.disabled = true;
       btn.textContent = 'Načítavam...';
 
@@ -752,552 +884,193 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         });
         const data = await response.json();
 
-        if (data.error) {
-          alert('Chyba: ' + data.error);
-          btn.disabled = false;
-          btn.textContent = 'Načítať kontakty';
-          return;
+        if (data.contacts) {
+          const tbody = document.getElementById('contactsTableBody');
+          tbody.innerHTML = data.contacts.map(c => `
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td>${c.name || '-'}</td>
+              <td>${c.email}</td>
+              <td>${c.source}</td>
+              <td>${new Date(c.createdAt).toLocaleDateString('sk-SK')}</td>
+              <td><button class="btn btn--ghost btn--small">Vymazať</button></td>
+            </tr>
+          `).join('');
         }
-
-        allContacts = data.contacts || [];
-        renderContacts(allContacts);
-        loadEmailStats();
-
       } catch (err) {
-        alert('Chyba: ' + err.message);
+        console.error(err);
       }
 
       btn.disabled = false;
       btn.textContent = 'Načítať kontakty';
+    });
+
+    // SOCIAL MEDIA FUNCTIONALITY
+
+    // Real-time preview update
+    const postContent = document.getElementById('postContent');
+    if (postContent) {
+      postContent.addEventListener('input', updatePreviews);
     }
 
-    function renderContacts(contacts) {
-      const tbody = document.getElementById('contactsTableBody');
+    function updatePreviews() {
+      const text = postContent.value || 'Tvoj text sa zobrazí tu...';
+      document.getElementById('fbPreviewText').textContent = text;
+      document.getElementById('igPreviewText').textContent = text;
+      document.getElementById('liPreviewText').textContent = text;
+      document.getElementById('twPreviewText').textContent = text;
 
-      if (!contacts || contacts.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="emptyState">Žiadne kontakty</td></tr>';
-        return;
-      }
+      const charCount = text.length;
+      document.getElementById('charCount').textContent = charCount;
+    }
 
-      tbody.innerHTML = contacts.map(contact => {
-        const tags = contact.tags || ['VIP'];
-        const tagsHtml = tags.map(tag => `<span class="tagBadge tagBadge--blue">${tag}</span>`).join(' ');
+    // Preview tab switching
+    document.querySelectorAll('.previewTab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.previewTab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.previewContent').forEach(c => c.classList.remove('active'));
 
-        return `
-        <tr>
-          <td><input type="checkbox" class="contact-checkbox" value="${contact.email}" /></td>
-          <td>${contact.name || '-'}</td>
-          <td>${contact.email}</td>
-          <td><span class="badge badge--${contact.source === 'workshop' ? 'success' : 'info'}">${contact.source}</span></td>
-          <td>${tagsHtml}</td>
-          <td>${new Date(contact.createdAt).toLocaleDateString('sk-SK')}</td>
-          <td>
-            <button class="btn btn--ghost btn--small" onclick="showNotes('${contact.email}')">📝</button>
-            <button class="btn btn--ghost btn--small" onclick="deleteContact('${contact.email}')">Vymazať</button>
-          </td>
-        </tr>
-      `}).join('');
-
-      document.querySelectorAll('.contact-checkbox').forEach(cb => {
-        cb.addEventListener('change', updateSelectedContacts);
+        this.classList.add('active');
+        document.getElementById('preview-' + this.dataset.preview).classList.add('active');
       });
-    }
+    });
 
-    function updateSelectedContacts() {
-      selectedContacts = Array.from(document.querySelectorAll('.contact-checkbox:checked')).map(cb => cb.value);
-      const count = selectedContacts.length;
-
-      if (count > 0) {
-        document.getElementById('selectedActions').style.display = 'block';
-        document.getElementById('selectedCount').textContent = count;
-      } else {
-        document.getElementById('selectedActions').style.display = 'none';
-      }
-    }
-
-    document.getElementById('selectAll')?.addEventListener('change', function() {
-      document.querySelectorAll('.contact-checkbox').forEach(cb => {
-        cb.checked = this.checked;
+    // Platform selection
+    document.querySelectorAll('.platformBtn input').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        this.closest('.platformBtn').classList.toggle('selected', this.checked);
       });
-      updateSelectedContacts();
     });
 
-    document.getElementById('sendToSelected')?.addEventListener('click', function() {
-      if (selectedContacts.length === 0) {
-        alert('Najprv označ kontakty');
-        return;
-      }
-
-      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
-      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
-      document.getElementById('subtab-campaigns').classList.add('active');
-
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignSegment').value = 'selected';
-
-      setTimeout(() => {
-        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    });
-
-    document.getElementById('deleteSelected')?.addEventListener('click', async function() {
-      if (selectedContacts.length === 0) {
-        alert('Najprv označ kontakty');
-        return;
-      }
-
-      if (!confirm(`Naozaj vymazať ${selectedContacts.length} kontaktov?`)) return;
-
-      for (const email of selectedContacts) {
-        try {
-          await fetch('/api/contacts/delete', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${adminPassword}`
-            },
-            body: JSON.stringify({ email })
-          });
-        } catch (err) {
-          console.error('Error deleting contact:', err);
-        }
-      }
-
-      await loadContacts();
-      selectedContacts = [];
-      updateSelectedContacts();
-    });
-
-    document.getElementById('addTagToSelected')?.addEventListener('click', function() {
-      if (selectedContacts.length === 0) {
-        alert('Najprv označ kontakty');
-        return;
-      }
-      openModal('addTagModal');
-    });
-
-    document.getElementById('confirmAddTagBtn')?.addEventListener('click', async function() {
-      const tag = document.getElementById('selectTagToAdd').value;
-      alert(`Pridaný tag "${tag}" pre ${selectedContacts.length} kontaktov`);
-      closeModal('addTagModal');
-      await loadContacts();
-    });
-
-    document.getElementById('searchContacts')?.addEventListener('input', filterContacts);
-    document.getElementById('filterSource')?.addEventListener('change', filterContacts);
-    document.getElementById('filterTag')?.addEventListener('change', filterContacts);
-
-    function filterContacts() {
-      const searchQuery = document.getElementById('searchContacts').value.toLowerCase();
-      const sourceFilter = document.getElementById('filterSource').value;
-      const tagFilter = document.getElementById('filterTag').value;
-
-      const filtered = allContacts.filter(contact => {
-        const matchesSearch = !searchQuery ||
-          contact.name?.toLowerCase().includes(searchQuery) ||
-          contact.email?.toLowerCase().includes(searchQuery);
-
-        const matchesSource = !sourceFilter || contact.source === sourceFilter;
-        const matchesTag = !tagFilter || (contact.tags && contact.tags.includes(tagFilter));
-
-        return matchesSearch && matchesSource && matchesTag;
+    // Schedule type
+    document.querySelectorAll('input[name="scheduleType"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const datetimeInput = document.getElementById('scheduleDateTime');
+        datetimeInput.disabled = this.value !== 'schedule';
       });
-
-      renderContacts(filtered);
-    }
-
-    document.getElementById('exportContacts')?.addEventListener('click', exportContactsCSV);
-
-    function exportContactsCSV() {
-      if (allContacts.length === 0) {
-        alert('Najprv načítaj kontakty');
-        return;
-      }
-
-      const csv = [
-        ['Meno', 'Email', 'Zdroj', 'Dátum'],
-        ...allContacts.map(c => [
-          c.name || '',
-          c.email,
-          c.source,
-          new Date(c.createdAt).toLocaleDateString('sk-SK')
-        ])
-      ].map(row => row.join(',')).join('\n');
-
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `kontakty-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    document.getElementById('importContactsBtn')?.addEventListener('click', () => {
-      openModal('importModal');
     });
 
-    document.getElementById('csvFileInput')?.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    // Media upload
+    const uploadZone = document.getElementById('mediaUploadZone');
+    const mediaUpload = document.getElementById('mediaUpload');
 
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const csv = event.target.result;
-        const lines = csv.split('\n').filter(line => line.trim());
-        const headers = lines[0].split(',');
+    if (uploadZone && mediaUpload) {
+      uploadZone.addEventListener('click', () => mediaUpload.click());
 
-        const previewTable = document.getElementById('csvPreviewTable');
-        let html = '<thead><tr>';
-        headers.forEach(h => html += `<th>${h}</th>`);
-        html += '</tr></thead><tbody>';
+      mediaUpload.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        const uploadedMedia = document.getElementById('uploadedMedia');
 
-        lines.slice(1, 6).forEach(line => {
-          const cells = line.split(',');
-          html += '<tr>';
-          cells.forEach(cell => html += `<td>${cell}</td>`);
-          html += '</tr>';
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const mediaItem = document.createElement('div');
+            mediaItem.className = 'mediaPreviewItem';
+            mediaItem.innerHTML = `
+              <img src="${event.target.result}" alt="${file.name}" />
+              <button class="removeMedia" onclick="this.parentElement.remove()">×</button>
+            `;
+            uploadedMedia.appendChild(mediaItem);
+
+            // Update all previews
+            updateMediaPreviews();
+          };
+          reader.readAsDataURL(file);
         });
-        html += '</tbody>';
+      });
+    }
 
-        previewTable.innerHTML = html;
-        document.getElementById('csvPreview').style.display = 'block';
-      };
-      reader.readAsText(file);
-    });
+    function updateMediaPreviews() {
+      const mediaItems = document.querySelectorAll('.mediaPreviewItem img');
+      const mediaSrc = mediaItems.length > 0 ? mediaItems[0].src : '';
 
-    document.getElementById('confirmImportBtn')?.addEventListener('click', async function() {
-      alert('Import prebieha... (demo)');
-      closeModal('importModal');
-      await loadContacts();
-    });
-
-    document.getElementById('createCampaignBtn')?.addEventListener('click', () => {
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('newCampaignForm').reset();
-    });
-
-    document.getElementById('cancelCampaign')?.addEventListener('click', () => {
-      document.getElementById('campaignForm').style.display = 'none';
-      document.getElementById('newCampaignForm').reset();
-    });
-
-    document.getElementById('campaignTemplate')?.addEventListener('change', function() {
-      const customField = document.getElementById('customContentField');
-      if (this.value === 'custom') {
-        customField.style.display = 'block';
-      } else {
-        customField.style.display = 'none';
-      }
-    });
-
-    document.getElementById('campaignSegment')?.addEventListener('change', function() {
-      const tagField = document.getElementById('tagSegmentField');
-      if (this.value === 'tag') {
-        tagField.style.display = 'block';
-      } else {
-        tagField.style.display = 'none';
-      }
-    });
-
-    document.getElementById('campaignSchedule')?.addEventListener('change', function() {
-      const timeField = document.getElementById('scheduleTimeField');
-      if (this.value === 'scheduled') {
-        timeField.style.display = 'block';
-      } else {
-        timeField.style.display = 'none';
-      }
-    });
-
-    document.getElementById('previewEmailBtn')?.addEventListener('click', function() {
-      const subject = document.getElementById('campaignSubject').value || 'Bez predmetu';
-      const content = document.getElementById('campaignContent').value || '<p>Obsah emailu...</p>';
-
-      const previewSubject = subject.replace(/\{meno\}/g, 'Ján Novák').replace(/\{email\}/g, 'jan@example.com');
-      const previewContent = content.replace(/\{meno\}/g, 'Ján Novák').replace(/\{email\}/g, 'jan@example.com');
-
-      document.getElementById('previewSubject').textContent = previewSubject;
-      document.getElementById('previewBody').innerHTML = previewContent;
-
-      openModal('previewModal');
-    });
-
-    document.getElementById('sendTestEmailBtn')?.addEventListener('click', function() {
-      const email = prompt('Zadaj email adresu na test:');
-      if (email) {
-        alert(`Test email odoslaný na: ${email}`);
-      }
-    });
-
-    document.getElementById('newCampaignForm')?.addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const campaignData = {
-        name: document.getElementById('campaignName').value,
-        subject: document.getElementById('campaignSubject').value,
-        template: document.getElementById('campaignTemplate').value,
-        content: document.getElementById('campaignContent').value,
-        segment: document.getElementById('campaignSegment').value,
-        selectedEmails: document.getElementById('campaignSegment').value === 'selected' ? selectedContacts : [],
-        schedule: document.getElementById('campaignSchedule').value,
-        datetime: document.getElementById('campaignDateTime').value
-      };
-
-      const confirmMsg = campaignData.schedule === 'scheduled'
-        ? `Naplánovať kampaň "${campaignData.name}" na ${campaignData.datetime}?`
-        : `Odoslať kampaň "${campaignData.name}" teraz?`;
-
-      if (!confirm(confirmMsg)) return;
-
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Odosielam...';
-
-      try {
-        const response = await fetch('/api/campaigns/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${adminPassword}`
-          },
-          body: JSON.stringify(campaignData)
-        });
-
-        const result = await response.json();
-
-        if (result.ok) {
-          alert(`Kampaň ${campaignData.schedule === 'scheduled' ? 'naplánovaná' : 'odoslaná'}! Odoslaných: ${result.sent}`);
-          document.getElementById('campaignForm').style.display = 'none';
-          this.reset();
-          loadCampaignHistory();
+      ['fb', 'ig', 'li', 'tw'].forEach(platform => {
+        const mediaPreview = document.getElementById(`${platform}PreviewMedia`);
+        if (mediaSrc) {
+          mediaPreview.innerHTML = `<img src="${mediaSrc}" alt="Preview" style="width:100%; border-radius:8px;" />`;
         } else {
-          alert('Chyba: ' + result.error);
+          mediaPreview.innerHTML = '';
         }
-      } catch (err) {
-        alert('Chyba: ' + err.message);
+      });
+    }
+
+    // Publish post
+    document.getElementById('publishPostBtn')?.addEventListener('click', function() {
+      const selectedPlatforms = Array.from(document.querySelectorAll('.platformBtn input:checked')).map(cb => cb.value);
+      const text = postContent.value;
+      const scheduleType = document.querySelector('input[name="scheduleType"]:checked').value;
+
+      if (selectedPlatforms.length === 0) {
+        alert('Vyber aspoň jednu platformu!');
+        return;
       }
 
-      btn.disabled = false;
-      btn.textContent = 'Vytvoriť a odoslať';
-    });
-
-    async function loadCampaignHistory() {
-      const tbody = document.getElementById('campaignsTableBody');
-
-      const campaigns = [
-        { name: 'Newsletter január', subject: 'Novinky', sent: 234, openRate: '42%', clickRate: '12%', date: '2026-01-10' },
-        { name: 'Workshop promo', subject: 'Nové termíny!', sent: 156, openRate: '38%', clickRate: '8%', date: '2026-01-08' }
-      ];
-
-      tbody.innerHTML = campaigns.map(c => `
-        <tr>
-          <td><strong>${c.name}</strong></td>
-          <td>${c.subject}</td>
-          <td>${c.sent}</td>
-          <td><span class="statBadge">${c.openRate}</span></td>
-          <td><span class="statBadge">${c.clickRate}</span></td>
-          <td>${new Date(c.date).toLocaleDateString('sk-SK')}</td>
-          <td>
-            <button class="btn btn--ghost btn--small" onclick="duplicateCampaign('${c.name}')">📋 Duplikovať</button>
-            <button class="btn btn--ghost btn--small" onclick="viewCampaignStats('${c.name}')">📊 Štatistiky</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    window.duplicateCampaign = function(name) {
-      alert(`Duplikujem kampaň: ${name}`);
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignName').value = name + ' (kópia)';
-    };
-
-    window.viewCampaignStats = function(name) {
-      alert(`Štatistiky kampane: ${name}\n\nOpen rate: 42%\nClick rate: 12%\nBounce rate: 2%\nUnsubscribes: 3`);
-    };
-
-    async function deleteContact(email) {
-      if (!confirm(`Naozaj vymazať kontakt ${email}?`)) return;
-
-      try {
-        const response = await fetch('/api/contacts/delete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${adminPassword}`
-          },
-          body: JSON.stringify({ email })
-        });
-
-        const result = await response.json();
-
-        if (result.ok) {
-          allContacts = allContacts.filter(c => c.email !== email);
-          renderContacts(allContacts);
-          loadEmailStats();
-        } else {
-          alert('Chyba: ' + result.error);
-        }
-      } catch (err) {
-        alert('Chyba: ' + err.message);
-      }
-    }
-
-    window.deleteContact = deleteContact;
-
-    function previewTemplate(type) {
-      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
-      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
-      document.getElementById('subtab-campaigns').classList.add('active');
-
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignTemplate').value = type;
-
-      if (type === 'newsletter') {
-        document.getElementById('campaignName').value = 'Newsletter ' + new Date().toLocaleDateString('sk-SK');
-        document.getElementById('campaignSubject').value = 'Novinky z FerkoMedia';
-      } else if (type === 'workshop-promo') {
-        document.getElementById('campaignName').value = 'Workshop propagácia ' + new Date().toLocaleDateString('sk-SK');
-        document.getElementById('campaignSubject').value = 'Nové termíny workshopov!';
+      if (!text.trim()) {
+        alert('Napíš text príspevku!');
+        return;
       }
 
-      setTimeout(() => {
-        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
+      const message = scheduleType === 'now'
+        ? `Publikujem na: ${selectedPlatforms.join(', ')}`
+        : scheduleType === 'schedule'
+        ? `Naplánovane na: ${selectedPlatforms.join(', ')}`
+        : scheduleType === 'queue'
+        ? `Pridané do fronty: ${selectedPlatforms.join(', ')}`
+        : `Uložené ako koncept`;
 
-    function useTemplate(type) {
-      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
-      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
-      document.getElementById('subtab-campaigns').classList.add('active');
+      alert(message);
 
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignTemplate').value = type;
-
-      setTimeout(() => {
-        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-
-    function selectCustomTemplate() {
-      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
-      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
-      document.getElementById('subtab-campaigns').classList.add('active');
-
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignTemplate').value = 'custom';
-      document.getElementById('customContentField').style.display = 'block';
-
-      document.getElementById('campaignContent').value = `<h1>Ahoj!</h1>
-<p>Tu môžeš napísať vlastný obsah s HTML kódom.</p>
-<p>Použiť môžeš:</p>
-<ul>
-  <li><strong>Tučný text</strong></li>
-  <li><em>Kurzíva</em></li>
-  <li><a href="https://portretnefilmy.sk">Odkazy</a></li>
-</ul>
-<p>Pre personalizáciu použiť: {meno} alebo {email}</p>`;
-
-      document.getElementById('campaignName').value = 'Vlastná kampaň ' + new Date().toLocaleDateString('sk-SK');
-      document.getElementById('campaignSubject').value = 'Máme pre teba novinky!';
-
-      setTimeout(() => {
-        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-
-    document.getElementById('createCustomTemplateBtn')?.addEventListener('click', function() {
-      const name = prompt('Názov vlastnej šablóny:');
-      if (!name) return;
-
-      const html = prompt('HTML kód šablóny:');
-      if (!html) return;
-
-      alert(`Šablóna "${name}" vytvorená!`);
-
-      const container = document.getElementById('customTemplatesContainer');
-      const card = document.createElement('div');
-      card.className = 'templateCard';
-      card.innerHTML = `
-        <h4>${name}</h4>
-        <p>Vlastná šablóna</p>
-        <div style="display:flex; gap:0.5rem;">
-          <button class="btn btn--ghost btn--small" onclick="useCustomTemplate('${name}')">Použiť</button>
-          <button class="btn btn--ghost btn--small" onclick="deleteTemplate('${name}')">Vymazať</button>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-
-    window.useCustomTemplate = function(name) {
-      alert(`Používam šablónu: ${name}`);
-      selectCustomTemplate();
-    };
-
-    window.deleteTemplate = function(name) {
-      if (confirm(`Vymazať šablónu "${name}"?`)) {
-        alert('Šablóna vymazaná');
+      // Clear form
+      if (scheduleType !== 'draft') {
+        document.getElementById('clearComposerBtn').click();
       }
-    };
-
-    document.getElementById('createTagForm')?.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const tagName = document.getElementById('tagName').value;
-      const tagColor = document.getElementById('tagColor').value;
-
-      alert(`Tag "${tagName}" vytvorený!`);
-      this.reset();
     });
 
-    window.deleteTag = function(tag) {
-      if (confirm(`Vymazať tag "${tag}"?`)) {
-        alert(`Tag "${tag}" vymazaný`);
+    // Save draft
+    document.getElementById('saveDraftBtn')?.addEventListener('click', function() {
+      alert('Koncept uložený!');
+    });
+
+    // Clear composer
+    document.getElementById('clearComposerBtn')?.addEventListener('click', function() {
+      if (confirm('Naozaj vymazať všetko?')) {
+        postContent.value = '';
+        document.getElementById('uploadedMedia').innerHTML = '';
+        document.querySelectorAll('.platformBtn input').forEach(cb => cb.checked = false);
+        document.querySelector('input[name="scheduleType"][value="now"]').checked = true;
+        updatePreviews();
+        updateMediaPreviews();
       }
-    };
-
-    window.showNotes = function(email) {
-      document.getElementById('notesContactEmail').textContent = email;
-      document.getElementById('contactNotes').value = '';
-      openModal('notesModal');
-    };
-
-    document.getElementById('saveNotesBtn')?.addEventListener('click', function() {
-      const email = document.getElementById('notesContactEmail').textContent;
-      const notes = document.getElementById('contactNotes').value;
-      alert(`Poznámky uložené pre: ${email}`);
-      closeModal('notesModal');
     });
 
-    document.getElementById('createAutomationBtn')?.addEventListener('click', function() {
-      alert('Vytváranie automatizácie - funkcionalita bude dostupná čoskoro');
-    });
-
-    window.editAutomation = function(type) {
-      alert(`Úprava automatizácie: ${type}`);
+    // Hashtag functions
+    window.addHashtag = function(hashtag) {
+      postContent.value += ' ' + hashtag;
+      postContent.focus();
+      updatePreviews();
     };
 
-    function openModal(modalId) {
-      document.getElementById(modalId).style.display = 'flex';
-    }
+    window.generateHashtags = function() {
+      const suggestions = ['#portretnefilmy', '#videomarketing', '#businessvideo', '#korporatnevideo', '#brandstory'];
+      const random = suggestions.slice(0, 3);
+      postContent.value += '\n\n' + random.join(' ');
+      updatePreviews();
+      alert('Vygenerované AI hashtagy pridané!');
+    };
 
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none';
-    }
+    // Calendar functions
+    window.prevMonth = function() {
+      alert('Predošlý mesiac (funkcionalita v príprave)');
+    };
 
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.previewTemplate = previewTemplate;
-    window.useTemplate = useTemplate;
-    window.selectCustomTemplate = selectCustomTemplate;
-
-    loadCampaignHistory();
+    window.nextMonth = function() {
+      alert('Ďalší mesiac (funkcionalita v príprave)');
+    };
   </script>
 </BaseLayout>
 
 <style>
+  /* Base styles */
   .heroSection {
     padding: 4rem 1.5rem 2rem;
     text-align: center;
@@ -1315,6 +1088,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     padding: 2rem 0 4rem;
   }
 
+  /* Tabs */
   .adminTabs {
     display: flex;
     gap: 0.5rem;
@@ -1378,6 +1152,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     display: block;
   }
 
+  /* Stats */
   .statsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1390,6 +1165,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     border-radius: 12px;
     padding: 1.5rem;
     text-align: center;
+    position: relative;
   }
   .statValue {
     display: block;
@@ -1401,15 +1177,24 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     font-size: 0.85rem;
     color: rgba(255,255,255,0.6);
   }
-  .statBadge {
-    background: rgba(34,197,94,0.2);
-    color: #22c55e;
+  .statChange {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
+  }
+  .statChange.positive {
+    background: rgba(34,197,94,0.2);
+    color: #22c55e;
+  }
+  .statChange.negative {
+    background: rgba(239,68,68,0.2);
+    color: #ef4444;
   }
 
+  /* Controls */
   .invoiceControls, .emailControls {
     display: flex;
     gap: 1rem;
@@ -1430,15 +1215,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     outline: none;
     border-color: #f97316;
   }
-  .filterSelect {
-    padding: 0.75rem 1rem;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    color: white;
-    font-size: 1rem;
-  }
 
+  /* Table */
   .tableWrapper {
     overflow-x: auto;
   }
@@ -1489,59 +1267,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     background: rgba(34,197,94,0.2);
     color: #22c55e;
   }
-  .badge--info {
-    background: rgba(59,130,246,0.2);
-    color: #3b82f6;
-  }
 
-  .tagBadge {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    margin-right: 0.25rem;
-  }
-  .tagBadge--blue {
-    background: rgba(59,130,246,0.2);
-    color: #3b82f6;
-  }
-  .tagBadge--green {
-    background: rgba(34,197,94,0.2);
-    color: #22c55e;
-  }
-  .tagBadge--orange {
-    background: rgba(249,115,22,0.2);
-    color: #f97316;
-  }
-  .tagBadge--purple {
-    background: rgba(168,85,247,0.2);
-    color: #a855f7;
-  }
-  .tagBadge--red {
-    background: rgba(239,68,68,0.2);
-    color: #ef4444;
-  }
-
-  .tagsGrid {
-    display: grid;
-    gap: 1rem;
-  }
-  .tagItem {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .tagCount {
-    color: rgba(255,255,255,0.6);
-    font-size: 0.9rem;
-    margin-left: auto;
-  }
-
+  /* Forms */
   .formCard {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
@@ -1637,184 +1364,547 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     margin: 0;
   }
 
-  .templatesGrid {
+  /* SOCIAL MEDIA STYLES */
+  .composerLayout {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
   }
-  .templateCard {
+
+  @media (max-width: 1024px) {
+    .composerLayout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .composerPanel, .previewPanel {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1.5rem;
-  }
-  .templateCard h4 {
-    margin-bottom: 0.5rem;
-    color: #f97316;
-  }
-  .templateCard p {
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 1rem;
-  }
-
-  .automationCards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  .automationCard {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1.5rem;
-  }
-  .automationHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-  .automationHeader h4 {
-    margin: 0;
-  }
-  .automationCard p {
-    color: rgba(255,255,255,0.7);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-  .automationStats {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.8rem;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 1rem;
-  }
-
-  .toggle {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 24px;
-  }
-  .toggle input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255,255,255,0.2);
-    transition: 0.3s;
-    border-radius: 24px;
-  }
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.3s;
-    border-radius: 50%;
-  }
-  input:checked + .slider {
-    background-color: #f97316;
-  }
-  input:checked + .slider:before {
-    transform: translateX(24px);
-  }
-
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .modalContent {
-    background: #1a1a1a;
-    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 16px;
-    max-width: 600px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  .modalLarge {
-    max-width: 900px;
-  }
-  .modalHeader {
-    padding: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .modalHeader h3 {
-    margin: 0;
-  }
-  .modalClose {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.7);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .modalClose:hover {
-    color: white;
-  }
-  .modalBody {
-    padding: 1.5rem;
-  }
-  .modalFooter {
-    padding: 1.5rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-  }
-
-  .emailPreview {
-    background: white;
-    color: #333;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .emailPreviewHeader {
-    background: #f5f5f5;
-    padding: 1rem;
-    border-bottom: 1px solid #ddd;
-    font-size: 0.9rem;
-  }
-  .emailPreviewBody {
     padding: 2rem;
   }
 
-  .notesList {
+  .platformSelector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .platformBtn {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(255,255,255,0.03);
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .platformBtn:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .platformBtn input {
+    display: none;
+  }
+
+  .platformBtn input:checked + .platformIcon {
+    transform: scale(1.2);
+  }
+
+  .platformBtn.selected {
+    border-color: #f97316;
+    background: rgba(249,115,22,0.1);
+  }
+
+  .platformIcon {
+    font-size: 2rem;
+    transition: transform 0.2s;
+  }
+
+  .platformIcon.large {
+    font-size: 3rem;
+  }
+
+  .textStats {
+    text-align: right;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 0.5rem;
+  }
+
+  .mediaUploadZone {
+    border: 2px dashed rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mediaUploadZone:hover {
+    border-color: #f97316;
+    background: rgba(249,115,22,0.05);
+  }
+
+  .uploadIcon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .uploadedMedia {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 0.75rem;
-    max-height: 200px;
-    overflow-y: auto;
+    margin-top: 1rem;
+  }
+
+  .mediaPreviewItem {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .mediaPreviewItem img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+  }
+
+  .removeMedia {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    background: rgba(239,68,68,0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .hashtagSuggestions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .hashtagTag {
+    padding: 0.5rem 1rem;
+    background: rgba(59,130,246,0.2);
+    color: #3b82f6;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .schedulingPanel {
+    background: rgba(255,255,255,0.03);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+  }
+
+  .schedulingPanel .field {
+    margin-bottom: 0.75rem;
+  }
+
+  .schedulingPanel label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .composerActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .previewTabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .previewTab {
+    padding: 0.5rem 1rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  .previewTab.active {
+    background: rgba(249,115,22,0.2);
+    border-color: #f97316;
+    color: #f97316;
+  }
+
+  .previewContent {
+    display: none;
+  }
+
+  .previewContent.active {
+    display: block;
+  }
+
+  .socialPreview {
+    background: #fff;
+    color: #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .previewHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .previewAvatar {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+  }
+
+  .previewMeta {
+    flex: 1;
+  }
+
+  .previewMeta strong {
+    display: block;
+    font-size: 0.95rem;
+  }
+
+  .previewTime {
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  .previewHandle {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .previewText {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .previewMedia {
+    margin-bottom: 1rem;
+  }
+
+  .previewStats {
+    display: flex;
+    gap: 2rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .bestTimeCard {
+    background: rgba(249,115,22,0.1);
+    border: 1px solid rgba(249,115,22,0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .bestTimeCard h4 {
+    margin-bottom: 0.75rem;
+    color: #f97316;
+  }
+
+  .bestTimeCard p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+  }
+
+  /* Calendar */
+  .calendarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .calendarControls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .calendar {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .calendarGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+
+  .calendarDay {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.5rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .calendarDay.dayHeader {
+    background: transparent;
+    font-weight: 700;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .calendarDay.today {
+    background: rgba(249,115,22,0.2);
+    border: 2px solid #f97316;
+  }
+
+  .calendarPosts {
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+
+  .calendarPost {
+    font-size: 0.7rem;
+    padding: 0.25rem;
+    margin: 0.25rem 0;
+    border-radius: 4px;
+  }
+
+  .calendarPost.fb {
+    background: rgba(59,130,246,0.2);
+  }
+
+  .calendarPost.ig {
+    background: rgba(236,72,153,0.2);
+  }
+
+  .scheduledPosts {
+    margin-top: 2rem;
+  }
+
+  .postsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .postItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+  }
+
+  .postPlatforms {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .platformBadge {
+    font-size: 1.25rem;
+  }
+
+  .postContent {
+    flex: 1;
+    font-size: 0.9rem;
+  }
+
+  .postActions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .postStats {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .dragHandle {
+    cursor: move;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* Queue */
+  .queueSettings {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .queueList {
+    margin-top: 2rem;
+  }
+
+  /* Analytics */
+  .analyticsDateRange {
+    margin-bottom: 2rem;
+  }
+
+  .chartPlaceholder {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 4rem 2rem;
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    margin: 2rem 0;
+  }
+
+  .topPosts {
+    margin-top: 2rem;
+  }
+
+  /* Media Library */
+  .mediaFilters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .mediaGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .mediaItem {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .mediaThumb {
+    aspect-ratio: 1;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .mediaInfo {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .mediaName {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .mediaDate {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Accounts */
+  .accountsList {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .accountCard {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .accountCard.connected {
+    border-color: rgba(34,197,94,0.3);
+  }
+
+  .accountHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .accountInfo {
+    flex: 1;
+  }
+
+  .accountInfo h4 {
+    margin-bottom: 0.25rem;
+  }
+
+  .accountInfo p {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+  }
+
+  .statusBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .statusBadge.active {
+    background: rgba(34,197,94,0.2);
+    color: #22c55e;
+  }
+
+  .statusBadge.inactive {
+    background: rgba(107,114,128,0.2);
+    color: #6b7280;
+  }
+
+  .accountStats {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 1rem;
+  }
+
+  .accountActions {
+    display: flex;
+    gap: 0.75rem;
   }
 
   .btn--small {
