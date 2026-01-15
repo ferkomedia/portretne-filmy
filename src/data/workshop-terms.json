@@ -22,6 +22,14 @@
     "price": 149,
     "capacity": 12,
     "status": "open"
+  },
+  {
+    "title": "Web za 1 deň",
+    "date": "12.02.2026",
+    "city": "Martin",
+    "price": 149,
+    "capacity": 12,
+    "status": "open"
   }
 ]
 
