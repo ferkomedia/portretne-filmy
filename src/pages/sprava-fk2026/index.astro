@@ -249,8 +249,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               </div>
 
               <div class="field fieldFull">
-                <label for="campaignSubject">Predmet emailu (môžeš použiť {{meno}}, {{email}})</label>
-                <input id="campaignSubject" type="text" placeholder="Ahoj {{meno}}, máme pre teba novinky!" required />
+                <label for="campaignSubject">Predmet emailu (môžeš použiť &#123;meno&#125;, &#123;email&#125;)</label>
+                <input id="campaignSubject" type="text" placeholder="Ahoj, máme pre teba novinky!" required />
               </div>
 
               <div class="field fieldFull">
@@ -264,8 +264,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               </div>
 
               <div class="field fieldFull" id="customContentField" style="display:none;">
-                <label for="campaignContent">Obsah emailu (HTML) - môžeš použiť {{meno}}, {{email}}</label>
-                <textarea id="campaignContent" rows="10" placeholder="<h1>Ahoj {{meno}}!</h1><p>Text...</p>"></textarea>
+                <label for="campaignContent">Obsah emailu (HTML) - môžeš použiť &#123;meno&#125;, &#123;email&#125;</label>
+                <textarea id="campaignContent" rows="10" placeholder="<h1>Ahoj!</h1><p>Text...</p>"></textarea>
               </div>
 
               <div class="field fieldFull">
@@ -561,7 +561,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     </div>
   </div>
 
-  <script define:vars={{ adminPassword: "MyFilmy2026@" }}>
+  <script define:vars={`{ adminPassword: "MyFilmy2026@" }`}>
     // Tab switching
     document.querySelectorAll('.adminTab').forEach(tab => {
       tab.addEventListener('click', function() {
@@ -607,6 +607,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     let currentOffset = 0;
     const limit = 50;
     let allInvoices = [];
+    const adminPassword = "MyFilmy2026@";
 
     document.getElementById('loadInvoices').addEventListener('click', loadInvoices);
     document.getElementById('loadMore')?.addEventListener('click', () => {
@@ -778,7 +779,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
 
       tbody.innerHTML = contacts.map(contact => {
-        const tags = contact.tags || ['VIP']; // Demo tags
+        const tags = contact.tags || ['VIP'];
         const tagsHtml = tags.map(tag => `<span class="tagBadge tagBadge--blue">${tag}</span>`).join(' ');
 
         return `
@@ -867,7 +868,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       updateSelectedContacts();
     });
 
-    // Add tag to selected
     document.getElementById('addTagToSelected')?.addEventListener('click', function() {
       if (selectedContacts.length === 0) {
         alert('Najprv označ kontakty');
@@ -878,13 +878,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     document.getElementById('confirmAddTagBtn')?.addEventListener('click', async function() {
       const tag = document.getElementById('selectTagToAdd').value;
-      // API call to add tag
       alert(`Pridaný tag "${tag}" pre ${selectedContacts.length} kontaktov`);
       closeModal('addTagModal');
       await loadContacts();
     });
 
-    // Search and filter
     document.getElementById('searchContacts')?.addEventListener('input', filterContacts);
     document.getElementById('filterSource')?.addEventListener('change', filterContacts);
     document.getElementById('filterTag')?.addEventListener('change', filterContacts);
@@ -908,7 +906,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       renderContacts(filtered);
     }
 
-    // Export CSV
     document.getElementById('exportContacts')?.addEventListener('click', exportContactsCSV);
 
     function exportContactsCSV() {
@@ -936,7 +933,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       URL.revokeObjectURL(url);
     }
 
-    // Import CSV
     document.getElementById('importContactsBtn')?.addEventListener('click', () => {
       openModal('importModal');
     });
@@ -976,7 +972,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       await loadContacts();
     });
 
-    // Campaign creation
     document.getElementById('createCampaignBtn')?.addEventListener('click', () => {
       document.getElementById('campaignForm').style.display = 'block';
       document.getElementById('newCampaignForm').reset();
@@ -1014,14 +1009,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     });
 
-    // Preview email
     document.getElementById('previewEmailBtn')?.addEventListener('click', function() {
       const subject = document.getElementById('campaignSubject').value || 'Bez predmetu';
       const content = document.getElementById('campaignContent').value || '<p>Obsah emailu...</p>';
 
-      // Replace personalization
-      const previewSubject = subject.replace(/\{\{meno\}\}/g, 'Ján Novák').replace(/\{\{email\}\}/g, 'jan@example.com');
-      const previewContent = content.replace(/\{\{meno\}\}/g, 'Ján Novák').replace(/\{\{email\}\}/g, 'jan@example.com');
+      const previewSubject = subject.replace(/\{meno\}/g, 'Ján Novák').replace(/\{email\}/g, 'jan@example.com');
+      const previewContent = content.replace(/\{meno\}/g, 'Ján Novák').replace(/\{email\}/g, 'jan@example.com');
 
       document.getElementById('previewSubject').textContent = previewSubject;
       document.getElementById('previewBody').innerHTML = previewContent;
@@ -1029,7 +1022,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       openModal('previewModal');
     });
 
-    // Send test email
     document.getElementById('sendTestEmailBtn')?.addEventListener('click', function() {
       const email = prompt('Zadaj email adresu na test:');
       if (email) {
@@ -1089,11 +1081,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       btn.textContent = 'Vytvoriť a odoslať';
     });
 
-    // Load campaign history with stats
     async function loadCampaignHistory() {
       const tbody = document.getElementById('campaignsTableBody');
 
-      // Demo data with statistics
       const campaigns = [
         { name: 'Newsletter január', subject: 'Novinky', sent: 234, openRate: '42%', clickRate: '12%', date: '2026-01-10' },
         { name: 'Workshop promo', subject: 'Nové termíny!', sent: 156, openRate: '38%', clickRate: '8%', date: '2026-01-08' }
@@ -1115,14 +1105,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       `).join('');
     }
 
-    // Duplicate campaign
     window.duplicateCampaign = function(name) {
       alert(`Duplikujem kampaň: ${name}`);
       document.getElementById('campaignForm').style.display = 'block';
       document.getElementById('campaignName').value = name + ' (kópia)';
     };
 
-    // View campaign stats
     window.viewCampaignStats = function(name) {
       alert(`Štatistiky kampane: ${name}\n\nOpen rate: 42%\nClick rate: 12%\nBounce rate: 2%\nUnsubscribes: 3`);
     };
@@ -1156,7 +1144,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     window.deleteContact = deleteContact;
 
-    // Template functions
     function previewTemplate(type) {
       document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
@@ -1203,24 +1190,24 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       document.getElementById('campaignTemplate').value = 'custom';
       document.getElementById('customContentField').style.display = 'block';
 
-      document.getElementById('campaignContent').value = `<h1>Ahoj {{meno}}!</h1>
+      document.getElementById('campaignContent').value = `<h1>Ahoj!</h1>
 <p>Tu môžeš napísať vlastný obsah s HTML kódom.</p>
 <p>Použiť môžeš:</p>
 <ul>
   <li><strong>Tučný text</strong></li>
   <li><em>Kurzíva</em></li>
   <li><a href="https://portretnefilmy.sk">Odkazy</a></li>
-</ul>`;
+</ul>
+<p>Pre personalizáciu použiť: {meno} alebo {email}</p>`;
 
       document.getElementById('campaignName').value = 'Vlastná kampaň ' + new Date().toLocaleDateString('sk-SK');
-      document.getElementById('campaignSubject').value = 'Ahoj {{meno}}, máme pre teba novinky!';
+      document.getElementById('campaignSubject').value = 'Máme pre teba novinky!';
 
       setTimeout(() => {
         document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     }
 
-    // Custom template creation
     document.getElementById('createCustomTemplateBtn')?.addEventListener('click', function() {
       const name = prompt('Názov vlastnej šablóny:');
       if (!name) return;
@@ -1230,7 +1217,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       alert(`Šablóna "${name}" vytvorená!`);
 
-      // Add to custom templates
       const container = document.getElementById('customTemplatesContainer');
       const card = document.createElement('div');
       card.className = 'templateCard';
@@ -1256,7 +1242,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     };
 
-    // Tags management
     document.getElementById('createTagForm')?.addEventListener('submit', function(e) {
       e.preventDefault();
       const tagName = document.getElementById('tagName').value;
@@ -1272,7 +1257,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     };
 
-    // Notes functionality
     window.showNotes = function(email) {
       document.getElementById('notesContactEmail').textContent = email;
       document.getElementById('contactNotes').value = '';
@@ -1286,7 +1270,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       closeModal('notesModal');
     });
 
-    // Automation
     document.getElementById('createAutomationBtn')?.addEventListener('click', function() {
       alert('Vytváranie automatizácie - funkcionalita bude dostupná čoskoro');
     });
@@ -1295,7 +1278,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       alert(`Úprava automatizácie: ${type}`);
     };
 
-    // Modal functions
     function openModal(modalId) {
       document.getElementById(modalId).style.display = 'flex';
     }
@@ -1306,12 +1288,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     window.openModal = openModal;
     window.closeModal = closeModal;
-
     window.previewTemplate = previewTemplate;
     window.useTemplate = useTemplate;
     window.selectCustomTemplate = selectCustomTemplate;
 
-    // Load campaign history on page load
     loadCampaignHistory();
   </script>
 </BaseLayout>
@@ -1334,7 +1314,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     padding: 2rem 0 4rem;
   }
 
-  /* Tabs */
   .adminTabs {
     display: flex;
     gap: 0.5rem;
@@ -1368,7 +1347,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     display: block;
   }
 
-  /* Sub-tabs */
   .subTabs {
     display: flex;
     gap: 0.5rem;
@@ -1399,7 +1377,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     display: block;
   }
 
-  /* Stats */
   .statsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1432,7 +1409,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     font-weight: 600;
   }
 
-  /* Controls */
   .invoiceControls, .emailControls {
     display: flex;
     gap: 1rem;
@@ -1462,7 +1438,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     font-size: 1rem;
   }
 
-  /* Table */
   .tableWrapper {
     overflow-x: auto;
   }
@@ -1502,7 +1477,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     padding: 3rem !important;
   }
 
-  /* Badge */
   .badge {
     display: inline-block;
     padding: 0.25rem 0.75rem;
@@ -1519,7 +1493,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     color: #3b82f6;
   }
 
-  /* Tags */
   .tagBadge {
     display: inline-block;
     padding: 0.25rem 0.5rem;
@@ -1568,7 +1541,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     margin-left: auto;
   }
 
-  /* Form */
   .formCard {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
@@ -1631,7 +1603,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     margin-top: 0.5rem;
   }
 
-  /* Steps */
   .stepsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1665,7 +1636,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     margin: 0;
   }
 
-  /* Templates Grid */
   .templatesGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1687,7 +1657,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     margin-bottom: 1rem;
   }
 
-  /* Automation */
   .automationCards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1721,7 +1690,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     margin-bottom: 1rem;
   }
 
-  /* Toggle switch */
   .toggle {
     position: relative;
     display: inline-block;
@@ -1762,7 +1730,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     transform: translateX(24px);
   }
 
-  /* Modal */
   .modal {
     display: none;
     position: fixed;
@@ -1825,7 +1792,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     justify-content: flex-end;
   }
 
-  /* Email Preview */
   .emailPreview {
     background: white;
     color: #333;
@@ -1842,7 +1808,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     padding: 2rem;
   }
 
-  /* Notes List */
   .notesList {
     display: flex;
     flex-direction: column;
