@@ -1,234 +1,81 @@
 ---
-import "../styles/global.css";
-
 interface Props {
   title?: string;
   description?: string;
-  image?: string;
-  type?: "website" | "article" | "video.other";
   noindex?: boolean;
+  ogImage?: string;
+  canonicalURL?: string;
 }
 
-const {
-  title = "Portrétny film | Profesionálna video produkcia",
-  description = "Vytvárame autentické portrétne filmy, firemné videá a ponúkame praktické workshopy. Príbehy, ktoré predávajú.",
-  image = "/og-default.jpg",
-  type = "website",
+const { 
+  title = "Portrétne filmy - Firemné a osobné video",
+  description = "Profesionálne portrétne filmy pre firmy, osobnosti a eventy. Vytvárame autentické videá, ktoré oslovujú a zapamätajú sa.",
   noindex = false,
+  ogImage = "/og-image.jpg",
+  canonicalURL
 } = Astro.props;
 
-const siteUrl = "https://portretnefilmy.sk";
-const canonical = new URL(Astro.url.pathname, siteUrl).href;
-const ogImage = new URL(image, siteUrl).href;
-
-const nav = [
-  { href: "/", label: "Domov" },
-  { href: "/sluzby", label: "Služby" },
-  { href: "/cennik", label: "Cenník" },
-   // { href: "/portfolio", label: "Portfólio" },  // Dočasne skryté
-  { href: "/workshopy", label: "Workshopy" },
-  { href: "/kontakt", label: "Kontakt" },
-];
-
-const isActive = (href: string) =>
-  Astro.url.pathname === href || (href !== "/" && Astro.url.pathname.startsWith(href));
-
-const schemaOrg = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "LocalBusiness",
-      "@id": `${siteUrl}/#business`,
-      name: "Portrétny film – FerkoMedia",
-      url: siteUrl,
-      telephone: "+421949460832",
-      email: "info@ferkomedia.sk",
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "Mudroňova 5",
-        addressLocality: "Martin",
-        postalCode: "036 01",
-        addressCountry: "SK",
-      },
-      geo: { "@type": "GeoCoordinates", latitude: 49.0636, longitude: 18.9214 },
-      priceRange: "€€",
-      image: ogImage,
-      sameAs: [
-        "https://www.facebook.com/portretnyfilm",
-        "https://www.instagram.com/portretnyfilm",
-      ],
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${siteUrl}/#website`,
-      url: siteUrl,
-      name: "Portrétny film",
-      publisher: { "@id": `${siteUrl}/#business` },
-      inLanguage: "sk",
-    },
-    {
-      "@type": "WebPage",
-      "@id": `${canonical}#webpage`,
-      url: canonical,
-      name: title,
-      description: description,
-      isPartOf: { "@id": `${siteUrl}/#website` },
-      inLanguage: "sk",
-    },
-  ],
-};
+const fullTitle = title === "Portrétne filmy - Firemné a osobné video" ? title : `${title} | Portrétne filmy`;
+const siteURL = "https://portretnefilmy.sk";
+const canonical = canonicalURL || new URL(Astro.url.pathname, siteURL).href;
+const ogImageURL = new URL(ogImage, siteURL).href;
 ---
+
 <!doctype html>
 <html lang="sk">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- Primary Meta Tags -->
-    <title>{title}</title>
-    <meta name="title" content={title} />
-    <meta name="description" content={description} />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonical} />
+    <meta name="generator" content={Astro.generator} />
+    
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-
-    <!-- Favicon - inline SVG -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23111'/><circle cx='50' cy='50' r='28' fill='%23f97316'/></svg>" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png" />
-    <meta name="theme-color" content="#0a0a0a" />
-
-    <!-- PWA -->
-    <link rel="manifest" href="/manifest.json" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Portrétne filmy" />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content={type} />
+    
+    <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:site_name" content="Portrétne filmy" />
     <meta property="og:locale" content="sk_SK" />
-    <meta property="og:site_name" content="Portrétny film" />
-
-    <!-- Twitter -->
+    
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonical} />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
-
-    <!-- Schema.org JSON-LD -->
-    <script type="application/ld+json" set:html={JSON.stringify(schemaOrg)} />
-  </head>
-
-  <body>
-    <header class="siteHeader">
-      <div class="container">
-        <nav class="nav" aria-label="Hlavné menu">
-          <a class="brand" href="/">
-            <span class="brandDot" aria-hidden="true"></span>
-            <span class="brandText">Portrétny film</span>
-          </a>
-
-          <div class="navLinks">
-            {nav.map((i) => (
-              <a
-                class={"navLink " + (isActive(i.href) ? "isActive" : "")}
-                href={i.href}
-                aria-current={isActive(i.href) ? "page" : undefined}
-              >
-                {i.label}
-              </a>
-            ))}
-          </div>
-
-          <div class="navCta">
-            <a class="btn btn--primary" href="tel:+421949460832">0949 460 832</a>
-          </div>
-
-          <button class="hamburger" type="button" aria-label="Otvoriť menu" data-drawer-open>
-            <span></span><span></span><span></span>
-          </button>
-        </nav>
-      </div>
-    </header>
-
-    <!-- Mobile drawer -->
-    <div class="drawerBackdrop" data-drawer-backdrop></div>
-    <aside class="drawer" data-drawer aria-label="Mobilné menu">
-      <div class="drawerHeader">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span class="brandDot" aria-hidden="true"></span>
-          <strong style="color:rgba(255,255,255,.9)">Menu</strong>
-        </div>
-        <button class="drawerClose" type="button" aria-label="Zavrieť menu" data-drawer-close>×</button>
-      </div>
-
-      <div class="drawerLinks">
-        {nav.map((i) => (
-          <a class={isActive(i.href) ? "isActive" : ""} href={i.href}>
-            {i.label}
-          </a>
-        ))}
-      </div>
-
-      <div class="drawerCtas">
-        <a class="btn btn--primary" href="tel:+421949460832">0949 460 832</a>
-        <a class="btn btn--ghost" href="/workshopy#rezervacia">Rezervovať workshop</a>
-      </div>
-    </aside>
-
-    <main class="container">
-      <slot />
-    </main>
-
-    <footer class="footer">
-      <div class="container">
-        <div class="footerInner">
-          <div>© {new Date().getFullYear()} FerkoMedia</div>
-          <div><a class="link" href="mailto:info@ferkomedia.sk">info@ferkomedia.sk</a></div>
-        </div>
-      </div>
-    </footer>
-
-    <script>
-      (() => {
-        const openBtn = document.querySelector("[data-drawer-open]");
-        const closeBtn = document.querySelector("[data-drawer-close]");
-        const drawer = document.querySelector("[data-drawer]");
-        const backdrop = document.querySelector("[data-drawer-backdrop]");
-
-        const open = () => {
-          backdrop?.classList.add("open");
-          drawer?.classList.add("open");
-          document.body.style.overflow = "hidden";
-        };
-        const close = () => {
-          backdrop?.classList.remove("open");
-          drawer?.classList.remove("open");
-          document.body.style.overflow = "";
-        };
-
-        openBtn?.addEventListener("click", open);
-        closeBtn?.addEventListener("click", close);
-        backdrop?.addEventListener("click", close);
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape") close();
-        });
-      })();
-    </script>
-
-    <!-- PWA Service Worker -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('SW registered'))
-            .catch(err => console.log('SW registration failed:', err));
-        });
+    <meta name="twitter:image" content={ogImageURL} />
+    
+    <meta name="author" content="FerkoMedia" />
+    <meta name="keywords" content="portrétne filmy, firemné video, korporátne video, video marketing, profesionálne video, Martin, Slovensko" />
+    
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "VideoProductionService",
+      "name": "Portrétne filmy",
+      "description": "Profesionálne portrétne filmy pre firmy, osobnosti a eventy",
+      "url": "https://portretnefilmy.sk",
+      "logo": "https://portretnefilmy.sk/logo.png",
+      "telephone": "+421949460832",
+      "email": "info@ferkomedia.sk",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "SK",
+        "addressLocality": "Martin"
+      },
+      "sameAs": [
+        "https://www.facebook.com/ferkomedia",
+        "https://www.instagram.com/ferkomedia"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "category": "Video Production"
       }
-    </script>
+    })} />
+  </head>
+  <body>
+    <slot />
   </body>
 </html>
