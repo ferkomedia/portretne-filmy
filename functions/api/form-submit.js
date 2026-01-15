@@ -1,4 +1,4 @@
-// Form submission handler with email notifications
+// Form submission handler with email notifications + automatic contact saving
 // Replaces Netlify Forms with custom solution
 
 export async function onRequestPost(context) {
@@ -26,24 +26,42 @@ export async function onRequestPost(context) {
         }
 
         // Build email content
-        let subject, customerEmail, replyTo;
+        let subject, customerEmail, replyTo, customerName;
 
         if (formName === 'kontakt') {
             subject = `Nový dopyt: Portrétny film`;
             customerEmail = data['Email'];
+            customerName = data['Meno a priezvisko'];
             replyTo = customerEmail;
         } else if (formName === 'workshopy') {
             subject = `Nová rezervácia: Workshop`;
             customerEmail = data['E-mail'];
+            customerName = data['Meno a priezvisko'];
             replyTo = customerEmail;
         } else if (formName === 'dlhodoba-spolupraca') {
             subject = `Nová objednávka: Dlhodobá spolupráca`;
             customerEmail = data['E-mail'];
+            customerName = data['Meno a priezvisko'];
             replyTo = customerEmail;
         } else {
             subject = `Nový formulár: ${formName}`;
             customerEmail = data['Email'] || data['E-mail'];
+            customerName = data['Meno a priezvisko'];
             replyTo = customerEmail;
+        }
+
+        // **AUTOMATIC CONTACT SAVING TO EMAIL_MARKETING KV**
+        if (customerEmail && env.EMAIL_MARKETING) {
+            try {
+                await saveContactToKV(env.EMAIL_MARKETING, {
+                    email: customerEmail,
+                    name: customerName || '',
+                    source: formName
+                });
+            } catch (err) {
+                console.error('Error saving contact to KV:', err);
+                // Continue even if contact save fails
+            }
         }
 
         // Format form data for admin
@@ -86,6 +104,41 @@ export async function onRequestPost(context) {
             JSON.stringify({ error: error.message }),
             { status: 500, headers }
         );
+    }
+}
+
+// **NEW FUNCTION: Save contact to EMAIL_MARKETING KV**
+async function saveContactToKV(kvNamespace, contactData) {
+    const { email, name, source } = contactData;
+
+    if (!email || !source) {
+        return;
+    }
+
+    const key = `contact:${email}`;
+
+    // Check if contact exists
+    const existing = await kvNamespace.get(key);
+
+    if (existing) {
+        // Update existing contact
+        const existingData = JSON.parse(existing);
+        const updatedContact = {
+            ...existingData,
+            name: name || existingData.name,
+            updatedAt: new Date().toISOString()
+        };
+        await kvNamespace.put(key, JSON.stringify(updatedContact));
+    } else {
+        // Create new contact
+        const newContact = {
+            email,
+            name: name || '',
+            source,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        await kvNamespace.put(key, JSON.stringify(newContact));
     }
 }
 
