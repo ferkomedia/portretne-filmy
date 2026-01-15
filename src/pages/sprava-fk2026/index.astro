@@ -572,6 +572,59 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       updateSelectedContacts();
     });
 
+    // Send campaign to selected contacts
+    document.getElementById('sendToSelected')?.addEventListener('click', function() {
+      if (selectedContacts.length === 0) {
+        alert('Najprv označ kontakty');
+        return;
+      }
+
+      // Switch to Campaigns tab
+      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
+      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
+      document.getElementById('subtab-campaigns').classList.add('active');
+
+      // Show campaign form
+      document.getElementById('campaignForm').style.display = 'block';
+      document.getElementById('campaignSegment').value = 'selected';
+
+      // Scroll to form
+      setTimeout(() => {
+        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    });
+
+    // Delete selected contacts
+    document.getElementById('deleteSelected')?.addEventListener('click', async function() {
+      if (selectedContacts.length === 0) {
+        alert('Najprv označ kontakty');
+        return;
+      }
+
+      if (!confirm(`Naozaj vymazať ${selectedContacts.length} kontaktov?`)) return;
+
+      for (const email of selectedContacts) {
+        try {
+          await fetch('/api/contacts/delete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${adminPassword}`
+            },
+            body: JSON.stringify({ email })
+          });
+        } catch (err) {
+          console.error('Error deleting contact:', err);
+        }
+      }
+
+      // Reload contacts
+      await loadContacts();
+      selectedContacts = [];
+      updateSelectedContacts();
+    });
+
     // Search and filter
     document.getElementById('searchContacts')?.addEventListener('input', filterContacts);
     document.getElementById('filterSource')?.addEventListener('change', filterContacts);
