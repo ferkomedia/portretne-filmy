@@ -768,13 +768,61 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     window.deleteContact = deleteContact;
 
     function previewTemplate(type) {
-      alert(`Náhľad šablóny: ${type}\n\nTáto funkcia bude dostupná čoskoro.`);
+      // Switch to campaigns tab
+      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
+      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
+      document.getElementById('subtab-campaigns').classList.add('active');
+
+      // Show form with selected template
+      document.getElementById('campaignForm').style.display = 'block';
+      document.getElementById('campaignTemplate').value = type;
+
+      // Prefill example data
+      if (type === 'newsletter') {
+        document.getElementById('campaignName').value = 'Newsletter ' + new Date().toLocaleDateString('sk-SK');
+        document.getElementById('campaignSubject').value = 'Novinky z FerkoMedia';
+      } else if (type === 'workshop-promo') {
+        document.getElementById('campaignName').value = 'Workshop propagácia ' + new Date().toLocaleDateString('sk-SK');
+        document.getElementById('campaignSubject').value = 'Nové termíny workshopov!';
+      }
+
+      // Scroll to form
+      setTimeout(() => {
+        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
 
     function selectCustomTemplate() {
+      // Switch to campaigns tab
+      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
+      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
+      document.getElementById('subtab-campaigns').classList.add('active');
+
+      // Show form with custom template
+      document.getElementById('campaignForm').style.display = 'block';
       document.getElementById('campaignTemplate').value = 'custom';
       document.getElementById('customContentField').style.display = 'block';
-      document.getElementById('campaignForm').style.display = 'block';
+
+      // Prefill example HTML
+      document.getElementById('campaignContent').value = `<h1>Vlastný email</h1>
+<p>Ahoj!</p>
+<p>Tu môžeš napísať vlastný obsah s HTML kódom.</p>
+<p>Použiť môžeš:</p>
+<ul>
+  <li><strong>Tučný text</strong></li>
+  <li><em>Kurzíva</em></li>
+  <li><a href="https://portretnefilmy.sk">Odkazy</a></li>
+</ul>`;
+
+      document.getElementById('campaignName').value = 'Vlastná kampaň ' + new Date().toLocaleDateString('sk-SK');
+      document.getElementById('campaignSubject').value = 'Tvoj vlastný email';
+
+      // Scroll to form
+      setTimeout(() => {
+        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
 
     window.previewTemplate = previewTemplate;
