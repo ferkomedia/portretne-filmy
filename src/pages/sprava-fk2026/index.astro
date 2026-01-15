@@ -561,7 +561,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     </div>
   </div>
 
-  <script define:vars={`{ adminPassword: "MyFilmy2026@" }`}>
+<script>
+    const adminPassword = "MyFilmy2026@";
+
     // Tab switching
     document.querySelectorAll('.adminTab').forEach(tab => {
       tab.addEventListener('click', function() {
