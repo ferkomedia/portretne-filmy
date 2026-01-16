@@ -1373,10 +1373,47 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       closeModal('notesModal');
     });
 
-    // Create automation
     document.getElementById('createAutomationBtn')?.addEventListener('click', function() {
       openModal('createAutomationModal');
       document.getElementById('newAutomationForm').reset();
+    });
+
+    // Automation trigger field toggle
+    document.getElementById('autoTrigger')?.addEventListener('change', function() {
+      const val = this.value;
+      document.getElementById('inactivityDaysField').style.display = val === 'inactivity' ? 'block' : 'none';
+      document.getElementById('tagTriggerField').style.display = val === 'tag-added' ? 'block' : 'none';
+    });
+
+    // Submit new automation
+    document.getElementById('newAutomationForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const autoData = {
+        name: document.getElementById('autoName').value,
+        trigger: document.getElementById('autoTrigger').value,
+        triggerDays: document.getElementById('autoDays')?.value || null,
+        triggerTag: document.getElementById('autoTriggerTag')?.value || null,
+        emailSubject: document.getElementById('autoEmailSubject').value,
+        emailContent: document.getElementById('autoEmailContent').value,
+        active: true
+      };
+
+      const btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Vytváram...';
+
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        alert(`Automatizácia "${autoData.name}" vytvorená!`);
+        closeModal('createAutomationModal');
+        this.reset();
+      } catch (err) {
+        alert('Chyba: ' + err.message);
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Vytvoriť automatizáciu';
     });
 
     // Automation trigger field toggle
@@ -1423,9 +1460,67 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       btn.textContent = 'Vytvoriť automatizáciu';
     });
 
-    // Edit automation
     window.editAutomation = function(type) {
       openModal('editAutomationModal');
+
+      const automations = {
+        welcome: {
+          name: 'Welcome email',
+          subject: 'Vitaj v FerkoMedia!',
+          content: '<h1>Ahoj {meno}!</h1><p>Ďakujeme za registráciu...</p>',
+          active: true
+        },
+        followup: {
+          name: 'Workshop follow-up',
+          subject: 'Ako sa ti páčil workshop?',
+          content: '<h1>Ahoj {meno}!</h1><p>Dúfame že sa ti workshop páčil...</p>',
+          active: true
+        },
+        reengagement: {
+          name: 'Re-engagement',
+          subject: 'Dlho sme sa nevideli!',
+          content: '<h1>Ahoj {meno}!</h1><p>Máme pre teba novinky...</p>',
+          active: false
+        }
+      };
+
+      const auto = automations[type] || automations.welcome;
+
+      document.getElementById('editAutoId').value = type;
+      document.getElementById('editAutoName').value = auto.name;
+      document.getElementById('editAutoSubject').value = auto.subject;
+      document.getElementById('editAutoContent').value = auto.content;
+      document.getElementById('editAutoActive').checked = auto.active;
+    };
+
+    // Submit edited automation
+    document.getElementById('editAutomationForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const autoId = document.getElementById('editAutoId').value;
+      const autoData = {
+        id: autoId,
+        name: document.getElementById('editAutoName').value,
+        subject: document.getElementById('editAutoSubject').value,
+        content: document.getElementById('editAutoContent').value,
+        active: document.getElementById('editAutoActive').checked
+      };
+
+      const btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Ukladám...';
+
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        alert(`Automatizácia "${autoData.name}" uložená!`);
+        closeModal('editAutomationModal');
+      } catch (err) {
+        alert('Chyba: ' + err.message);
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Uložiť zmeny';
+    });
 
       // Pre-fill form based on automation type
       const automations = {
