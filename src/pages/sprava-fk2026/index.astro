@@ -560,7 +560,109 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
     </div>
   </div>
+<!-- Create Automation Modal -->
+  <div id="createAutomationModal" class="modal" style="display:none;">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>Vytvoriť novú automatizáciu</h3>
+        <button class="modalClose" onclick="closeModal('createAutomationModal')">&times;</button>
+      </div>
+      <div class="modalBody">
+        <form id="newAutomationForm">
+          <div class="formGrid">
+            <div class="field fieldFull">
+              <label for="autoName">Názov automatizácie</label>
+              <input id="autoName" type="text" placeholder="Napr. Onboarding séria" required />
+            </div>
 
+            <div class="field fieldFull">
+              <label for="autoTrigger">Trigger</label>
+              <select id="autoTrigger" required>
+                <option value="">Vyber trigger</option>
+                <option value="new-contact">Nový kontakt</option>
+                <option value="workshop-complete">Po workshope</option>
+                <option value="tag-added">Pri pridaní tagu</option>
+                <option value="inactivity">Po X dňoch nečinnosti</option>
+              </select>
+            </div>
+
+            <div class="field" id="inactivityDaysField" style="display:none;">
+              <label for="autoDays">Počet dní nečinnosti</label>
+              <input id="autoDays" type="number" value="30" min="1" />
+            </div>
+
+            <div class="field" id="tagTriggerField" style="display:none;">
+              <label for="autoTriggerTag">Pri akom tagu?</label>
+              <select id="autoTriggerTag">
+                <option value="VIP">VIP</option>
+                <option value="Záujemca">Záujemca</option>
+                <option value="Kúpil">Kúpil</option>
+              </select>
+            </div>
+
+            <div class="field fieldFull">
+              <label for="autoEmailSubject">Predmet emailu</label>
+              <input id="autoEmailSubject" type="text" placeholder="Ahoj {meno}, vitaj!" required />
+            </div>
+
+            <div class="field fieldFull">
+              <label for="autoEmailContent">Obsah emailu (HTML)</label>
+              <textarea id="autoEmailContent" rows="8" placeholder="<h1>Vitaj!</h1><p>Text...</p>" required></textarea>
+            </div>
+          </div>
+
+          <div class="formActions">
+            <button type="button" class="btn btn--ghost" onclick="closeModal('createAutomationModal')">Zrušiť</button>
+            <button type="submit" class="btn btn--primary">Vytvoriť automatizáciu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Automation Modal -->
+  <div id="editAutomationModal" class="modal" style="display:none;">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>Upraviť automatizáciu</h3>
+        <button class="modalClose" onclick="closeModal('editAutomationModal')">&times;</button>
+      </div>
+      <div class="modalBody">
+        <form id="editAutomationForm">
+          <input type="hidden" id="editAutoId" />
+
+          <div class="formGrid">
+            <div class="field fieldFull">
+              <label for="editAutoName">Názov</label>
+              <input id="editAutoName" type="text" required />
+            </div>
+
+            <div class="field fieldFull">
+              <label for="editAutoSubject">Predmet emailu</label>
+              <input id="editAutoSubject" type="text" required />
+            </div>
+
+            <div class="field fieldFull">
+              <label for="editAutoContent">Obsah emailu (HTML)</label>
+              <textarea id="editAutoContent" rows="10" required></textarea>
+            </div>
+
+            <div class="field fieldFull">
+              <label>
+                <input type="checkbox" id="editAutoActive" />
+                Aktívna automatizácia
+              </label>
+            </div>
+          </div>
+
+          <div class="formActions">
+            <button type="button" class="btn btn--ghost" onclick="closeModal('editAutomationModal')">Zrušiť</button>
+            <button type="submit" class="btn btn--primary">Uložiť zmeny</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 <script>
     const adminPassword = "MyFilmy2026@";
 
@@ -1271,13 +1373,125 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       closeModal('notesModal');
     });
 
+    // Create automation
     document.getElementById('createAutomationBtn')?.addEventListener('click', function() {
-      alert('Vytváranie automatizácie - funkcionalita bude dostupná čoskoro');
+      openModal('createAutomationModal');
+      document.getElementById('newAutomationForm').reset();
     });
 
+    // Automation trigger field toggle
+    document.getElementById('autoTrigger')?.addEventListener('change', function() {
+      const val = this.value;
+      document.getElementById('inactivityDaysField').style.display = val === 'inactivity' ? 'block' : 'none';
+      document.getElementById('tagTriggerField').style.display = val === 'tag-added' ? 'block' : 'none';
+    });
+
+    // Submit new automation
+    document.getElementById('newAutomationForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const autoData = {
+        name: document.getElementById('autoName').value,
+        trigger: document.getElementById('autoTrigger').value,
+        triggerDays: document.getElementById('autoDays')?.value || null,
+        triggerTag: document.getElementById('autoTriggerTag')?.value || null,
+        emailSubject: document.getElementById('autoEmailSubject').value,
+        emailContent: document.getElementById('autoEmailContent').value,
+        active: true
+      };
+
+      const btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Vytváram...';
+
+      try {
+        // Simulate API call (replace with real API endpoint)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        alert(`Automatizácia "${autoData.name}" vytvorená!`);
+        closeModal('createAutomationModal');
+        this.reset();
+
+        // Reload automation cards
+        // TODO: Call function to refresh automation list
+
+      } catch (err) {
+        alert('Chyba: ' + err.message);
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Vytvoriť automatizáciu';
+    });
+
+    // Edit automation
     window.editAutomation = function(type) {
-      alert(`Úprava automatizácie: ${type}`);
+      openModal('editAutomationModal');
+
+      // Pre-fill form based on automation type
+      const automations = {
+        welcome: {
+          name: 'Welcome email',
+          subject: 'Vitaj v FerkoMedia!',
+          content: '<h1>Ahoj {meno}!</h1><p>Ďakujeme za registráciu...</p>',
+          active: true
+        },
+        followup: {
+          name: 'Workshop follow-up',
+          subject: 'Ako sa ti páčil workshop?',
+          content: '<h1>Ahoj {meno}!</h1><p>Dúfame že sa ti workshop páčil...</p>',
+          active: true
+        },
+        reengagement: {
+          name: 'Re-engagement',
+          subject: 'Dlho sme sa nevideli!',
+          content: '<h1>Ahoj {meno}!</h1><p>Máme pre teba novinky...</p>',
+          active: false
+        }
+      };
+
+      const auto = automations[type] || automations.welcome;
+
+      document.getElementById('editAutoId').value = type;
+      document.getElementById('editAutoName').value = auto.name;
+      document.getElementById('editAutoSubject').value = auto.subject;
+      document.getElementById('editAutoContent').value = auto.content;
+      document.getElementById('editAutoActive').checked = auto.active;
     };
+
+    // Submit edited automation
+    document.getElementById('editAutomationForm')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const autoId = document.getElementById('editAutoId').value;
+      const autoData = {
+        id: autoId,
+        name: document.getElementById('editAutoName').value,
+        subject: document.getElementById('editAutoSubject').value,
+        content: document.getElementById('editAutoContent').value,
+        active: document.getElementById('editAutoActive').checked
+      };
+
+      const btn = this.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Ukladám...';
+
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        alert(`Automatizácia "${autoData.name}" uložená!`);
+        closeModal('editAutomationModal');
+
+        // Update UI
+        // TODO: Refresh automation cards
+
+      } catch (err) {
+        alert('Chyba: ' + err.message);
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Uložiť zmeny';
+    });
 
     function openModal(modalId) {
       document.getElementById(modalId).style.display = 'flex';
