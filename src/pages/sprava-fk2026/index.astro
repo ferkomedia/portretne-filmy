@@ -664,1470 +664,186 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     </div>
   </div>
 <script>
-    const adminPassword = "MyFilmy2026@";
+document.addEventListener('DOMContentLoaded', () => {
 
-    // Tab switching
-    document.querySelectorAll('.adminTab').forEach(tab => {
-      tab.addEventListener('click', function() {
-        document.querySelectorAll('.adminTab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tabContent').forEach(c => c.classList.remove('active'));
+  const adminPassword = "MyFilmy2026@";
 
-        this.classList.add('active');
-        document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+  /* =====================
+     TABS
+  ===================== */
+  document.querySelectorAll('.adminTab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.adminTab, .tabContent')
+        .forEach(el => el.classList.remove('active'));
 
-        if (this.dataset.tab === 'email') {
-          loadEmailStats();
-        }
-      });
+      tab.classList.add('active');
+      document.getElementById(`tab-${tab.dataset.tab}`)?.classList.add('active');
+
+      if (tab.dataset.tab === 'email') loadEmailStats();
     });
+  });
 
-    // Sub-tab switching
-    document.querySelectorAll('.subTab').forEach(tab => {
-      tab.addEventListener('click', function() {
-        document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.subTab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.subTab, .subTabContent')
+        .forEach(el => el.classList.remove('active'));
 
-        this.classList.add('active');
-        document.getElementById('subtab-' + this.dataset.subtab).classList.add('active');
-      });
+      tab.classList.add('active');
+      document.getElementById(`subtab-${tab.dataset.subtab}`)?.classList.add('active');
     });
+  });
 
-    // Workshop JSON generator
-    document.getElementById('addTermForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      var term = {
-        title: document.getElementById('title').value,
-        date: document.getElementById('date').value,
-        city: document.getElementById('city').value,
-        price: parseInt(document.getElementById('price').value),
-        capacity: parseInt(document.getElementById('capacity').value),
-        status: document.getElementById('status').value
-      };
-      document.getElementById('jsonCode').textContent = JSON.stringify(term, null, 2);
-      document.getElementById('jsonOutput').style.display = 'block';
-    });
+  /* =====================
+     WORKSHOP JSON
+  ===================== */
+  document.getElementById('addTermForm')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const term = {
+      title: title.value,
+      date: date.value,
+      city: city.value,
+      price: +price.value,
+      capacity: +capacity.value,
+      status: status.value
+    };
+    jsonCode.textContent = JSON.stringify(term, null, 2);
+    jsonOutput.style.display = 'block';
+  });
 
-    // Invoice loading
-    let currentOffset = 0;
-    const limit = 50;
-    let allInvoices = [];
+  /* =====================
+     INVOICES
+  ===================== */
+  let offset = 0;
+  const limit = 50;
+  let allInvoices = [];
 
-    document.getElementById('loadInvoices').addEventListener('click', loadInvoices);
-    document.getElementById('loadMore')?.addEventListener('click', () => {
-      currentOffset += limit;
-      loadInvoices(true);
-    });
+  document.getElementById('loadInvoices')?.addEventListener('click', () => loadInvoices(false));
+  document.getElementById('loadMore')?.addEventListener('click', () => {
+    offset += limit;
+    loadInvoices(true);
+  });
 
-    document.getElementById('searchInvoice').addEventListener('input', function() {
-      const query = this.value.toLowerCase();
-      filterInvoices(query);
-    });
+  document.getElementById('searchInvoice')?.addEventListener('input', e =>
+    filterInvoices(e.target.value.toLowerCase())
+  );
 
-    async function loadInvoices(append = false) {
-      const btn = document.getElementById('loadInvoices');
-      btn.disabled = true;
-      btn.textContent = 'Načítavam...';
+  async function loadInvoices(append) {
+    const key = prompt('Admin kľúč:');
+    if (!key) return;
 
-      try {
-        const apiKey = prompt('Zadajte admin kľúč:', 'fk2026-admin');
-        if (!apiKey) {
-          btn.disabled = false;
-          btn.textContent = 'Načítať faktúry';
-          return;
-        }
+    const res = await fetch(`/api/get-invoices?key=${key}&limit=${limit}&offset=${offset}`);
+    const data = await res.json();
 
-        const response = await fetch(`/api/get-invoices?key=${encodeURIComponent(apiKey)}&limit=${limit}&offset=${currentOffset}`);
-        const data = await response.json();
+    allInvoices = append ? [...allInvoices, ...data.invoices] : data.invoices;
+    renderInvoices(allInvoices);
+  }
 
-        if (data.error) {
-          alert('Chyba: ' + data.error);
-          btn.disabled = false;
-          btn.textContent = 'Načítať faktúry';
-          return;
-        }
-
-        if (data.stats) {
-          document.getElementById('statTotal').textContent = data.stats.totalInvoices || 0;
-          document.getElementById('statRevenue').textContent = (data.stats.totalRevenue || 0).toLocaleString('sk-SK') + ' €';
-          document.getElementById('statMonthCount').textContent = data.stats.monthlyCount || 0;
-          document.getElementById('statMonthRevenue').textContent = (data.stats.monthlyRevenue || 0).toLocaleString('sk-SK') + ' €';
-        }
-
-        if (append) {
-          allInvoices = [...allInvoices, ...data.invoices];
-        } else {
-          allInvoices = data.invoices;
-        }
-
-        renderInvoices(allInvoices);
-
-        if (data.invoices.length === limit && currentOffset + limit < data.total) {
-          document.getElementById('loadMoreWrapper').style.display = 'block';
-        } else {
-          document.getElementById('loadMoreWrapper').style.display = 'none';
-        }
-
-      } catch (err) {
-        alert('Chyba pri načítaní: ' + err.message);
-      }
-
-      btn.disabled = false;
-      btn.textContent = 'Načítať faktúry';
-    }
-
-    function renderInvoices(invoices) {
-      const tbody = document.getElementById('invoiceTableBody');
-
-      if (!invoices || invoices.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="emptyState">Žiadne faktúry</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = invoices.map(inv => `
+  function renderInvoices(list) {
+    const tbody = invoiceTableBody;
+    tbody.innerHTML = list.length
+      ? list.map(inv => `
         <tr>
           <td><strong>${inv.id}</strong></td>
           <td>${new Date(inv.createdAt).toLocaleDateString('sk-SK')}</td>
-          <td>
-            <div>${inv.customerName}</div>
-            <div class="subtext">${inv.customerEmail}</div>
-          </td>
-          <td>
-            ${inv.companyName ? `<div>${inv.companyName}</div><div class="subtext">IČO: ${inv.companyIco}</div>` : '<span class="subtext">FO</span>'}
-          </td>
+          <td>${inv.customerName}<div class="subtext">${inv.customerEmail}</div></td>
           <td>${inv.productName}</td>
-          <td class="amount">${inv.amount.toLocaleString('sk-SK', { minimumFractionDigits: 2 })} €</td>
+          <td class="amount">${inv.amount} €</td>
           <td><span class="badge badge--success">Uhradená</span></td>
-        </tr>
-      `).join('');
-    }
+        </tr>`).join('')
+      : `<tr><td colspan="6" class="emptyState">Žiadne faktúry</td></tr>`;
+  }
 
-    function filterInvoices(query) {
-      if (!query) {
-        renderInvoices(allInvoices);
-        return;
-      }
+  function filterInvoices(q) {
+    renderInvoices(allInvoices.filter(i =>
+      Object.values(i).some(v => String(v).toLowerCase().includes(q))
+    ));
+  }
 
-      const filtered = allInvoices.filter(inv =>
-        inv.customerName?.toLowerCase().includes(query) ||
-        inv.customerEmail?.toLowerCase().includes(query) ||
-        inv.companyName?.toLowerCase().includes(query) ||
-        inv.companyIco?.includes(query) ||
-        inv.id?.toLowerCase().includes(query) ||
-        inv.productName?.toLowerCase().includes(query)
-      );
+  /* =====================
+     EMAIL CONTACTS
+  ===================== */
+  let allContacts = [];
+  let selectedContacts = [];
 
-      renderInvoices(filtered);
-    }
-
-    // EMAIL MARKETING FUNCTIONALITY
-    let allContacts = [];
-    let selectedContacts = [];
-
-    async function loadEmailStats() {
-      try {
-        const response = await fetch('/api/contacts/stats', {
-          headers: { 'Authorization': `Bearer ${adminPassword}` }
-        });
-        const data = await response.json();
-
-        if (data.ok) {
-          document.getElementById('emailStatTotal').textContent = data.total || 0;
-          document.getElementById('emailStatWorkshops').textContent = data.workshop || 0;
-          document.getElementById('emailStatContact').textContent = data.kontakt || 0;
-          document.getElementById('emailStatCampaigns').textContent = data.campaigns || 0;
-        }
-      } catch (err) {
-        console.error('Error loading email stats:', err);
-      }
-    }
-
-    document.getElementById('loadContacts')?.addEventListener('click', loadContacts);
-
-    async function loadContacts() {
-      const btn = document.getElementById('loadContacts');
-      btn.disabled = true;
-      btn.textContent = 'Načítavam...';
-
-      try {
-        const response = await fetch('/api/contacts/list', {
-          headers: { 'Authorization': `Bearer ${adminPassword}` }
-        });
-        const data = await response.json();
-
-        if (data.error) {
-          alert('Chyba: ' + data.error);
-          btn.disabled = false;
-          btn.textContent = 'Načítať kontakty';
-          return;
-        }
-
-        allContacts = data.contacts || [];
-        renderContacts(allContacts);
-        loadEmailStats();
-
-      } catch (err) {
-        alert('Chyba: ' + err.message);
-      }
-
-      btn.disabled = false;
-      btn.textContent = 'Načítať kontakty';
-    }
-
-    function renderContacts(contacts) {
-      const tbody = document.getElementById('contactsTableBody');
-
-      if (!contacts || contacts.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="emptyState">Žiadne kontakty</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = contacts.map(contact => {
-        const tags = contact.tags || ['VIP'];
-        const tagsHtml = tags.map(tag => `<span class="tagBadge tagBadge--blue">${tag}</span>`).join(' ');
-
-        return `
-        <tr>
-          <td><input type="checkbox" class="contact-checkbox" value="${contact.email}" /></td>
-          <td>${contact.name || '-'}</td>
-          <td>${contact.email}</td>
-          <td><span class="badge badge--${contact.source === 'workshop' ? 'success' : 'info'}">${contact.source}</span></td>
-          <td>${tagsHtml}</td>
-          <td>${new Date(contact.createdAt).toLocaleDateString('sk-SK')}</td>
-          <td>
-            <button class="btn btn--ghost btn--small" onclick="showNotes('${contact.email}')">📝</button>
-            <button class="btn btn--ghost btn--small" onclick="deleteContact('${contact.email}')">Vymazať</button>
-          </td>
-        </tr>
-      `}).join('');
-
-      document.querySelectorAll('.contact-checkbox').forEach(cb => {
-        cb.addEventListener('change', updateSelectedContacts);
-      });
-    }
-
-    function updateSelectedContacts() {
-      selectedContacts = Array.from(document.querySelectorAll('.contact-checkbox:checked')).map(cb => cb.value);
-      const count = selectedContacts.length;
-
-      if (count > 0) {
-        document.getElementById('selectedActions').style.display = 'block';
-        document.getElementById('selectedCount').textContent = count;
-      } else {
-        document.getElementById('selectedActions').style.display = 'none';
-      }
-    }
-
-    document.getElementById('selectAll')?.addEventListener('change', function() {
-      document.querySelectorAll('.contact-checkbox').forEach(cb => {
-        cb.checked = this.checked;
-      });
-      updateSelectedContacts();
+  async function loadEmailStats() {
+    const res = await fetch('/api/contacts/stats', {
+      headers: { Authorization: `Bearer ${adminPassword}` }
     });
+    const d = await res.json();
+    if (!d.ok) return;
 
-    document.getElementById('sendToSelected')?.addEventListener('click', function() {
-      if (selectedContacts.length === 0) {
-        alert('Najprv označ kontakty');
-        return;
-      }
+    emailStatTotal.textContent = d.total;
+    emailStatWorkshops.textContent = d.workshop;
+    emailStatContact.textContent = d.kontakt;
+    emailStatCampaigns.textContent = d.campaigns;
+  }
 
-      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
-      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
-      document.getElementById('subtab-campaigns').classList.add('active');
-
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignSegment').value = 'selected';
-
-      setTimeout(() => {
-        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+  document.getElementById('loadContacts')?.addEventListener('click', async () => {
+    const res = await fetch('/api/contacts/list', {
+      headers: { Authorization: `Bearer ${adminPassword}` }
     });
-
-    document.getElementById('deleteSelected')?.addEventListener('click', async function() {
-      if (selectedContacts.length === 0) {
-        alert('Najprv označ kontakty');
-        return;
-      }
-
-      if (!confirm(`Naozaj vymazať ${selectedContacts.length} kontaktov?`)) return;
-
-      for (const email of selectedContacts) {
-        try {
-          await fetch('/api/contacts/delete', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${adminPassword}`
-            },
-            body: JSON.stringify({ email })
-          });
-        } catch (err) {
-          console.error('Error deleting contact:', err);
-        }
-      }
-
-      await loadContacts();
-      selectedContacts = [];
-      updateSelectedContacts();
-    });
-
-    document.getElementById('addTagToSelected')?.addEventListener('click', function() {
-      if (selectedContacts.length === 0) {
-        alert('Najprv označ kontakty');
-        return;
-      }
-      openModal('addTagModal');
-    });
-
-    document.getElementById('confirmAddTagBtn')?.addEventListener('click', async function() {
-      const tag = document.getElementById('selectTagToAdd').value;
-      alert(`Pridaný tag "${tag}" pre ${selectedContacts.length} kontaktov`);
-      closeModal('addTagModal');
-      await loadContacts();
-    });
-
-    document.getElementById('searchContacts')?.addEventListener('input', filterContacts);
-    document.getElementById('filterSource')?.addEventListener('change', filterContacts);
-    document.getElementById('filterTag')?.addEventListener('change', filterContacts);
-
-    function filterContacts() {
-      const searchQuery = document.getElementById('searchContacts').value.toLowerCase();
-      const sourceFilter = document.getElementById('filterSource').value;
-      const tagFilter = document.getElementById('filterTag').value;
-
-      const filtered = allContacts.filter(contact => {
-        const matchesSearch = !searchQuery ||
-          contact.name?.toLowerCase().includes(searchQuery) ||
-          contact.email?.toLowerCase().includes(searchQuery);
-
-        const matchesSource = !sourceFilter || contact.source === sourceFilter;
-        const matchesTag = !tagFilter || (contact.tags && contact.tags.includes(tagFilter));
-
-        return matchesSearch && matchesSource && matchesTag;
-      });
-
-      renderContacts(filtered);
-    }
-
-    document.getElementById('exportContacts')?.addEventListener('click', exportContactsCSV);
-
-    function exportContactsCSV() {
-      if (allContacts.length === 0) {
-        alert('Najprv načítaj kontakty');
-        return;
-      }
-
-      const csv = [
-        ['Meno', 'Email', 'Zdroj', 'Dátum'],
-        ...allContacts.map(c => [
-          c.name || '',
-          c.email,
-          c.source,
-          new Date(c.createdAt).toLocaleDateString('sk-SK')
-        ])
-      ].map(row => row.join(',')).join('\n');
-
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `kontakty-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    document.getElementById('importContactsBtn')?.addEventListener('click', () => {
-      openModal('importModal');
-    });
-
-    document.getElementById('csvFileInput')?.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const csv = event.target.result;
-        const lines = csv.split('\n').filter(line => line.trim());
-        const headers = lines[0].split(',');
-
-        const previewTable = document.getElementById('csvPreviewTable');
-        let html = '<thead><tr>';
-        headers.forEach(h => html += `<th>${h}</th>`);
-        html += '</tr></thead><tbody>';
-
-        lines.slice(1, 6).forEach(line => {
-          const cells = line.split(',');
-          html += '<tr>';
-          cells.forEach(cell => html += `<td>${cell}</td>`);
-          html += '</tr>';
-        });
-        html += '</tbody>';
-
-        previewTable.innerHTML = html;
-        document.getElementById('csvPreview').style.display = 'block';
-      };
-      reader.readAsText(file);
-    });
-
-    document.getElementById('confirmImportBtn')?.addEventListener('click', async function() {
-      alert('Import prebieha... (demo)');
-      closeModal('importModal');
-      await loadContacts();
-    });
-
-    document.getElementById('createCampaignBtn')?.addEventListener('click', () => {
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('newCampaignForm').reset();
-    });
-
-    document.getElementById('cancelCampaign')?.addEventListener('click', () => {
-      document.getElementById('campaignForm').style.display = 'none';
-      document.getElementById('newCampaignForm').reset();
-    });
-
-    document.getElementById('campaignTemplate')?.addEventListener('change', function() {
-      const customField = document.getElementById('customContentField');
-      if (this.value === 'custom') {
-        customField.style.display = 'block';
-      } else {
-        customField.style.display = 'none';
-      }
-    });
-
-    document.getElementById('campaignSegment')?.addEventListener('change', function() {
-      const tagField = document.getElementById('tagSegmentField');
-      if (this.value === 'tag') {
-        tagField.style.display = 'block';
-      } else {
-        tagField.style.display = 'none';
-      }
-    });
-
-    document.getElementById('campaignSchedule')?.addEventListener('change', function() {
-      const timeField = document.getElementById('scheduleTimeField');
-      if (this.value === 'scheduled') {
-        timeField.style.display = 'block';
-      } else {
-        timeField.style.display = 'none';
-      }
-    });
-
-    document.getElementById('previewEmailBtn')?.addEventListener('click', function() {
-      const subject = document.getElementById('campaignSubject').value || 'Bez predmetu';
-      const content = document.getElementById('campaignContent').value || '<p>Obsah emailu...</p>';
-
-      const previewSubject = subject.replace(/\{meno\}/g, 'Ján Novák').replace(/\{email\}/g, 'jan@example.com');
-      const previewContent = content.replace(/\{meno\}/g, 'Ján Novák').replace(/\{email\}/g, 'jan@example.com');
-
-      document.getElementById('previewSubject').textContent = previewSubject;
-      document.getElementById('previewBody').innerHTML = previewContent;
-
-      openModal('previewModal');
-    });
-
-    document.getElementById('sendTestEmailBtn')?.addEventListener('click', function() {
-      const email = prompt('Zadaj email adresu na test:');
-      if (email) {
-        alert(`Test email odoslaný na: ${email}`);
-      }
-    });
-
-    document.getElementById('newCampaignForm')?.addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const campaignData = {
-        name: document.getElementById('campaignName').value,
-        subject: document.getElementById('campaignSubject').value,
-        template: document.getElementById('campaignTemplate').value,
-        content: document.getElementById('campaignContent').value,
-        segment: document.getElementById('campaignSegment').value,
-        selectedEmails: document.getElementById('campaignSegment').value === 'selected' ? selectedContacts : [],
-        schedule: document.getElementById('campaignSchedule').value,
-        datetime: document.getElementById('campaignDateTime').value
-      };
-
-      const confirmMsg = campaignData.schedule === 'scheduled'
-        ? `Naplánovať kampaň "${campaignData.name}" na ${campaignData.datetime}?`
-        : `Odoslať kampaň "${campaignData.name}" teraz?`;
-
-      if (!confirm(confirmMsg)) return;
-
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Odosielam...';
-
-      try {
-        const response = await fetch('/api/campaigns/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${adminPassword}`
-          },
-          body: JSON.stringify(campaignData)
-        });
-
-        const result = await response.json();
-
-        if (result.ok) {
-          alert(`Kampaň ${campaignData.schedule === 'scheduled' ? 'naplánovaná' : 'odoslaná'}! Odoslaných: ${result.sent}`);
-          document.getElementById('campaignForm').style.display = 'none';
-          this.reset();
-          loadCampaignHistory();
-        } else {
-          alert('Chyba: ' + result.error);
-        }
-      } catch (err) {
-        alert('Chyba: ' + err.message);
-      }
-
-      btn.disabled = false;
-      btn.textContent = 'Vytvoriť a odoslať';
-    });
-
-    async function loadCampaignHistory() {
-      const tbody = document.getElementById('campaignsTableBody');
-
-      const campaigns = [
-        { name: 'Newsletter január', subject: 'Novinky', sent: 234, openRate: '42%', clickRate: '12%', date: '2026-01-10' },
-        { name: 'Workshop promo', subject: 'Nové termíny!', sent: 156, openRate: '38%', clickRate: '8%', date: '2026-01-08' }
-      ];
-
-      tbody.innerHTML = campaigns.map(c => `
-        <tr>
-          <td><strong>${c.name}</strong></td>
-          <td>${c.subject}</td>
-          <td>${c.sent}</td>
-          <td><span class="statBadge">${c.openRate}</span></td>
-          <td><span class="statBadge">${c.clickRate}</span></td>
-          <td>${new Date(c.date).toLocaleDateString('sk-SK')}</td>
-          <td>
-            <button class="btn btn--ghost btn--small" onclick="duplicateCampaign('${c.name}')">📋 Duplikovať</button>
-            <button class="btn btn--ghost btn--small" onclick="viewCampaignStats('${c.name}')">📊 Štatistiky</button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    window.duplicateCampaign = function(name) {
-      alert(`Duplikujem kampaň: ${name}`);
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignName').value = name + ' (kópia)';
-    };
-
-    window.viewCampaignStats = function(name) {
-      alert(`Štatistiky kampane: ${name}\n\nOpen rate: 42%\nClick rate: 12%\nBounce rate: 2%\nUnsubscribes: 3`);
-    };
-
-    async function deleteContact(email) {
-      if (!confirm(`Naozaj vymazať kontakt ${email}?`)) return;
-
-      try {
-        const response = await fetch('/api/contacts/delete', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${adminPassword}`
-          },
-          body: JSON.stringify({ email })
-        });
-
-        const result = await response.json();
-
-        if (result.ok) {
-          allContacts = allContacts.filter(c => c.email !== email);
-          renderContacts(allContacts);
-          loadEmailStats();
-        } else {
-          alert('Chyba: ' + result.error);
-        }
-      } catch (err) {
-        alert('Chyba: ' + err.message);
-      }
-    }
-
-    window.deleteContact = deleteContact;
-
-    function previewTemplate(type) {
-      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
-      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
-      document.getElementById('subtab-campaigns').classList.add('active');
-
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignTemplate').value = type;
-
-      if (type === 'newsletter') {
-        document.getElementById('campaignName').value = 'Newsletter ' + new Date().toLocaleDateString('sk-SK');
-        document.getElementById('campaignSubject').value = 'Novinky z FerkoMedia';
-      } else if (type === 'workshop-promo') {
-        document.getElementById('campaignName').value = 'Workshop propagácia ' + new Date().toLocaleDateString('sk-SK');
-        document.getElementById('campaignSubject').value = 'Nové termíny workshopov!';
-      }
-
-      setTimeout(() => {
-        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-
-    function useTemplate(type) {
-      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
-      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
-      document.getElementById('subtab-campaigns').classList.add('active');
-
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignTemplate').value = type;
-
-      setTimeout(() => {
-        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-
-    function selectCustomTemplate() {
-      document.querySelectorAll('.subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.subTabContent').forEach(c => c.classList.remove('active'));
-      document.querySelector('[data-subtab="campaigns"]').classList.add('active');
-      document.getElementById('subtab-campaigns').classList.add('active');
-
-      document.getElementById('campaignForm').style.display = 'block';
-      document.getElementById('campaignTemplate').value = 'custom';
-      document.getElementById('customContentField').style.display = 'block';
-
-      document.getElementById('campaignContent').value = `<h1>Ahoj!</h1>
-<p>Tu môžeš napísať vlastný obsah s HTML kódom.</p>
-<p>Použiť môžeš:</p>
-<ul>
-  <li><strong>Tučný text</strong></li>
-  <li><em>Kurzíva</em></li>
-  <li><a href="https://portretnefilmy.sk">Odkazy</a></li>
-</ul>
-<p>Pre personalizáciu použiť: {meno} alebo {email}</p>`;
-
-      document.getElementById('campaignName').value = 'Vlastná kampaň ' + new Date().toLocaleDateString('sk-SK');
-      document.getElementById('campaignSubject').value = 'Máme pre teba novinky!';
-
-      setTimeout(() => {
-        document.getElementById('campaignForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-
-    document.getElementById('createCustomTemplateBtn')?.addEventListener('click', function() {
-      const name = prompt('Názov vlastnej šablóny:');
-      if (!name) return;
-
-      const html = prompt('HTML kód šablóny:');
-      if (!html) return;
-
-      alert(`Šablóna "${name}" vytvorená!`);
-
-      const container = document.getElementById('customTemplatesContainer');
-      const card = document.createElement('div');
-      card.className = 'templateCard';
-      card.innerHTML = `
-        <h4>${name}</h4>
-        <p>Vlastná šablóna</p>
-        <div style="display:flex; gap:0.5rem;">
-          <button class="btn btn--ghost btn--small" onclick="useCustomTemplate('${name}')">Použiť</button>
-          <button class="btn btn--ghost btn--small" onclick="deleteTemplate('${name}')">Vymazať</button>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-
-    window.useCustomTemplate = function(name) {
-      alert(`Používam šablónu: ${name}`);
-      selectCustomTemplate();
-    };
-
-    window.deleteTemplate = function(name) {
-      if (confirm(`Vymazať šablónu "${name}"?`)) {
-        alert('Šablóna vymazaná');
-      }
-    };
-
-    document.getElementById('createTagForm')?.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const tagName = document.getElementById('tagName').value;
-      const tagColor = document.getElementById('tagColor').value;
-
-      alert(`Tag "${tagName}" vytvorený!`);
-      this.reset();
-    });
-
-    window.deleteTag = function(tag) {
-      if (confirm(`Vymazať tag "${tag}"?`)) {
-        alert(`Tag "${tag}" vymazaný`);
-      }
-    };
-
-    window.showNotes = function(email) {
-      document.getElementById('notesContactEmail').textContent = email;
-      document.getElementById('contactNotes').value = '';
-      openModal('notesModal');
-    };
-
-    document.getElementById('saveNotesBtn')?.addEventListener('click', function() {
-      const email = document.getElementById('notesContactEmail').textContent;
-      const notes = document.getElementById('contactNotes').value;
-      alert(`Poznámky uložené pre: ${email}`);
-      closeModal('notesModal');
-    });
-
-    document.getElementById('createAutomationBtn')?.addEventListener('click', function() {
-      openModal('createAutomationModal');
-      document.getElementById('newAutomationForm').reset();
-    });
-
-    // Automation trigger field toggle
-    document.getElementById('autoTrigger')?.addEventListener('change', function() {
-      const val = this.value;
-      document.getElementById('inactivityDaysField').style.display = val === 'inactivity' ? 'block' : 'none';
-      document.getElementById('tagTriggerField').style.display = val === 'tag-added' ? 'block' : 'none';
-    });
-
-    // Submit new automation
-    document.getElementById('newAutomationForm')?.addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const autoData = {
-        name: document.getElementById('autoName').value,
-        trigger: document.getElementById('autoTrigger').value,
-        triggerDays: document.getElementById('autoDays')?.value || null,
-        triggerTag: document.getElementById('autoTriggerTag')?.value || null,
-        emailSubject: document.getElementById('autoEmailSubject').value,
-        emailContent: document.getElementById('autoEmailContent').value,
+    const d = await res.json();
+    allContacts = d.contacts || [];
+    renderContacts(allContacts);
+    loadEmailStats();
+  });
+
+  function renderContacts(list) {
+    contactsTableBody.innerHTML = list.map(c => `
+      <tr>
+        <td><input type="checkbox" value="${c.email}" class="contact-checkbox"></td>
+        <td>${c.name || '-'}</td>
+        <td>${c.email}</td>
+        <td>${c.source}</td>
+        <td>${new Date(c.createdAt).toLocaleDateString('sk-SK')}</td>
+      </tr>
+    `).join('');
+
+    document.querySelectorAll('.contact-checkbox')
+      .forEach(cb => cb.addEventListener('change', updateSelected));
+  }
+
+  function updateSelected() {
+    selectedContacts = [...document.querySelectorAll('.contact-checkbox:checked')]
+      .map(c => c.value);
+  }
+
+  /* =====================
+     AUTOMATIONS
+  ===================== */
+  window.editAutomation = type => {
+    const automations = {
+      welcome: {
+        name: 'Welcome',
+        subject: 'Vitaj!',
+        content: '<h1>Ahoj {meno}</h1>',
         active: true
-      };
-
-      const btn = this.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Vytváram...';
-
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        alert(`Automatizácia "${autoData.name}" vytvorená!`);
-        closeModal('createAutomationModal');
-        this.reset();
-      } catch (err) {
-        alert('Chyba: ' + err.message);
-      }
-
-      btn.disabled = false;
-      btn.textContent = 'Vytvoriť automatizáciu';
-    });
-
-    // Automation trigger field toggle
-    document.getElementById('autoTrigger')?.addEventListener('change', function() {
-      const val = this.value;
-      document.getElementById('inactivityDaysField').style.display = val === 'inactivity' ? 'block' : 'none';
-      document.getElementById('tagTriggerField').style.display = val === 'tag-added' ? 'block' : 'none';
-    });
-
-    // Submit new automation
-    document.getElementById('newAutomationForm')?.addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const autoData = {
-        name: document.getElementById('autoName').value,
-        trigger: document.getElementById('autoTrigger').value,
-        triggerDays: document.getElementById('autoDays')?.value || null,
-        triggerTag: document.getElementById('autoTriggerTag')?.value || null,
-        emailSubject: document.getElementById('autoEmailSubject').value,
-        emailContent: document.getElementById('autoEmailContent').value,
+      },
+      followup: {
+        name: 'Follow-up',
+        subject: 'Ako sa ti páčilo?',
+        content: '<p>Dúfame že super</p>',
         active: true
-      };
-
-      const btn = this.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Vytváram...';
-
-      try {
-        // Simulate API call (replace with real API endpoint)
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        alert(`Automatizácia "${autoData.name}" vytvorená!`);
-        closeModal('createAutomationModal');
-        this.reset();
-
-        // Reload automation cards
-        // TODO: Call function to refresh automation list
-
-      } catch (err) {
-        alert('Chyba: ' + err.message);
       }
-
-      btn.disabled = false;
-      btn.textContent = 'Vytvoriť automatizáciu';
-    });
-
-    window.editAutomation = function(type) {
-      openModal('editAutomationModal');
-
-      const automations = {
-        welcome: {
-          name: 'Welcome email',
-          subject: 'Vitaj v FerkoMedia!',
-          content: '<h1>Ahoj {meno}!</h1><p>Ďakujeme za registráciu...</p>',
-          active: true
-        },
-        followup: {
-          name: 'Workshop follow-up',
-          subject: 'Ako sa ti páčil workshop?',
-          content: '<h1>Ahoj {meno}!</h1><p>Dúfame že sa ti workshop páčil...</p>',
-          active: true
-        },
-        reengagement: {
-          name: 'Re-engagement',
-          subject: 'Dlho sme sa nevideli!',
-          content: '<h1>Ahoj {meno}!</h1><p>Máme pre teba novinky...</p>',
-          active: false
-        }
-      };
-
-      const auto = automations[type] || automations.welcome;
-
-      document.getElementById('editAutoId').value = type;
-      document.getElementById('editAutoName').value = auto.name;
-      document.getElementById('editAutoSubject').value = auto.subject;
-      document.getElementById('editAutoContent').value = auto.content;
-      document.getElementById('editAutoActive').checked = auto.active;
     };
 
-    // Submit edited automation
-    document.getElementById('editAutomationForm')?.addEventListener('submit', async function(e) {
-      e.preventDefault();
+    const a = automations[type] || automations.welcome;
 
-      const autoId = document.getElementById('editAutoId').value;
-      const autoData = {
-        id: autoId,
-        name: document.getElementById('editAutoName').value,
-        subject: document.getElementById('editAutoSubject').value,
-        content: document.getElementById('editAutoContent').value,
-        active: document.getElementById('editAutoActive').checked
-      };
+    editAutoId.value = type;
+    editAutoName.value = a.name;
+    editAutoSubject.value = a.subject;
+    editAutoContent.value = a.content;
+    editAutoActive.checked = a.active;
 
-      const btn = this.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Ukladám...';
+    openModal('editAutomationModal');
+  };
 
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        alert(`Automatizácia "${autoData.name}" uložená!`);
-        closeModal('editAutomationModal');
-      } catch (err) {
-        alert('Chyba: ' + err.message);
-      }
+  /* =====================
+     MODALS
+  ===================== */
+  window.openModal = id => document.getElementById(id).style.display = 'flex';
+  window.closeModal = id => document.getElementById(id).style.display = 'none';
 
-      btn.disabled = false;
-      btn.textContent = 'Uložiť zmeny';
-    });
-
-      // Pre-fill form based on automation type
-      const automations = {
-        welcome: {
-          name: 'Welcome email',
-          subject: 'Vitaj v FerkoMedia!',
-          content: '<h1>Ahoj {meno}!</h1><p>Ďakujeme za registráciu...</p>',
-          active: true
-        },
-        followup: {
-          name: 'Workshop follow-up',
-          subject: 'Ako sa ti páčil workshop?',
-          content: '<h1>Ahoj {meno}!</h1><p>Dúfame že sa ti workshop páčil...</p>',
-          active: true
-        },
-        reengagement: {
-          name: 'Re-engagement',
-          subject: 'Dlho sme sa nevideli!',
-          content: '<h1>Ahoj {meno}!</h1><p>Máme pre teba novinky...</p>',
-          active: false
-        }
-      };
-
-      const auto = automations[type] || automations.welcome;
-
-      document.getElementById('editAutoId').value = type;
-      document.getElementById('editAutoName').value = auto.name;
-      document.getElementById('editAutoSubject').value = auto.subject;
-      document.getElementById('editAutoContent').value = auto.content;
-      document.getElementById('editAutoActive').checked = auto.active;
-    };
-
-    // Submit edited automation
-    document.getElementById('editAutomationForm')?.addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const autoId = document.getElementById('editAutoId').value;
-      const autoData = {
-        id: autoId,
-        name: document.getElementById('editAutoName').value,
-        subject: document.getElementById('editAutoSubject').value,
-        content: document.getElementById('editAutoContent').value,
-        active: document.getElementById('editAutoActive').checked
-      };
-
-      const btn = this.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Ukladám...';
-
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        alert(`Automatizácia "${autoData.name}" uložená!`);
-        closeModal('editAutomationModal');
-
-        // Update UI
-        // TODO: Refresh automation cards
-
-      } catch (err) {
-        alert('Chyba: ' + err.message);
-      }
-
-      btn.disabled = false;
-      btn.textContent = 'Uložiť zmeny';
-    });
-
-    function openModal(modalId) {
-      document.getElementById(modalId).style.display = 'flex';
-    }
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none';
-    }
-
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.previewTemplate = previewTemplate;
-    window.useTemplate = useTemplate;
-    window.selectCustomTemplate = selectCustomTemplate;
-
-    loadCampaignHistory();
-  </script>
-</BaseLayout>
-
-<style>
-  .heroSection {
-    padding: 4rem 1.5rem 2rem;
-    text-align: center;
-    background: radial-gradient(ellipse at top, rgba(249,115,22,0.12) 0%, transparent 60%);
-  }
-  .heroSection h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
-  .heroLead {
-    color: rgba(255,255,255,0.6);
-  }
-
-  .section {
-    padding: 2rem 0 4rem;
-  }
-
-  .adminTabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-  .adminTab {
-    padding: 0.75rem 1.5rem;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
-    color: rgba(255,255,255,0.7);
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.95rem;
-  }
-  .adminTab:hover {
-    background: rgba(255,255,255,0.05);
-  }
-  .adminTab.active {
-    background: #f97316;
-    border-color: #f97316;
-    color: white;
-  }
-  .tabContent {
-    display: none;
-  }
-  .tabContent.active {
-    display: block;
-  }
-
-  .subTabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-  }
-  .subTab {
-    padding: 0.5rem 1rem;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 6px;
-    color: rgba(255,255,255,0.7);
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-  .subTab:hover {
-    background: rgba(255,255,255,0.05);
-  }
-  .subTab.active {
-    background: rgba(249,115,22,0.2);
-    border-color: #f97316;
-    color: #f97316;
-  }
-  .subTabContent {
-    display: none;
-  }
-  .subTabContent.active {
-    display: block;
-  }
-
-  .statsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  .statCard {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-  }
-  .statValue {
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #f97316;
-  }
-  .statLabel {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.6);
-  }
-  .statBadge {
-    background: rgba(34,197,94,0.2);
-    color: #22c55e;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
-  .invoiceControls, .emailControls {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-  .searchInput {
-    flex: 1;
-    min-width: 200px;
-    padding: 0.75rem 1rem;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    color: white;
-    font-size: 1rem;
-  }
-  .searchInput:focus {
-    outline: none;
-    border-color: #f97316;
-  }
-  .filterSelect {
-    padding: 0.75rem 1rem;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    color: white;
-    font-size: 1rem;
-  }
-
-  .tableWrapper {
-    overflow-x: auto;
-  }
-  .invoiceTable {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 800px;
-  }
-  .invoiceTable th {
-    background: rgba(255,255,255,0.05);
-    padding: 1rem;
-    text-align: left;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: rgba(255,255,255,0.6);
-  }
-  .invoiceTable td {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    font-size: 0.95rem;
-  }
-  .invoiceTable tr:hover td {
-    background: rgba(255,255,255,0.02);
-  }
-  .subtext {
-    font-size: 0.8rem;
-    color: rgba(255,255,255,0.5);
-  }
-  .amount {
-    font-weight: 600;
-    color: #22c55e;
-  }
-  .emptyState {
-    text-align: center;
-    color: rgba(255,255,255,0.5);
-    padding: 3rem !important;
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-  .badge--success {
-    background: rgba(34,197,94,0.2);
-    color: #22c55e;
-  }
-  .badge--info {
-    background: rgba(59,130,246,0.2);
-    color: #3b82f6;
-  }
-
-  .tagBadge {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    margin-right: 0.25rem;
-  }
-  .tagBadge--blue {
-    background: rgba(59,130,246,0.2);
-    color: #3b82f6;
-  }
-  .tagBadge--green {
-    background: rgba(34,197,94,0.2);
-    color: #22c55e;
-  }
-  .tagBadge--orange {
-    background: rgba(249,115,22,0.2);
-    color: #f97316;
-  }
-  .tagBadge--purple {
-    background: rgba(168,85,247,0.2);
-    color: #a855f7;
-  }
-  .tagBadge--red {
-    background: rgba(239,68,68,0.2);
-    color: #ef4444;
-  }
-
-  .tagsGrid {
-    display: grid;
-    gap: 1rem;
-  }
-  .tagItem {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .tagCount {
-    color: rgba(255,255,255,0.6);
-    font-size: 0.9rem;
-    margin-left: auto;
-  }
-
-  .formCard {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-  }
-  .formGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.25rem;
-  }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .fieldFull {
-    grid-column: 1 / -1;
-  }
-  .field label {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.7);
-  }
-  .field input,
-  .field select,
-  .field textarea {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    color: #fff;
-    font-size: 1rem;
-    font-family: inherit;
-  }
-  .field input:focus,
-  .field select:focus,
-  .field textarea:focus {
-    outline: none;
-    border-color: #f97316;
-  }
-  .formActions {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  #jsonCode {
-    background: rgba(0,0,0,0.3);
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-family: monospace;
-    font-size: 0.9rem;
-  }
-  .help {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.5);
-    margin-top: 0.5rem;
-  }
-
-  .stepsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
-  }
-  .stepCard {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-  }
-  .stepNum {
-    display: inline-flex;
-    width: 36px;
-    height: 36px;
-    background: #f97316;
-    color: white;
-    border-radius: 50%;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-  }
-  .stepCard h4 {
-    margin-bottom: 0.25rem;
-  }
-  .stepCard p {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.6);
-    margin: 0;
-  }
-
-  .templatesGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-  .templateCard {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1.5rem;
-  }
-  .templateCard h4 {
-    margin-bottom: 0.5rem;
-    color: #f97316;
-  }
-  .templateCard p {
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 1rem;
-  }
-
-  .automationCards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  .automationCard {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 1.5rem;
-  }
-  .automationHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-  .automationHeader h4 {
-    margin: 0;
-  }
-  .automationCard p {
-    color: rgba(255,255,255,0.7);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-  .automationStats {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.8rem;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 1rem;
-  }
-
-  .toggle {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 24px;
-  }
-  .toggle input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(255,255,255,0.2);
-    transition: 0.3s;
-    border-radius: 24px;
-  }
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.3s;
-    border-radius: 50%;
-  }
-  input:checked + .slider {
-    background-color: #f97316;
-  }
-  input:checked + .slider:before {
-    transform: translateX(24px);
-  }
-
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .modalContent {
-    background: #1a1a1a;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    max-width: 600px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  .modalLarge {
-    max-width: 900px;
-  }
-  .modalHeader {
-    padding: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .modalHeader h3 {
-    margin: 0;
-  }
-  .modalClose {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.7);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .modalClose:hover {
-    color: white;
-  }
-  .modalBody {
-    padding: 1.5rem;
-  }
-  .modalFooter {
-    padding: 1.5rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-  }
-
-  .emailPreview {
-    background: white;
-    color: #333;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .emailPreviewHeader {
-    background: #f5f5f5;
-    padding: 1rem;
-    border-bottom: 1px solid #ddd;
-    font-size: 0.9rem;
-  }
-  .emailPreviewBody {
-    padding: 2rem;
-  }
-
-  .notesList {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-
-  .btn--small {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-  }
-</style>
+  loadCampaignHistory();
+});
+</script>
