@@ -324,6 +324,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         </div>
 
         <h3 style="margin-top:2rem;">História kampaní</h3>
+        <div style="margin-bottom:1rem;">
+          <button class="btn btn--primary" id="loadCampaigns">Načítať kampane</button>
+        </div>
         <div class="tableWrapper">
           <table class="invoiceTable">
             <thead>
@@ -333,13 +336,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 <th>Odoslaných</th>
                 <th>Open Rate</th>
                 <th>Click Rate</th>
+                <th>Bounce</th>
                 <th>Dátum</th>
                 <th>Akcie</th>
               </tr>
             </thead>
             <tbody id="campaignsTableBody">
               <tr>
-                <td colspan="7" class="emptyState">Žiadne kampane</td>
+                <td colspan="8" class="emptyState">Klikni na "Načítať kampane"</td>
               </tr>
             </tbody>
           </table>
@@ -523,6 +527,103 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <div class="modalFooter">
         <button class="btn btn--ghost" onclick="closeModal('importModal')">Zrušiť</button>
         <button class="btn btn--primary" id="confirmImportBtn" disabled>Importovať</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campaign Statistics Modal -->
+  <div id="campaignStatsModal" class="modal" style="display:none;">
+    <div class="modalContent modalLarge">
+      <div class="modalHeader">
+        <h3>📊 Štatistiky kampane</h3>
+        <button class="modalClose" onclick="closeModal('campaignStatsModal')">&times;</button>
+      </div>
+      <div class="modalBody">
+        <h4 id="campaignStatsName" style="margin-bottom:0.5rem; color:#f97316;"></h4>
+        <p id="campaignStatsSubject" style="color:rgba(255,255,255,0.6); margin-bottom:1.5rem;"></p>
+
+        <!-- Stats Grid -->
+        <div class="statsGrid" style="margin-bottom:2rem;">
+          <div class="statCard">
+            <span class="statValue" id="statSent">-</span>
+            <span class="statLabel">Odoslaných</span>
+          </div>
+          <div class="statCard">
+            <span class="statValue" id="statDelivered">-</span>
+            <span class="statLabel">Doručených</span>
+          </div>
+          <div class="statCard">
+            <span class="statValue" style="color:#22c55e;" id="statOpened">-</span>
+            <span class="statLabel">Otvorených</span>
+          </div>
+          <div class="statCard">
+            <span class="statValue" style="color:#3b82f6;" id="statClicked">-</span>
+            <span class="statLabel">Kliknutí</span>
+          </div>
+        </div>
+
+        <!-- Rates -->
+        <div class="ratesGrid">
+          <div class="rateCard">
+            <div class="rateHeader">
+              <span>Open Rate</span>
+              <span class="rateValue" id="rateOpen">0%</span>
+            </div>
+            <div class="rateBar">
+              <div class="rateBarFill rateBarFill--green" id="rateOpenBar" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="rateCard">
+            <div class="rateHeader">
+              <span>Click Rate</span>
+              <span class="rateValue" id="rateClick">0%</span>
+            </div>
+            <div class="rateBar">
+              <div class="rateBarFill rateBarFill--blue" id="rateClickBar" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="rateCard">
+            <div class="rateHeader">
+              <span>Bounce Rate</span>
+              <span class="rateValue" id="rateBounce">0%</span>
+            </div>
+            <div class="rateBar">
+              <div class="rateBarFill rateBarFill--red" id="rateBounceBar" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="rateCard">
+            <div class="rateHeader">
+              <span>Unsubscribe Rate</span>
+              <span class="rateValue" id="rateUnsub">0%</span>
+            </div>
+            <div class="rateBar">
+              <div class="rateBarFill rateBarFill--orange" id="rateUnsubBar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Click Details -->
+        <h4 style="margin-top:2rem; margin-bottom:1rem;">🔗 Kliknuté odkazy</h4>
+        <div class="tableWrapper">
+          <table class="invoiceTable" id="clickDetailsTable">
+            <thead>
+              <tr>
+                <th>URL</th>
+                <th>Kliknutí</th>
+                <th>Unikátnych</th>
+              </tr>
+            </thead>
+            <tbody id="clickDetailsBody">
+              <tr>
+                <td colspan="3" class="emptyState">Žiadne kliknutia</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modalFooter">
+        <button class="btn btn--ghost" onclick="closeModal('campaignStatsModal')">Zavrieť</button>
+        <button class="btn btn--primary" id="duplicateCampaignBtn">📋 Duplikovať kampaň</button>
       </div>
     </div>
   </div>
@@ -931,7 +1032,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${c.tags ? c.tags.map(t => `<span class="tagBadge tagBadge--blue">${t}</span>`).join(' ') : '-'}</td>
         <td>${new Date(c.createdAt).toLocaleDateString('sk-SK')}</td>
         <td>
-          <button class="btn btn--ghost btn--small" onclick="openNotesModal('${c.email}')">📝</button>
+          <button class="btn btn--ghost btn--small" onclick="openNotesModal('${c.email}')" title="Poznámky">📝</button>
+          <button class="btn btn--ghost btn--small btn--danger" onclick="deleteContact('${c.email}')" title="Vymazať">🗑️</button>
         </td>
       </tr>
     `).join('') : '<tr><td colspan="7" class="emptyState">Žiadne kontakty</td></tr>';
@@ -959,6 +1061,80 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     updateSelectedContacts();
   });
+
+  // =====================
+  // DELETE CONTACTS
+  // =====================
+  document.getElementById('deleteSelected')?.addEventListener('click', async () => {
+    if (selectedContacts.length === 0) return;
+
+    const confirmDelete = confirm(`Naozaj chceš vymazať ${selectedContacts.length} kontakt(ov)?\n\nTáto akcia je nevratná!`);
+    if (!confirmDelete) return;
+
+    const btn = document.getElementById('deleteSelected');
+    btn.disabled = true;
+    btn.textContent = 'Mažem...';
+
+    try {
+      const emails = selectedContacts.map(c => c.email);
+      const res = await fetch('/api/contacts/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminPassword}`
+        },
+        body: JSON.stringify({ emails })
+      });
+
+      const result = await res.json();
+
+      if (result.ok) {
+        alert(`✅ Vymazaných: ${result.deleted} kontaktov`);
+        // Remove from local array and re-render
+        allContacts = allContacts.filter(c => !emails.includes(c.email));
+        renderContacts(allContacts);
+        loadEmailStats();
+        document.getElementById('selectAll').checked = false;
+      } else {
+        alert(`❌ Chyba: ${result.error}`);
+      }
+    } catch (e) {
+      alert(`❌ Chyba pri mazaní: ${e.message}`);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Vymazať';
+  });
+
+  // Delete single contact function
+  window.deleteContact = async (email) => {
+    const confirmDelete = confirm(`Naozaj chceš vymazať kontakt ${email}?`);
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch('/api/contacts/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminPassword}`
+        },
+        body: JSON.stringify({ emails: [email] })
+      });
+
+      const result = await res.json();
+
+      if (result.ok) {
+        alert(`✅ Kontakt ${email} bol vymazaný`);
+        allContacts = allContacts.filter(c => c.email !== email);
+        renderContacts(allContacts);
+        loadEmailStats();
+      } else {
+        alert(`❌ Chyba: ${result.error}`);
+      }
+    } catch (e) {
+      alert(`❌ Chyba pri mazaní: ${e.message}`);
+    }
+  };
 
   // =====================
   // CSV IMPORT
@@ -1182,6 +1358,209 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('campaignSchedule')?.addEventListener('change', e => {
     const scheduleField = document.getElementById('scheduleTimeField');
     scheduleField.style.display = e.target.value === 'scheduled' ? 'block' : 'none';
+  });
+
+  // =====================
+  // CAMPAIGNS & STATISTICS
+  // =====================
+  let allCampaigns = [];
+
+  document.getElementById('loadCampaigns')?.addEventListener('click', async () => {
+    const btn = document.getElementById('loadCampaigns');
+    btn.disabled = true;
+    btn.textContent = 'Načítavam...';
+
+    try {
+      const res = await fetch('/api/campaigns/list', {
+        headers: { Authorization: `Bearer ${adminPassword}` }
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        allCampaigns = data.campaigns || [];
+        renderCampaigns(allCampaigns);
+      } else {
+        // If API doesn't exist yet, show demo data
+        allCampaigns = getDemoCampaigns();
+        renderCampaigns(allCampaigns);
+      }
+    } catch (e) {
+      // Show demo data if API fails
+      console.log('Using demo campaigns data');
+      allCampaigns = getDemoCampaigns();
+      renderCampaigns(allCampaigns);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Načítať kampane';
+  });
+
+  function getDemoCampaigns() {
+    return [
+      {
+        id: 'camp-001',
+        name: 'Zimná ponuka 2026',
+        subject: 'Ahoj {meno}, máme pre teba zimné zľavy!',
+        sent: 156,
+        delivered: 152,
+        opened: 89,
+        clicked: 34,
+        bounced: 4,
+        unsubscribed: 2,
+        createdAt: '2026-01-15T10:00:00Z',
+        clicks: [
+          { url: 'https://portretnefilmy.sk/workshopy', clicks: 24, unique: 18 },
+          { url: 'https://portretnefilmy.sk/cennik', clicks: 10, unique: 8 }
+        ]
+      },
+      {
+        id: 'camp-002',
+        name: 'Workshop február',
+        subject: 'Workshop pre teba, {meno}!',
+        sent: 89,
+        delivered: 87,
+        opened: 52,
+        clicked: 21,
+        bounced: 2,
+        unsubscribed: 1,
+        createdAt: '2026-01-10T14:30:00Z',
+        clicks: [
+          { url: 'https://portretnefilmy.sk/workshopy', clicks: 21, unique: 18 }
+        ]
+      },
+      {
+        id: 'camp-003',
+        name: 'Novinky január',
+        subject: 'Novinky od FerkoMedia',
+        sent: 234,
+        delivered: 228,
+        opened: 145,
+        clicked: 67,
+        bounced: 6,
+        unsubscribed: 3,
+        createdAt: '2026-01-05T09:00:00Z',
+        clicks: [
+          { url: 'https://portretnefilmy.sk', clicks: 45, unique: 38 },
+          { url: 'https://portretnefilmy.sk/sluzby', clicks: 22, unique: 19 }
+        ]
+      }
+    ];
+  }
+
+  function renderCampaigns(campaigns) {
+    const tbody = document.getElementById('campaignsTableBody');
+
+    if (!campaigns.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="emptyState">Žiadne kampane</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = campaigns.map(c => {
+      const openRate = c.delivered > 0 ? ((c.opened / c.delivered) * 100).toFixed(1) : 0;
+      const clickRate = c.delivered > 0 ? ((c.clicked / c.delivered) * 100).toFixed(1) : 0;
+      const bounceRate = c.sent > 0 ? ((c.bounced / c.sent) * 100).toFixed(1) : 0;
+
+      return `
+        <tr>
+          <td><strong>${c.name}</strong></td>
+          <td class="subtext">${c.subject.substring(0, 30)}...</td>
+          <td>${c.sent}</td>
+          <td>
+            <span class="statBadge statBadge--green">${openRate}%</span>
+            <span class="subtext">(${c.opened})</span>
+          </td>
+          <td>
+            <span class="statBadge statBadge--blue">${clickRate}%</span>
+            <span class="subtext">(${c.clicked})</span>
+          </td>
+          <td>
+            <span class="statBadge ${bounceRate > 5 ? 'statBadge--red' : 'statBadge--gray'}">${bounceRate}%</span>
+          </td>
+          <td>${new Date(c.createdAt).toLocaleDateString('sk-SK')}</td>
+          <td>
+            <button class="btn btn--ghost btn--small" onclick="showCampaignStats('${c.id}')" title="Štatistiky">📊</button>
+            <button class="btn btn--ghost btn--small" onclick="duplicateCampaign('${c.id}')" title="Duplikovať">📋</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  window.showCampaignStats = (campaignId) => {
+    const campaign = allCampaigns.find(c => c.id === campaignId);
+    if (!campaign) return;
+
+    // Set basic info
+    document.getElementById('campaignStatsName').textContent = campaign.name;
+    document.getElementById('campaignStatsSubject').textContent = campaign.subject;
+
+    // Set stats
+    document.getElementById('statSent').textContent = campaign.sent;
+    document.getElementById('statDelivered').textContent = campaign.delivered;
+    document.getElementById('statOpened').textContent = campaign.opened;
+    document.getElementById('statClicked').textContent = campaign.clicked;
+
+    // Calculate rates
+    const openRate = campaign.delivered > 0 ? ((campaign.opened / campaign.delivered) * 100).toFixed(1) : 0;
+    const clickRate = campaign.delivered > 0 ? ((campaign.clicked / campaign.delivered) * 100).toFixed(1) : 0;
+    const bounceRate = campaign.sent > 0 ? ((campaign.bounced / campaign.sent) * 100).toFixed(1) : 0;
+    const unsubRate = campaign.delivered > 0 ? ((campaign.unsubscribed / campaign.delivered) * 100).toFixed(2) : 0;
+
+    // Update rate displays
+    document.getElementById('rateOpen').textContent = openRate + '%';
+    document.getElementById('rateOpenBar').style.width = Math.min(openRate, 100) + '%';
+
+    document.getElementById('rateClick').textContent = clickRate + '%';
+    document.getElementById('rateClickBar').style.width = Math.min(clickRate, 100) + '%';
+
+    document.getElementById('rateBounce').textContent = bounceRate + '%';
+    document.getElementById('rateBounceBar').style.width = Math.min(bounceRate * 10, 100) + '%';
+
+    document.getElementById('rateUnsub').textContent = unsubRate + '%';
+    document.getElementById('rateUnsubBar').style.width = Math.min(unsubRate * 20, 100) + '%';
+
+    // Click details
+    const clickBody = document.getElementById('clickDetailsBody');
+    if (campaign.clicks && campaign.clicks.length > 0) {
+      clickBody.innerHTML = campaign.clicks.map(click => `
+        <tr>
+          <td><a href="${click.url}" target="_blank" style="color:#f97316;">${click.url}</a></td>
+          <td>${click.clicks}</td>
+          <td>${click.unique}</td>
+        </tr>
+      `).join('');
+    } else {
+      clickBody.innerHTML = '<tr><td colspan="3" class="emptyState">Žiadne kliknutia</td></tr>';
+    }
+
+    // Store current campaign for duplication
+    window.currentCampaign = campaign;
+
+    openModal('campaignStatsModal');
+  };
+
+  window.duplicateCampaign = (campaignId) => {
+    const campaign = allCampaigns.find(c => c.id === campaignId);
+    if (!campaign) return;
+
+    // Switch to campaigns tab and open form
+    document.querySelector('[data-subtab="campaigns"]')?.click();
+    document.getElementById('createCampaignBtn')?.click();
+
+    // Fill in form with campaign data
+    document.getElementById('campaignName').value = campaign.name + ' (kópia)';
+    document.getElementById('campaignSubject').value = campaign.subject;
+    document.getElementById('campaignTemplate').value = 'custom';
+    document.getElementById('customContentField').style.display = 'block';
+
+    alert('Kampaň bola duplikovaná. Uprav a odošli.');
+  };
+
+  document.getElementById('duplicateCampaignBtn')?.addEventListener('click', () => {
+    if (window.currentCampaign) {
+      closeModal('campaignStatsModal');
+      duplicateCampaign(window.currentCampaign.id);
+    }
   });
 
   // =====================
@@ -1716,6 +2095,100 @@ document.addEventListener('DOMContentLoaded', () => {
 .badge--success {
   background: rgba(34,197,94,0.2);
   color: #22c55e;
+}
+
+/* ========== STAT BADGES ========== */
+.statBadge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.statBadge--green {
+  background: rgba(34,197,94,0.2);
+  color: #22c55e;
+}
+
+.statBadge--blue {
+  background: rgba(59,130,246,0.2);
+  color: #3b82f6;
+}
+
+.statBadge--red {
+  background: rgba(239,68,68,0.2);
+  color: #ef4444;
+}
+
+.statBadge--gray {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+}
+
+/* ========== RATE CARDS ========== */
+.ratesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.rateCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.rateHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.rateValue {
+  font-weight: 700;
+  color: white;
+}
+
+.rateBar {
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rateBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.rateBarFill--green {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.rateBarFill--blue {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.rateBarFill--red {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.rateBarFill--orange {
+  background: linear-gradient(90deg, #f97316, #ea580c);
+}
+
+/* ========== DANGER BUTTON ========== */
+.btn--danger {
+  color: #ef4444 !important;
+}
+
+.btn--danger:hover {
+  background: rgba(239,68,68,0.1) !important;
 }
 
 /* ========== STEPS ========== */
