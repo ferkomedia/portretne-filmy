@@ -1,12 +1,12 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="Admin | Správa" noindex={true}>
   <section class="heroSection">
     <div class="heroContent">
       <h1>Správa FerkoMedia</h1>
-      <p class="heroLead">Faktúry, workshopy, email marketing</p>
+      <p class="heroLead">Faktúry, workshopy, prehľady</p>
     </div>
   </section>
 
@@ -15,7 +15,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <div class="adminTabs">
       <button class="adminTab active" data-tab="invoices">Faktúry</button>
       <button class="adminTab" data-tab="workshops">Workshopy</button>
-      <button class="adminTab" data-tab="email">Email Marketing</button>
     </div>
 
     <!-- FAKTÚRY TAB -->
@@ -153,697 +152,387 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         </div>
       </div>
     </div>
-
-    <!-- EMAIL MARKETING TAB -->
-    <div class="tabContent" id="tab-email">
-      <!-- Stats -->
-      <div class="statsGrid">
-        <div class="statCard">
-          <span class="statValue" id="emailStatTotal">-</span>
-          <span class="statLabel">Kontaktov celkom</span>
-        </div>
-        <div class="statCard">
-          <span class="statValue" id="emailStatWorkshops">-</span>
-          <span class="statLabel">Z workshopov</span>
-        </div>
-        <div class="statCard">
-          <span class="statValue" id="emailStatContact">-</span>
-          <span class="statLabel">Z kontaktu</span>
-        </div>
-        <div class="statCard">
-          <span class="statValue" id="emailStatCampaigns">-</span>
-          <span class="statLabel">Odoslaných kampaní</span>
-        </div>
-      </div>
-
-      <!-- Sub-tabs -->
-      <div class="subTabs">
-        <button class="subTab active" data-subtab="contacts">Kontakty</button>
-        <button class="subTab" data-subtab="campaigns">Kampane</button>
-        <button class="subTab" data-subtab="templates">Šablóny</button>
-        <button class="subTab" data-subtab="tags">Tagy</button>
-        <button class="subTab" data-subtab="automation">Automatizácia</button>
-      </div>
-
-      <!-- CONTACTS SUBTAB -->
-      <div class="subTabContent active" id="subtab-contacts">
-        <div class="emailControls">
-          <input type="text" id="searchContacts" placeholder="Hľadať kontakty..." class="searchInput" />
-          <select id="filterSource" class="filterSelect">
-            <option value="">Všetky zdroje</option>
-            <option value="workshop">Workshop</option>
-            <option value="kontakt">Kontakt</option>
-            <option value="dlhodoba-spolupraca">Dlhodobá spolupráca</option>
-          </select>
-          <select id="filterTag" class="filterSelect">
-            <option value="">Všetky tagy</option>
-            <option value="VIP">VIP</option>
-            <option value="Záujemca">Záujemca</option>
-            <option value="Kúpil">Kúpil</option>
-          </select>
-          <button class="btn btn--primary" id="loadContacts">Načítať kontakty</button>
-          <button class="btn btn--ghost" id="exportContacts">Export CSV</button>
-          <button class="btn btn--ghost" id="importContactsBtn">📥 Import CSV</button>
-        </div>
-
-        <div class="tableWrapper">
-          <table class="invoiceTable">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="selectAll" /></th>
-                <th>Meno</th>
-                <th>Email</th>
-                <th>Zdroj</th>
-                <th>Tagy</th>
-                <th>Dátum</th>
-                <th>Akcie</th>
-              </tr>
-            </thead>
-            <tbody id="contactsTableBody">
-              <tr>
-                <td colspan="7" class="emptyState">Klikni na "Načítať kontakty"</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div id="selectedActions" style="display:none; margin-top:1rem; padding:1rem; background:rgba(249,115,22,0.1); border-radius:8px;">
-          <span id="selectedCount">0</span> označených kontaktov
-          <button class="btn btn--primary btn--small" id="sendToSelected" style="margin-left:1rem;">Odoslať kampaň</button>
-          <button class="btn btn--ghost btn--small" id="addTagToSelected">Pridať tag</button>
-          <button class="btn btn--ghost btn--small" id="deleteSelected">Vymazať</button>
-        </div>
-      </div>
-
-      <!-- CAMPAIGNS SUBTAB -->
-      <div class="subTabContent" id="subtab-campaigns">
-        <button class="btn btn--primary" id="createCampaignBtn" style="margin-bottom:2rem;">+ Vytvoriť novú kampaň</button>
-
-        <div id="campaignForm" style="display:none;" class="formCard">
-          <h3>Nová kampaň</h3>
-          <form id="newCampaignForm">
-            <div class="formGrid">
-              <div class="field fieldFull">
-                <label for="campaignName">Názov kampane</label>
-                <input id="campaignName" type="text" placeholder="Napr. Zimná ponuka 2026" required />
-              </div>
-
-              <div class="field fieldFull">
-                <label for="campaignSubject">Predmet emailu (môžeš použiť &#123;meno&#125;, &#123;email&#125;)</label>
-                <input id="campaignSubject" type="text" placeholder="Ahoj, máme pre teba novinky!" required />
-              </div>
-
-              <div class="field fieldFull">
-                <label for="campaignTemplate">Šablóna</label>
-                <select id="campaignTemplate" required>
-                  <option value="">Vyber šablónu</option>
-                  <option value="newsletter">Newsletter</option>
-                  <option value="workshop-promo">Workshop propagácia</option>
-                  <option value="custom">Vlastný text</option>
-                </select>
-              </div>
-
-              <div class="field fieldFull" id="customContentField" style="display:none;">
-                <label for="campaignContent">Obsah emailu (HTML) - môžeš použiť &#123;meno&#125;, &#123;email&#125;</label>
-                <textarea id="campaignContent" rows="10" placeholder="<h1>Ahoj!</h1><p>Text...</p>"></textarea>
-              </div>
-
-              <div class="field fieldFull">
-                <label for="campaignSegment">Komu odoslať?</label>
-                <select id="campaignSegment">
-                  <option value="all">Všetkým kontaktom</option>
-                  <option value="workshop">Len workshopom</option>
-                  <option value="kontakt">Len kontaktu</option>
-                  <option value="selected">Označeným kontaktom</option>
-                  <option value="tag">Podľa tagu</option>
-                </select>
-              </div>
-
-              <div class="field fieldFull" id="tagSegmentField" style="display:none;">
-                <label for="campaignTag">Vyber tag</label>
-                <select id="campaignTag">
-                  <option value="VIP">VIP</option>
-                  <option value="Záujemca">Záujemca</option>
-                  <option value="Kúpil">Kúpil</option>
-                </select>
-              </div>
-
-              <div class="field fieldFull">
-                <label for="campaignSchedule">Odoslanie</label>
-                <select id="campaignSchedule">
-                  <option value="now">Odoslať hneď</option>
-                  <option value="scheduled">Naplánovať na neskôr</option>
-                </select>
-              </div>
-
-              <div class="field fieldFull" id="scheduleTimeField" style="display:none;">
-                <label for="campaignDateTime">Dátum a čas odoslania</label>
-                <input id="campaignDateTime" type="datetime-local" />
-              </div>
-            </div>
-
-            <div class="formActions">
-              <button type="button" class="btn btn--ghost" id="previewEmailBtn">👁️ Náhľad</button>
-              <button type="button" class="btn btn--ghost" id="sendTestEmailBtn">📧 Test email</button>
-              <button type="submit" class="btn btn--primary">Vytvoriť a odoslať</button>
-              <button type="button" class="btn btn--ghost" id="cancelCampaign">Zrušiť</button>
-            </div>
-          </form>
-        </div>
-
-        <h3 style="margin-top:2rem;">História kampaní</h3>
-        <div class="tableWrapper">
-          <table class="invoiceTable">
-            <thead>
-              <tr>
-                <th>Názov</th>
-                <th>Predmet</th>
-                <th>Odoslaných</th>
-                <th>Open Rate</th>
-                <th>Click Rate</th>
-                <th>Dátum</th>
-                <th>Akcie</th>
-              </tr>
-            </thead>
-            <tbody id="campaignsTableBody">
-              <tr>
-                <td colspan="7" class="emptyState">Žiadne kampane</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- TEMPLATES SUBTAB -->
-      <div class="subTabContent" id="subtab-templates">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
-          <h3>Email šablóny</h3>
-          <button class="btn btn--primary" id="createCustomTemplateBtn">+ Vytvoriť vlastnú šablónu</button>
-        </div>
-
-        <div class="templatesGrid">
-          <div class="templateCard">
-            <h4>Newsletter</h4>
-            <p>Základná šablóna pre newsletter s novinkami a ponukami.</p>
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn btn--ghost btn--small" onclick="previewTemplate('newsletter')">Náhľad</button>
-              <button class="btn btn--ghost btn--small" onclick="useTemplate('newsletter')">Použiť</button>
-            </div>
-          </div>
-          <div class="templateCard">
-            <h4>Workshop propagácia</h4>
-            <p>Šablóna na propagáciu nadchádzajúcich workshopov.</p>
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn btn--ghost btn--small" onclick="previewTemplate('workshop-promo')">Náhľad</button>
-              <button class="btn btn--ghost btn--small" onclick="useTemplate('workshop-promo')">Použiť</button>
-            </div>
-          </div>
-          <div class="templateCard">
-            <h4>Vlastný</h4>
-            <p>Vytvor si vlastný email s HTML kódom.</p>
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn btn--ghost btn--small" onclick="selectCustomTemplate()">Použiť</button>
-            </div>
-          </div>
-          <div id="customTemplatesContainer"></div>
-        </div>
-      </div>
-
-      <!-- TAGS SUBTAB -->
-      <div class="subTabContent" id="subtab-tags">
-        <h3>Správa tagov</h3>
-        <div class="formCard">
-          <form id="createTagForm">
-            <div class="formGrid">
-              <div class="field">
-                <label for="tagName">Názov tagu</label>
-                <input id="tagName" type="text" placeholder="Napr. VIP, Záujemca" required />
-              </div>
-              <div class="field">
-                <label for="tagColor">Farba</label>
-                <select id="tagColor">
-                  <option value="blue">Modrá</option>
-                  <option value="green">Zelená</option>
-                  <option value="orange">Oranžová</option>
-                  <option value="purple">Fialová</option>
-                  <option value="red">Červená</option>
-                </select>
-              </div>
-            </div>
-            <div class="formActions">
-              <button type="submit" class="btn btn--primary">Vytvoriť tag</button>
-            </div>
-          </form>
-        </div>
-
-        <h4 style="margin-top:2rem;">Existujúce tagy</h4>
-        <div class="tagsGrid" id="existingTags">
-          <div class="tagItem">
-            <span class="tagBadge tagBadge--blue">VIP</span>
-            <span class="tagCount">12 kontaktov</span>
-            <button class="btn btn--ghost btn--small" onclick="deleteTag('VIP')">Vymazať</button>
-          </div>
-          <div class="tagItem">
-            <span class="tagBadge tagBadge--green">Záujemca</span>
-            <span class="tagCount">34 kontaktov</span>
-            <button class="btn btn--ghost btn--small" onclick="deleteTag('Záujemca')">Vymazať</button>
-          </div>
-          <div class="tagItem">
-            <span class="tagBadge tagBadge--orange">Kúpil</span>
-            <span class="tagCount">89 kontaktov</span>
-            <button class="btn btn--ghost btn--small" onclick="deleteTag('Kúpil')">Vymazať</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- AUTOMATION SUBTAB -->
-      <div class="subTabContent" id="subtab-automation">
-        <h3>Automatické kampane</h3>
-        <button class="btn btn--primary" id="createAutomationBtn" style="margin-bottom:2rem;">+ Vytvoriť automatizáciu</button>
-
-        <div class="automationCards">
-          <div class="automationCard">
-            <div class="automationHeader">
-              <h4>Welcome email</h4>
-              <label class="toggle">
-                <input type="checkbox" checked />
-                <span class="slider"></span>
-              </label>
-            </div>
-            <p>Automaticky odošle welcome email novým kontaktom</p>
-            <div class="automationStats">
-              <span>Trigger: Nový kontakt</span>
-              <span>Odoslaných: 156</span>
-            </div>
-            <button class="btn btn--ghost btn--small" onclick="editAutomation('welcome')">Upraviť</button>
-          </div>
-
-          <div class="automationCard">
-            <div class="automationHeader">
-              <h4>Workshop follow-up</h4>
-              <label class="toggle">
-                <input type="checkbox" checked />
-                <span class="slider"></span>
-              </label>
-            </div>
-            <p>Odošle email 3 dni po workshope</p>
-            <div class="automationStats">
-              <span>Trigger: Po workshope (+3 dni)</span>
-              <span>Odoslaných: 89</span>
-            </div>
-            <button class="btn btn--ghost btn--small" onclick="editAutomation('followup')">Upraviť</button>
-          </div>
-
-          <div class="automationCard">
-            <div class="automationHeader">
-              <h4>Re-engagement</h4>
-              <label class="toggle">
-                <input type="checkbox" />
-                <span class="slider"></span>
-              </label>
-            </div>
-            <p>Aktivuje kontakty po 30 dňoch nečinnosti</p>
-            <div class="automationStats">
-              <span>Trigger: 30 dní bez aktivity</span>
-              <span>Odoslaných: 23</span>
-            </div>
-            <button class="btn btn--ghost btn--small" onclick="editAutomation('reengagement')">Upraviť</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </section>
 
-  <!-- MODALS -->
-  <!-- Import CSV Modal -->
-  <div id="importModal" class="modal" style="display:none;">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>Import kontaktov z CSV</h3>
-        <button class="modalClose" onclick="closeModal('importModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <p class="help">CSV súbor musí obsahovať stĺpce: meno, email, zdroj (voliteľné)</p>
-        <input type="file" id="csvFileInput" accept=".csv" />
-        <div id="csvPreview" style="display:none; margin-top:1rem;">
-          <h4>Náhľad (prvých 5 riadkov):</h4>
-          <div class="tableWrapper">
-            <table class="invoiceTable" id="csvPreviewTable"></table>
-          </div>
-        </div>
-      </div>
-      <div class="modalFooter">
-        <button class="btn btn--ghost" onclick="closeModal('importModal')">Zrušiť</button>
-        <button class="btn btn--primary" id="confirmImportBtn">Importovať</button>
-      </div>
-    </div>
-  </div>
+  <script>
+    // Tab switching
+    document.querySelectorAll('.adminTab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.adminTab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tabContent').forEach(c => c.classList.remove('active'));
 
-  <!-- Email Preview Modal -->
-  <div id="previewModal" class="modal" style="display:none;">
-    <div class="modalContent modalLarge">
-      <div class="modalHeader">
-        <h3>Náhľad emailu</h3>
-        <button class="modalClose" onclick="closeModal('previewModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <div class="emailPreview" id="emailPreviewContent">
-          <div class="emailPreviewHeader">
-            <strong>Od:</strong> FerkoMedia &lt;noreply@portretnefilmy.sk&gt;<br>
-            <strong>Predmet:</strong> <span id="previewSubject"></span>
-          </div>
-          <div class="emailPreviewBody" id="previewBody"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Contact Notes Modal -->
-  <div id="notesModal" class="modal" style="display:none;">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>Poznámky ku kontaktu</h3>
-        <button class="modalClose" onclick="closeModal('notesModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <p><strong>Email:</strong> <span id="notesContactEmail"></span></p>
-        <textarea id="contactNotes" rows="6" placeholder="Pridaj poznámky..." style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.3); color:white;"></textarea>
-        <div id="notesHistory" style="margin-top:1rem;">
-          <h4>História poznámok:</h4>
-          <div class="notesList"></div>
-        </div>
-      </div>
-      <div class="modalFooter">
-        <button class="btn btn--ghost" onclick="closeModal('notesModal')">Zrušiť</button>
-        <button class="btn btn--primary" id="saveNotesBtn">Uložiť</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Tag Modal -->
-  <div id="addTagModal" class="modal" style="display:none;">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>Pridať tag</h3>
-        <button class="modalClose" onclick="closeModal('addTagModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <select id="selectTagToAdd" style="width:100%; padding:0.75rem; border-radius:8px; border:1px solid rgba(255,255,255,0.15); background:rgba(0,0,0,0.3); color:white;">
-          <option value="VIP">VIP</option>
-          <option value="Záujemca">Záujemca</option>
-          <option value="Kúpil">Kúpil</option>
-        </select>
-      </div>
-      <div class="modalFooter">
-        <button class="btn btn--ghost" onclick="closeModal('addTagModal')">Zrušiť</button>
-        <button class="btn btn--primary" id="confirmAddTagBtn">Pridať</button>
-      </div>
-    </div>
-  </div>
-<!-- Create Automation Modal -->
-  <div id="createAutomationModal" class="modal" style="display:none;">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>Vytvoriť novú automatizáciu</h3>
-        <button class="modalClose" onclick="closeModal('createAutomationModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <form id="newAutomationForm">
-          <div class="formGrid">
-            <div class="field fieldFull">
-              <label for="autoName">Názov automatizácie</label>
-              <input id="autoName" type="text" placeholder="Napr. Onboarding séria" required />
-            </div>
-
-            <div class="field fieldFull">
-              <label for="autoTrigger">Trigger</label>
-              <select id="autoTrigger" required>
-                <option value="">Vyber trigger</option>
-                <option value="new-contact">Nový kontakt</option>
-                <option value="workshop-complete">Po workshope</option>
-                <option value="tag-added">Pri pridaní tagu</option>
-                <option value="inactivity">Po X dňoch nečinnosti</option>
-              </select>
-            </div>
-
-            <div class="field" id="inactivityDaysField" style="display:none;">
-              <label for="autoDays">Počet dní nečinnosti</label>
-              <input id="autoDays" type="number" value="30" min="1" />
-            </div>
-
-            <div class="field" id="tagTriggerField" style="display:none;">
-              <label for="autoTriggerTag">Pri akom tagu?</label>
-              <select id="autoTriggerTag">
-                <option value="VIP">VIP</option>
-                <option value="Záujemca">Záujemca</option>
-                <option value="Kúpil">Kúpil</option>
-              </select>
-            </div>
-
-            <div class="field fieldFull">
-              <label for="autoEmailSubject">Predmet emailu</label>
-              <input id="autoEmailSubject" type="text" placeholder="Ahoj {meno}, vitaj!" required />
-            </div>
-
-            <div class="field fieldFull">
-              <label for="autoEmailContent">Obsah emailu (HTML)</label>
-              <textarea id="autoEmailContent" rows="8" placeholder="<h1>Vitaj!</h1><p>Text...</p>" required></textarea>
-            </div>
-          </div>
-
-          <div class="formActions">
-            <button type="button" class="btn btn--ghost" onclick="closeModal('createAutomationModal')">Zrušiť</button>
-            <button type="submit" class="btn btn--primary">Vytvoriť automatizáciu</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Edit Automation Modal -->
-  <div id="editAutomationModal" class="modal" style="display:none;">
-    <div class="modalContent">
-      <div class="modalHeader">
-        <h3>Upraviť automatizáciu</h3>
-        <button class="modalClose" onclick="closeModal('editAutomationModal')">&times;</button>
-      </div>
-      <div class="modalBody">
-        <form id="editAutomationForm">
-          <input type="hidden" id="editAutoId" />
-
-          <div class="formGrid">
-            <div class="field fieldFull">
-              <label for="editAutoName">Názov</label>
-              <input id="editAutoName" type="text" required />
-            </div>
-
-            <div class="field fieldFull">
-              <label for="editAutoSubject">Predmet emailu</label>
-              <input id="editAutoSubject" type="text" required />
-            </div>
-
-            <div class="field fieldFull">
-              <label for="editAutoContent">Obsah emailu (HTML)</label>
-              <textarea id="editAutoContent" rows="10" required></textarea>
-            </div>
-
-            <div class="field fieldFull">
-              <label>
-                <input type="checkbox" id="editAutoActive" />
-                Aktívna automatizácia
-              </label>
-            </div>
-          </div>
-
-          <div class="formActions">
-            <button type="button" class="btn btn--ghost" onclick="closeModal('editAutomationModal')">Zrušiť</button>
-            <button type="submit" class="btn btn--primary">Uložiť zmeny</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  const adminPassword = "MyFilmy2026@";
-
-  /* =====================
-     TABS
-  ===================== */
-  document.querySelectorAll('.adminTab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.adminTab, .tabContent')
-        .forEach(el => el.classList.remove('active'));
-
-      tab.classList.add('active');
-      document.getElementById(`tab-${tab.dataset.tab}`)?.classList.add('active');
-
-      if (tab.dataset.tab === 'email') loadEmailStats();
+        this.classList.add('active');
+        document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+      });
     });
-  });
 
-  document.querySelectorAll('.subTab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.subTab, .subTabContent')
-        .forEach(el => el.classList.remove('active'));
-
-      tab.classList.add('active');
-      document.getElementById(`subtab-${tab.dataset.subtab}`)?.classList.add('active');
+    // Workshop JSON generator
+    document.getElementById('addTermForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var term = {
+        title: document.getElementById('title').value,
+        date: document.getElementById('date').value,
+        city: document.getElementById('city').value,
+        price: parseInt(document.getElementById('price').value),
+        capacity: parseInt(document.getElementById('capacity').value),
+        status: document.getElementById('status').value
+      };
+      document.getElementById('jsonCode').textContent = JSON.stringify(term, null, 2);
+      document.getElementById('jsonOutput').style.display = 'block';
     });
-  });
 
-  /* =====================
-     WORKSHOP JSON
-  ===================== */
-  document.getElementById('addTermForm')?.addEventListener('submit', e => {
-    e.preventDefault();
-    const term = {
-      title: title.value,
-      date: date.value,
-      city: city.value,
-      price: +price.value,
-      capacity: +capacity.value,
-      status: status.value
-    };
-    jsonCode.textContent = JSON.stringify(term, null, 2);
-    jsonOutput.style.display = 'block';
-  });
+    // Invoice loading
+    let currentOffset = 0;
+    const limit = 50;
+    let allInvoices = [];
 
-  /* =====================
-     INVOICES
-  ===================== */
-  let offset = 0;
-  const limit = 50;
-  let allInvoices = [];
+    document.getElementById('loadInvoices').addEventListener('click', loadInvoices);
+    document.getElementById('loadMore').addEventListener('click', () => {
+      currentOffset += limit;
+      loadInvoices(true);
+    });
 
-  document.getElementById('loadInvoices')?.addEventListener('click', () => loadInvoices(false));
-  document.getElementById('loadMore')?.addEventListener('click', () => {
-    offset += limit;
-    loadInvoices(true);
-  });
+    // Search functionality
+    document.getElementById('searchInvoice').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      filterInvoices(query);
+    });
 
-  document.getElementById('searchInvoice')?.addEventListener('input', e =>
-    filterInvoices(e.target.value.toLowerCase())
-  );
+    async function loadInvoices(append = false) {
+      const btn = document.getElementById('loadInvoices');
+      btn.disabled = true;
+      btn.textContent = 'Načítavam...';
 
-  async function loadInvoices(append) {
-    const key = prompt('Admin kľúč:');
-    if (!key) return;
+      try {
+        const apiKey = prompt('Zadajte admin kľúč:', 'fk2026-admin');
+        if (!apiKey) {
+          btn.disabled = false;
+          btn.textContent = 'Načítať faktúry';
+          return;
+        }
 
-    const res = await fetch(`/api/get-invoices?key=${key}&limit=${limit}&offset=${offset}`);
-    const data = await res.json();
+        const response = await fetch(`/api/get-invoices?key=${encodeURIComponent(apiKey)}&limit=${limit}&offset=${currentOffset}`);
+        const data = await response.json();
 
-    allInvoices = append ? [...allInvoices, ...data.invoices] : data.invoices;
-    renderInvoices(allInvoices);
-  }
+        if (data.error) {
+          alert('Chyba: ' + data.error);
+          btn.disabled = false;
+          btn.textContent = 'Načítať faktúry';
+          return;
+        }
 
-  function renderInvoices(list) {
-    const tbody = invoiceTableBody;
-    tbody.innerHTML = list.length
-      ? list.map(inv => `
+        // Update stats
+        if (data.stats) {
+          document.getElementById('statTotal').textContent = data.stats.totalInvoices || 0;
+          document.getElementById('statRevenue').textContent = (data.stats.totalRevenue || 0).toLocaleString('sk-SK') + ' €';
+          document.getElementById('statMonthCount').textContent = data.stats.monthlyCount || 0;
+          document.getElementById('statMonthRevenue').textContent = (data.stats.monthlyRevenue || 0).toLocaleString('sk-SK') + ' €';
+        }
+
+        // Update invoices
+        if (append) {
+          allInvoices = [...allInvoices, ...data.invoices];
+        } else {
+          allInvoices = data.invoices;
+        }
+
+        renderInvoices(allInvoices);
+
+        // Show load more if there are more
+        if (data.invoices.length === limit && currentOffset + limit < data.total) {
+          document.getElementById('loadMoreWrapper').style.display = 'block';
+        } else {
+          document.getElementById('loadMoreWrapper').style.display = 'none';
+        }
+
+      } catch (err) {
+        alert('Chyba pri načítaní: ' + err.message);
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Načítať faktúry';
+    }
+
+    function renderInvoices(invoices) {
+      const tbody = document.getElementById('invoiceTableBody');
+
+      if (!invoices || invoices.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="emptyState">Žiadne faktúry</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = invoices.map(inv => `
         <tr>
           <td><strong>${inv.id}</strong></td>
           <td>${new Date(inv.createdAt).toLocaleDateString('sk-SK')}</td>
-          <td>${inv.customerName}<div class="subtext">${inv.customerEmail}</div></td>
+          <td>
+            <div>${inv.customerName}</div>
+            <div class="subtext">${inv.customerEmail}</div>
+          </td>
+          <td>
+            ${inv.companyName ? `<div>${inv.companyName}</div><div class="subtext">IČO: ${inv.companyIco}</div>` : '<span class="subtext">FO</span>'}
+          </td>
           <td>${inv.productName}</td>
-          <td class="amount">${inv.amount} €</td>
+          <td class="amount">${inv.amount.toLocaleString('sk-SK', { minimumFractionDigits: 2 })} €</td>
           <td><span class="badge badge--success">Uhradená</span></td>
-        </tr>`).join('')
-      : `<tr><td colspan="6" class="emptyState">Žiadne faktúry</td></tr>`;
-  }
+        </tr>
+      `).join('');
+    }
 
-  function filterInvoices(q) {
-    renderInvoices(allInvoices.filter(i =>
-      Object.values(i).some(v => String(v).toLowerCase().includes(q))
-    ));
-  }
-
-  /* =====================
-     EMAIL CONTACTS
-  ===================== */
-  let allContacts = [];
-  let selectedContacts = [];
-
-  async function loadEmailStats() {
-    const res = await fetch('/api/contacts/stats', {
-      headers: { Authorization: `Bearer ${adminPassword}` }
-    });
-    const d = await res.json();
-    if (!d.ok) return;
-
-    emailStatTotal.textContent = d.total;
-    emailStatWorkshops.textContent = d.workshop;
-    emailStatContact.textContent = d.kontakt;
-    emailStatCampaigns.textContent = d.campaigns;
-  }
-
-  document.getElementById('loadContacts')?.addEventListener('click', async () => {
-    const res = await fetch('/api/contacts/list', {
-      headers: { Authorization: `Bearer ${adminPassword}` }
-    });
-    const d = await res.json();
-    allContacts = d.contacts || [];
-    renderContacts(allContacts);
-    loadEmailStats();
-  });
-
-  function renderContacts(list) {
-    contactsTableBody.innerHTML = list.map(c => `
-      <tr>
-        <td><input type="checkbox" value="${c.email}" class="contact-checkbox"></td>
-        <td>${c.name || '-'}</td>
-        <td>${c.email}</td>
-        <td>${c.source}</td>
-        <td>${new Date(c.createdAt).toLocaleDateString('sk-SK')}</td>
-      </tr>
-    `).join('');
-
-    document.querySelectorAll('.contact-checkbox')
-      .forEach(cb => cb.addEventListener('change', updateSelected));
-  }
-
-  function updateSelected() {
-    selectedContacts = [...document.querySelectorAll('.contact-checkbox:checked')]
-      .map(c => c.value);
-  }
-
-  /* =====================
-     AUTOMATIONS
-  ===================== */
-  window.editAutomation = type => {
-    const automations = {
-      welcome: {
-        name: 'Welcome',
-        subject: 'Vitaj!',
-        content: '<h1>Ahoj {meno}</h1>',
-        active: true
-      },
-      followup: {
-        name: 'Follow-up',
-        subject: 'Ako sa ti páčilo?',
-        content: '<p>Dúfame že super</p>',
-        active: true
+    function filterInvoices(query) {
+      if (!query) {
+        renderInvoices(allInvoices);
+        return;
       }
-    };
 
-    const a = automations[type] || automations.welcome;
+      const filtered = allInvoices.filter(inv =>
+        inv.customerName?.toLowerCase().includes(query) ||
+        inv.customerEmail?.toLowerCase().includes(query) ||
+        inv.companyName?.toLowerCase().includes(query) ||
+        inv.companyIco?.includes(query) ||
+        inv.id?.toLowerCase().includes(query) ||
+        inv.productName?.toLowerCase().includes(query)
+      );
 
-    editAutoId.value = type;
-    editAutoName.value = a.name;
-    editAutoSubject.value = a.subject;
-    editAutoContent.value = a.content;
-    editAutoActive.checked = a.active;
+      renderInvoices(filtered);
+    }
+  </script>
+</BaseLayout>
 
-    openModal('editAutomationModal');
-  };
+<style>
+  .heroSection {
+    padding: 4rem 1.5rem 2rem;
+    text-align: center;
+    background: radial-gradient(ellipse at top, rgba(249,115,22,0.12) 0%, transparent 60%);
+  }
+  .heroSection h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .heroLead {
+    color: rgba(255,255,255,0.6);
+  }
 
-  /* =====================
-     MODALS
-  ===================== */
-  window.openModal = id => document.getElementById(id).style.display = 'flex';
-  window.closeModal = id => document.getElementById(id).style.display = 'none';
+  .section {
+    padding: 2rem 0 4rem;
+  }
 
-  loadCampaignHistory();
-});
-</script>
+  /* Tabs */
+  .adminTabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 1rem;
+  }
+  .adminTab {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .adminTab:hover {
+    background: rgba(255,255,255,0.05);
+  }
+  .adminTab.active {
+    background: #f97316;
+    border-color: #f97316;
+    color: white;
+  }
+  .tabContent {
+    display: none;
+  }
+  .tabContent.active {
+    display: block;
+  }
+
+  /* Stats */
+  .statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .statCard {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .statValue {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #f97316;
+  }
+  .statLabel {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* Controls */
+  .invoiceControls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .searchInput {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+  }
+  .searchInput:focus {
+    outline: none;
+    border-color: #f97316;
+  }
+
+  /* Table */
+  .tableWrapper {
+    overflow-x: auto;
+  }
+  .invoiceTable {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+  }
+  .invoiceTable th {
+    background: rgba(255,255,255,0.05);
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.6);
+  }
+  .invoiceTable td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.95rem;
+  }
+  .invoiceTable tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+  .subtext {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+  }
+  .amount {
+    font-weight: 600;
+    color: #22c55e;
+  }
+  .emptyState {
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    padding: 3rem !important;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge--success {
+    background: rgba(34,197,94,0.2);
+    color: #22c55e;
+  }
+
+  /* Form */
+  .formCard {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  .formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.25rem;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .field label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+  }
+  .field input,
+  .field select {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #fff;
+    font-size: 1rem;
+  }
+  .field input:focus,
+  .field select:focus {
+    outline: none;
+    border-color: #f97316;
+  }
+  .formActions {
+    margin-top: 1.5rem;
+  }
+
+  #jsonCode {
+    background: rgba(0,0,0,0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 0.9rem;
+  }
+  .help {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 0.5rem;
+  }
+
+  /* Steps */
+  .stepsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+  .stepCard {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .stepNum {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    background: #f97316;
+    color: white;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .stepCard h4 {
+    margin-bottom: 0.25rem;
+  }
+  .stepCard p {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+  }
+</style>
