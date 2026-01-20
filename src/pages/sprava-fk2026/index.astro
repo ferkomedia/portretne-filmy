@@ -251,8 +251,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               </div>
 
               <div class="field fieldFull">
-                <label for="campaignSubject">Predmet emailu (môžeš použiť &#123;meno&#125;, &#123;email&#125;)</label>
-                <input id="campaignSubject" type="text" placeholder="Ahoj, máme pre teba novinky!" required />
+                <label for="campaignSubject">Predmet emailu (môžeš použiť <code>&#123;meno&#125;</code>, <code>&#123;email&#125;</code>)</label>
+                <input id="campaignSubject" type="text" placeholder="Ahoj {meno}, máme pre teba novinky!" required />
               </div>
 
               <div class="field fieldFull">
@@ -266,8 +266,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               </div>
 
               <div class="field fieldFull" id="customContentField" style="display:none;">
-                <label for="campaignContent">Obsah emailu (HTML) - môžeš použiť &#123;meno&#125;, &#123;email&#125;</label>
-                <textarea id="campaignContent" rows="10" placeholder="<h1>Ahoj!</h1><p>Text...</p>"></textarea>
+                <label for="campaignContent">Obsah emailu (HTML) - môžeš použiť <code>&#123;meno&#125;</code>, <code>&#123;email&#125;</code></label>
+                <textarea id="campaignContent" rows="10" placeholder="<h1>Ahoj &#123;meno&#125;!</h1><p>Text...</p>"></textarea>
               </div>
 
               <div class="field fieldFull">
@@ -311,6 +311,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               <button type="button" class="btn btn--ghost" id="cancelCampaign">Zrušiť</button>
             </div>
           </form>
+        </div>
+
+        <!-- Personalization Help Box -->
+        <div class="personalizationHelp" style="margin-bottom:2rem; padding:1rem; background:rgba(249,115,22,0.1); border-radius:8px; border-left:4px solid #f97316;">
+          <h4 style="margin:0 0 0.5rem 0; color:#f97316;">💡 Personalizácia emailov</h4>
+          <p style="margin:0; font-size:0.875rem; color:rgba(255,255,255,0.7);">
+            Použi tieto premenné v predmete alebo texte emailu:
+            <code style="background:rgba(0,0,0,0.3); padding:0.15rem 0.4rem; border-radius:4px; margin:0 0.25rem;">&#123;meno&#125;</code> - meno kontaktu,
+            <code style="background:rgba(0,0,0,0.3); padding:0.15rem 0.4rem; border-radius:4px; margin:0 0.25rem;">&#123;email&#125;</code> - email kontaktu
+          </p>
         </div>
 
         <h3 style="margin-top:2rem;">História kampaní</h3>
@@ -485,18 +495,34 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <button class="modalClose" onclick="closeModal('importModal')">&times;</button>
       </div>
       <div class="modalBody">
-        <p class="help">CSV súbor musí obsahovať stĺpce: meno, email, zdroj (voliteľné)</p>
-        <input type="file" id="csvFileInput" accept=".csv" />
-        <div id="csvPreview" style="display:none; margin-top:1rem;">
-          <h4>Náhľad (prvých 5 riadkov):</h4>
-          <div class="tableWrapper">
-            <table class="invoiceTable" id="csvPreviewTable"></table>
+        <p class="help">CSV súbor musí obsahovať stĺpce: <strong>meno</strong>, <strong>email</strong>, <strong>zdroj</strong> (voliteľné)</p>
+        <p class="help" style="margin-bottom:1rem;">Prvý riadok = hlavička. Oddeľovač: čiarka alebo bodkočiarka.</p>
+
+        <div class="fileDropZone" id="fileDropZone">
+          <input type="file" id="csvFileInput" accept=".csv,.txt" style="display:none;" />
+          <div class="dropZoneContent">
+            <span style="font-size:2rem;">📁</span>
+            <p>Pretiahni CSV súbor sem<br>alebo <strong style="color:#f97316; cursor:pointer;" onclick="document.getElementById('csvFileInput').click()">vyber súbor</strong></p>
           </div>
+        </div>
+
+        <div id="csvPreview" style="display:none; margin-top:1.5rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+            <h4 style="margin:0;">Náhľad (prvých 5 riadkov):</h4>
+            <span id="csvRowCount" class="badge badge--success"></span>
+          </div>
+          <div class="tableWrapper">
+            <table class="invoiceTable" id="csvPreviewTable">
+              <thead id="csvPreviewHead"></thead>
+              <tbody id="csvPreviewBody"></tbody>
+            </table>
+          </div>
+          <div id="csvErrors" style="margin-top:1rem;"></div>
         </div>
       </div>
       <div class="modalFooter">
         <button class="btn btn--ghost" onclick="closeModal('importModal')">Zrušiť</button>
-        <button class="btn btn--primary" id="confirmImportBtn">Importovať</button>
+        <button class="btn btn--primary" id="confirmImportBtn" disabled>Importovať</button>
       </div>
     </div>
   </div>
@@ -506,16 +532,50 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <div class="modalContent modalLarge">
       <div class="modalHeader">
         <h3>Náhľad emailu</h3>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn--small previewToggle active" data-view="desktop">Desktop</button>
+          <button class="btn btn--small previewToggle" data-view="mobile">Mobile</button>
+        </div>
         <button class="modalClose" onclick="closeModal('previewModal')">&times;</button>
       </div>
       <div class="modalBody">
         <div class="emailPreview" id="emailPreviewContent">
           <div class="emailPreviewHeader">
             <strong>Od:</strong> FerkoMedia &lt;noreply@portretnefilmy.sk&gt;<br>
+            <strong>Komu:</strong> <span id="previewTo">jan.novak@email.sk</span><br>
             <strong>Predmet:</strong> <span id="previewSubject"></span>
           </div>
           <div class="emailPreviewBody" id="previewBody"></div>
         </div>
+      </div>
+      <div class="modalFooter">
+        <button class="btn btn--ghost" onclick="closeModal('previewModal')">Zavrieť</button>
+        <button class="btn btn--primary" id="sendTestFromPreview">📧 Odoslať test na môj email</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test Email Modal -->
+  <div id="testEmailModal" class="modal" style="display:none;">
+    <div class="modalContent">
+      <div class="modalHeader">
+        <h3>Odoslať testovací email</h3>
+        <button class="modalClose" onclick="closeModal('testEmailModal')">&times;</button>
+      </div>
+      <div class="modalBody">
+        <div class="field">
+          <label for="testEmailAddress">Email adresa pre test</label>
+          <input id="testEmailAddress" type="email" placeholder="tvoj@email.sk" required />
+        </div>
+        <p class="help" style="margin-top:1rem;">
+          📌 Email bude odoslaný s ukážkovými dátami:<br>
+          <code>&#123;meno&#125;</code> → "Ján Novák"<br>
+          <code>&#123;email&#125;</code> → tvoja zadaná adresa
+        </p>
+      </div>
+      <div class="modalFooter">
+        <button class="btn btn--ghost" onclick="closeModal('testEmailModal')">Zrušiť</button>
+        <button class="btn btn--primary" id="confirmTestEmail">Odoslať test</button>
       </div>
     </div>
   </div>
@@ -605,7 +665,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
             <div class="field fieldFull">
               <label for="autoEmailSubject">Predmet emailu</label>
-              <input id="autoEmailSubject" type="text" placeholder="Ahoj {meno}, vitaj!" required />
+              <input id="autoEmailSubject" type="text" placeholder="Ahoj &#123;meno&#125;, vitaj!" required />
             </div>
 
             <div class="field fieldFull">
@@ -674,9 +734,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const adminPassword = "MyFilmy2026@";
 
-  /* =====================
-     TABS
-  ===================== */
+  // =====================
+  // EMAIL TEMPLATES
+  // =====================
+  const emailTemplates = {
+    newsletter: {
+      subject: 'Novinky od FerkoMedia - {meno}',
+      content: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #f97316;">Ahoj {meno}!</h1>
+          <p>Máme pre teba novinky z FerkoMedia.</p>
+          <p>Pozri si naše najnovšie projekty a ponuky.</p>
+          <a href="https://portretnefilmy.sk" style="display: inline-block; background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin-top: 20px;">Pozrieť viac</a>
+          <p style="margin-top: 30px; font-size: 12px; color: #666;">
+            Tento email bol odoslaný na {email}.<br>
+            <a href="#">Odhlásiť sa</a>
+          </p>
+        </div>
+      `
+    },
+    'workshop-promo': {
+      subject: 'Workshop pre teba, {meno}!',
+      content: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #f97316;">🎓 Workshop pre teba!</h1>
+          <p>Ahoj {meno},</p>
+          <p>Pripravili sme nový workshop, ktorý by ťa mohol zaujímať.</p>
+          <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h2 style="margin-top: 0;">Web za 1 deň</h2>
+            <p>📅 Dátum: 15.2.2026</p>
+            <p>📍 Miesto: Martin</p>
+            <p>💰 Cena: 149€</p>
+          </div>
+          <a href="https://portretnefilmy.sk/workshopy" style="display: inline-block; background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px;">Rezervovať miesto</a>
+          <p style="margin-top: 30px; font-size: 12px; color: #666;">
+            Kontakt: {email}
+          </p>
+        </div>
+      `
+    },
+    custom: {
+      subject: '',
+      content: ''
+    }
+  };
+
+  // =====================
+  // PERSONALIZATION HELPER
+  // =====================
+  function personalize(text, data = {}) {
+    const defaults = {
+      meno: data.meno || 'Ján Novák',
+      email: data.email || 'jan.novak@email.sk'
+    };
+    return text
+      .replace(/\{meno\}/g, defaults.meno)
+      .replace(/\{email\}/g, defaults.email);
+  }
+
+  // =====================
+  // TABS
+  // =====================
   document.querySelectorAll('.adminTab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.adminTab, .tabContent')
@@ -699,26 +817,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* =====================
-     WORKSHOP JSON
-  ===================== */
+  // =====================
+  // WORKSHOP JSON
+  // =====================
   document.getElementById('addTermForm')?.addEventListener('submit', e => {
     e.preventDefault();
     const term = {
-      title: title.value,
-      date: date.value,
-      city: city.value,
-      price: +price.value,
-      capacity: +capacity.value,
-      status: status.value
+      title: document.getElementById('title').value,
+      date: document.getElementById('date').value,
+      city: document.getElementById('city').value,
+      price: +document.getElementById('price').value,
+      capacity: +document.getElementById('capacity').value,
+      status: document.getElementById('status').value
     };
-    jsonCode.textContent = JSON.stringify(term, null, 2);
-    jsonOutput.style.display = 'block';
+    document.getElementById('jsonCode').textContent = JSON.stringify(term, null, 2);
+    document.getElementById('jsonOutput').style.display = 'block';
   });
 
-  /* =====================
-     INVOICES
-  ===================== */
+  // =====================
+  // INVOICES
+  // =====================
   let offset = 0;
   const limit = 50;
   let allInvoices = [];
@@ -745,7 +863,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderInvoices(list) {
-    const tbody = invoiceTableBody;
+    const tbody = document.getElementById('invoiceTableBody');
     tbody.innerHTML = list.length
       ? list.map(inv => `
         <tr>
@@ -765,92 +883,529 @@ document.addEventListener('DOMContentLoaded', () => {
     ));
   }
 
-  /* =====================
-     EMAIL CONTACTS
-  ===================== */
+  // =====================
+  // EMAIL CONTACTS
+  // =====================
   let allContacts = [];
   let selectedContacts = [];
 
   async function loadEmailStats() {
-    const res = await fetch('/api/contacts/stats', {
-      headers: { Authorization: `Bearer ${adminPassword}` }
-    });
-    const d = await res.json();
-    if (!d.ok) return;
+    try {
+      const res = await fetch('/api/contacts/stats', {
+        headers: { Authorization: `Bearer ${adminPassword}` }
+      });
+      const d = await res.json();
+      if (!d.ok) return;
 
-    emailStatTotal.textContent = d.total;
-    emailStatWorkshops.textContent = d.workshop;
-    emailStatContact.textContent = d.kontakt;
-    emailStatCampaigns.textContent = d.campaigns;
+      document.getElementById('emailStatTotal').textContent = d.total || 0;
+      document.getElementById('emailStatWorkshops').textContent = d.workshop || 0;
+      document.getElementById('emailStatContact').textContent = d.kontakt || 0;
+      document.getElementById('emailStatCampaigns').textContent = d.campaigns || 0;
+    } catch (e) {
+      console.error('Stats error:', e);
+    }
   }
 
   document.getElementById('loadContacts')?.addEventListener('click', async () => {
-    const res = await fetch('/api/contacts/list', {
-      headers: { Authorization: `Bearer ${adminPassword}` }
-    });
-    const d = await res.json();
-    allContacts = d.contacts || [];
-    renderContacts(allContacts);
-    loadEmailStats();
+    try {
+      const res = await fetch('/api/contacts/list', {
+        headers: { Authorization: `Bearer ${adminPassword}` }
+      });
+      const d = await res.json();
+      allContacts = d.contacts || [];
+      renderContacts(allContacts);
+      loadEmailStats();
+    } catch (e) {
+      console.error('Load contacts error:', e);
+    }
   });
 
   function renderContacts(list) {
-    contactsTableBody.innerHTML = list.map(c => `
+    const tbody = document.getElementById('contactsTableBody');
+    tbody.innerHTML = list.length ? list.map(c => `
       <tr>
-        <td><input type="checkbox" value="${c.email}" class="contact-checkbox"></td>
+        <td><input type="checkbox" value="${c.email}" class="contact-checkbox" data-name="${c.name || ''}"></td>
         <td>${c.name || '-'}</td>
         <td>${c.email}</td>
-        <td>${c.source}</td>
+        <td>${c.source || '-'}</td>
+        <td>${c.tags ? c.tags.map(t => `<span class="tagBadge tagBadge--blue">${t}</span>`).join(' ') : '-'}</td>
         <td>${new Date(c.createdAt).toLocaleDateString('sk-SK')}</td>
+        <td>
+          <button class="btn btn--ghost btn--small" onclick="openNotesModal('${c.email}')">📝</button>
+        </td>
+      </tr>
+    `).join('') : '<tr><td colspan="7" class="emptyState">Žiadne kontakty</td></tr>';
+
+    document.querySelectorAll('.contact-checkbox').forEach(cb =>
+      cb.addEventListener('change', updateSelectedContacts)
+    );
+  }
+
+  function updateSelectedContacts() {
+    selectedContacts = [...document.querySelectorAll('.contact-checkbox:checked')]
+      .map(c => ({ email: c.value, name: c.dataset.name }));
+
+    const countEl = document.getElementById('selectedCount');
+    const actionsEl = document.getElementById('selectedActions');
+
+    countEl.textContent = selectedContacts.length;
+    actionsEl.style.display = selectedContacts.length > 0 ? 'block' : 'none';
+  }
+
+  // Select All checkbox
+  document.getElementById('selectAll')?.addEventListener('change', e => {
+    document.querySelectorAll('.contact-checkbox').forEach(cb => {
+      cb.checked = e.target.checked;
+    });
+    updateSelectedContacts();
+  });
+
+  // =====================
+  // CSV IMPORT
+  // =====================
+  let csvData = [];
+
+  document.getElementById('importContactsBtn')?.addEventListener('click', () => {
+    openModal('importModal');
+    resetCsvImport();
+  });
+
+  function resetCsvImport() {
+    csvData = [];
+    document.getElementById('csvFileInput').value = '';
+    document.getElementById('csvPreview').style.display = 'none';
+    document.getElementById('confirmImportBtn').disabled = true;
+    document.getElementById('csvErrors').innerHTML = '';
+  }
+
+  // File input change
+  document.getElementById('csvFileInput')?.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) parseCSV(file);
+  });
+
+  // Drag and drop
+  const dropZone = document.getElementById('fileDropZone');
+  if (dropZone) {
+    dropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && (file.name.endsWith('.csv') || file.name.endsWith('.txt'))) {
+        parseCSV(file);
+      } else {
+        alert('Prosím nahraj CSV súbor.');
+      }
+    });
+  }
+
+  function parseCSV(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const text = e.target.result;
+      const delimiter = text.includes(';') ? ';' : ',';
+      const lines = text.split('\n').filter(line => line.trim());
+
+      if (lines.length < 2) {
+        showCsvError('Súbor musí obsahovať hlavičku a aspoň jeden riadok dát.');
+        return;
+      }
+
+      const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+
+      // Validate headers
+      const emailIndex = headers.findIndex(h => h === 'email' || h === 'e-mail');
+      if (emailIndex === -1) {
+        showCsvError('CSV musí obsahovať stĺpec "email".');
+        return;
+      }
+
+      const nameIndex = headers.findIndex(h => h === 'meno' || h === 'name' || h === 'meno a priezvisko');
+      const sourceIndex = headers.findIndex(h => h === 'zdroj' || h === 'source');
+
+      csvData = [];
+      const errors = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(delimiter).map(v => v.trim().replace(/^"|"$/g, ''));
+        const email = values[emailIndex];
+
+        if (!email || !isValidEmail(email)) {
+          errors.push(`Riadok ${i + 1}: Neplatný email "${email}"`);
+          continue;
+        }
+
+        csvData.push({
+          email: email,
+          name: nameIndex !== -1 ? values[nameIndex] || '' : '',
+          source: sourceIndex !== -1 ? values[sourceIndex] || 'import' : 'import'
+        });
+      }
+
+      // Show preview
+      showCsvPreview(csvData, errors);
+    };
+    reader.readAsText(file);
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function showCsvPreview(data, errors) {
+    const preview = document.getElementById('csvPreview');
+    const head = document.getElementById('csvPreviewHead');
+    const body = document.getElementById('csvPreviewBody');
+    const countEl = document.getElementById('csvRowCount');
+    const errorsEl = document.getElementById('csvErrors');
+    const importBtn = document.getElementById('confirmImportBtn');
+
+    head.innerHTML = '<tr><th>Meno</th><th>Email</th><th>Zdroj</th></tr>';
+    body.innerHTML = data.slice(0, 5).map(row => `
+      <tr>
+        <td>${row.name || '-'}</td>
+        <td>${row.email}</td>
+        <td>${row.source}</td>
       </tr>
     `).join('');
 
-    document.querySelectorAll('.contact-checkbox')
-      .forEach(cb => cb.addEventListener('change', updateSelected));
+    countEl.textContent = `${data.length} kontaktov`;
+
+    if (errors.length > 0) {
+      errorsEl.innerHTML = `
+        <div style="background:rgba(239,68,68,0.1); padding:0.75rem; border-radius:8px; color:#ef4444;">
+          <strong>⚠️ ${errors.length} chýb:</strong><br>
+          ${errors.slice(0, 3).join('<br>')}
+          ${errors.length > 3 ? `<br>... a ${errors.length - 3} ďalších` : ''}
+        </div>
+      `;
+    } else {
+      errorsEl.innerHTML = `
+        <div style="background:rgba(34,197,94,0.1); padding:0.75rem; border-radius:8px; color:#22c55e;">
+          ✅ Všetky riadky sú v poriadku
+        </div>
+      `;
+    }
+
+    preview.style.display = 'block';
+    importBtn.disabled = data.length === 0;
   }
 
-  function updateSelected() {
-    selectedContacts = [...document.querySelectorAll('.contact-checkbox:checked')]
-      .map(c => c.value);
+  function showCsvError(message) {
+    const errorsEl = document.getElementById('csvErrors');
+    errorsEl.innerHTML = `
+      <div style="background:rgba(239,68,68,0.1); padding:0.75rem; border-radius:8px; color:#ef4444;">
+        ❌ ${message}
+      </div>
+    `;
+    document.getElementById('csvPreview').style.display = 'block';
   }
 
-  /* =====================
-     AUTOMATIONS
-  ===================== */
+  // Confirm import
+  document.getElementById('confirmImportBtn')?.addEventListener('click', async () => {
+    if (csvData.length === 0) return;
+
+    const btn = document.getElementById('confirmImportBtn');
+    btn.disabled = true;
+    btn.textContent = 'Importujem...';
+
+    try {
+      const res = await fetch('/api/contacts/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminPassword}`
+        },
+        body: JSON.stringify({ contacts: csvData })
+      });
+
+      const result = await res.json();
+
+      if (result.ok) {
+        alert(`✅ Import úspešný! Importovaných: ${result.imported} kontaktov`);
+        closeModal('importModal');
+        document.getElementById('loadContacts')?.click();
+      } else {
+        alert(`❌ Chyba: ${result.error}`);
+      }
+    } catch (e) {
+      alert(`❌ Chyba pri importe: ${e.message}`);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Importovať';
+  });
+
+  // =====================
+  // CAMPAIGN FORM
+  // =====================
+  document.getElementById('createCampaignBtn')?.addEventListener('click', () => {
+    document.getElementById('campaignForm').style.display = 'block';
+  });
+
+  document.getElementById('cancelCampaign')?.addEventListener('click', () => {
+    document.getElementById('campaignForm').style.display = 'none';
+  });
+
+  // Template selection
+  document.getElementById('campaignTemplate')?.addEventListener('change', e => {
+    const customField = document.getElementById('customContentField');
+    const template = emailTemplates[e.target.value];
+
+    if (e.target.value === 'custom') {
+      customField.style.display = 'block';
+    } else {
+      customField.style.display = 'none';
+      if (template) {
+        document.getElementById('campaignSubject').value = template.subject;
+        document.getElementById('campaignContent').value = template.content;
+      }
+    }
+  });
+
+  // Segment selection
+  document.getElementById('campaignSegment')?.addEventListener('change', e => {
+    const tagField = document.getElementById('tagSegmentField');
+    tagField.style.display = e.target.value === 'tag' ? 'block' : 'none';
+  });
+
+  // Schedule selection
+  document.getElementById('campaignSchedule')?.addEventListener('change', e => {
+    const scheduleField = document.getElementById('scheduleTimeField');
+    scheduleField.style.display = e.target.value === 'scheduled' ? 'block' : 'none';
+  });
+
+  // =====================
+  // EMAIL PREVIEW
+  // =====================
+  document.getElementById('previewEmailBtn')?.addEventListener('click', () => {
+    showEmailPreview();
+  });
+
+  function showEmailPreview() {
+    const subject = document.getElementById('campaignSubject').value || 'Bez predmetu';
+    const templateKey = document.getElementById('campaignTemplate').value;
+    let content = '';
+
+    if (templateKey === 'custom') {
+      content = document.getElementById('campaignContent').value || '<p>Prázdny email</p>';
+    } else if (emailTemplates[templateKey]) {
+      content = emailTemplates[templateKey].content;
+    }
+
+    // Apply personalization with sample data
+    const sampleData = { meno: 'Ján Novák', email: 'jan.novak@email.sk' };
+
+    document.getElementById('previewSubject').textContent = personalize(subject, sampleData);
+    document.getElementById('previewBody').innerHTML = personalize(content, sampleData);
+
+    openModal('previewModal');
+  }
+
+  // Preview toggle (Desktop/Mobile)
+  document.querySelectorAll('.previewToggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.previewToggle').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const preview = document.getElementById('emailPreviewContent');
+      if (btn.dataset.view === 'mobile') {
+        preview.style.maxWidth = '375px';
+        preview.style.margin = '0 auto';
+      } else {
+        preview.style.maxWidth = 'none';
+        preview.style.margin = '0';
+      }
+    });
+  });
+
+  // =====================
+  // TEST EMAIL
+  // =====================
+  document.getElementById('sendTestEmailBtn')?.addEventListener('click', () => {
+    openModal('testEmailModal');
+  });
+
+  document.getElementById('sendTestFromPreview')?.addEventListener('click', () => {
+    closeModal('previewModal');
+    openModal('testEmailModal');
+  });
+
+  document.getElementById('confirmTestEmail')?.addEventListener('click', async () => {
+    const testEmail = document.getElementById('testEmailAddress').value;
+    if (!testEmail || !isValidEmail(testEmail)) {
+      alert('Zadaj platnú emailovú adresu.');
+      return;
+    }
+
+    const subject = document.getElementById('campaignSubject').value;
+    const templateKey = document.getElementById('campaignTemplate').value;
+    let content = templateKey === 'custom'
+      ? document.getElementById('campaignContent').value
+      : emailTemplates[templateKey]?.content || '';
+
+    // Personalize with test data
+    const testData = { meno: 'Ján Novák', email: testEmail };
+
+    const btn = document.getElementById('confirmTestEmail');
+    btn.disabled = true;
+    btn.textContent = 'Odosielam...';
+
+    try {
+      const res = await fetch('/api/email/send-test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminPassword}`
+        },
+        body: JSON.stringify({
+          to: testEmail,
+          subject: personalize(subject, testData),
+          html: personalize(content, testData)
+        })
+      });
+
+      const result = await res.json();
+      if (result.ok) {
+        alert(`✅ Test email odoslaný na ${testEmail}`);
+        closeModal('testEmailModal');
+      } else {
+        alert(`❌ Chyba: ${result.error}`);
+      }
+    } catch (e) {
+      alert(`❌ Chyba: ${e.message}`);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Odoslať test';
+  });
+
+  // =====================
+  // EXPORT CSV
+  // =====================
+  document.getElementById('exportContacts')?.addEventListener('click', () => {
+    if (allContacts.length === 0) {
+      alert('Najprv načítaj kontakty.');
+      return;
+    }
+
+    const csv = [
+      'Meno,Email,Zdroj,Dátum',
+      ...allContacts.map(c =>
+        `"${c.name || ''}","${c.email}","${c.source || ''}","${new Date(c.createdAt).toLocaleDateString('sk-SK')}"`
+      )
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `kontakty-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // =====================
+  // AUTOMATIONS
+  // =====================
   window.editAutomation = type => {
     const automations = {
       welcome: {
-        name: 'Welcome',
-        subject: 'Vitaj!',
-        content: '<h1>Ahoj {meno}</h1>',
+        name: 'Welcome email',
+        subject: 'Vitaj {meno}!',
+        content: '<h1>Ahoj {meno}!</h1><p>Vitaj v našej komunite.</p>',
         active: true
       },
       followup: {
-        name: 'Follow-up',
-        subject: 'Ako sa ti páčilo?',
-        content: '<p>Dúfame že super</p>',
+        name: 'Workshop follow-up',
+        subject: 'Ako sa ti páčil workshop, {meno}?',
+        content: '<p>Ahoj {meno}, dúfame že workshop bol pre teba prínosný.</p>',
         active: true
+      },
+      reengagement: {
+        name: 'Re-engagement',
+        subject: '{meno}, dlho sme sa nevideli!',
+        content: '<p>Ahoj {meno}, máme pre teba novinky!</p>',
+        active: false
       }
     };
 
     const a = automations[type] || automations.welcome;
 
-    editAutoId.value = type;
-    editAutoName.value = a.name;
-    editAutoSubject.value = a.subject;
-    editAutoContent.value = a.content;
-    editAutoActive.checked = a.active;
+    document.getElementById('editAutoId').value = type;
+    document.getElementById('editAutoName').value = a.name;
+    document.getElementById('editAutoSubject').value = a.subject;
+    document.getElementById('editAutoContent').value = a.content;
+    document.getElementById('editAutoActive').checked = a.active;
 
     openModal('editAutomationModal');
   };
 
-  /* =====================
-     MODALS
-  ===================== */
+  document.getElementById('createAutomationBtn')?.addEventListener('click', () => {
+    openModal('createAutomationModal');
+  });
+
+  // =====================
+  // TEMPLATE FUNCTIONS
+  // =====================
+  window.previewTemplate = (templateKey) => {
+    const template = emailTemplates[templateKey];
+    if (!template) return;
+
+    const sampleData = { meno: 'Ján Novák', email: 'jan.novak@email.sk' };
+    document.getElementById('previewSubject').textContent = personalize(template.subject, sampleData);
+    document.getElementById('previewBody').innerHTML = personalize(template.content, sampleData);
+    openModal('previewModal');
+  };
+
+  window.useTemplate = (templateKey) => {
+    document.querySelector('[data-subtab="campaigns"]')?.click();
+    document.getElementById('createCampaignBtn')?.click();
+    document.getElementById('campaignTemplate').value = templateKey;
+    document.getElementById('campaignTemplate').dispatchEvent(new Event('change'));
+  };
+
+  window.selectCustomTemplate = () => {
+    document.querySelector('[data-subtab="campaigns"]')?.click();
+    document.getElementById('createCampaignBtn')?.click();
+    document.getElementById('campaignTemplate').value = 'custom';
+    document.getElementById('customContentField').style.display = 'block';
+  };
+
+  // =====================
+  // NOTES MODAL
+  // =====================
+  window.openNotesModal = (email) => {
+    document.getElementById('notesContactEmail').textContent = email;
+    openModal('notesModal');
+  };
+
+  // =====================
+  // MODALS
+  // =====================
   window.openModal = id => document.getElementById(id).style.display = 'flex';
   window.closeModal = id => document.getElementById(id).style.display = 'none';
 
-  loadCampaignHistory();
+  // Close modal on backdrop click
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  });
+
+  // Load initial stats
+  loadEmailStats();
 });
 </script>
 
@@ -990,6 +1545,14 @@ document.addEventListener('DOMContentLoaded', () => {
 .field label {
   font-size: 0.875rem;
   color: rgba(255,255,255,0.7);
+}
+
+.field label code {
+  background: rgba(249,115,22,0.2);
+  color: #f97316;
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
 }
 
 .field input,
@@ -1367,10 +1930,12 @@ document.addEventListener('DOMContentLoaded', () => {
   align-items: center;
   padding: 1.5rem;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  gap: 1rem;
 }
 
 .modalHeader h3 {
   margin: 0;
+  flex: 1;
 }
 
 .modalClose {
@@ -1405,6 +1970,7 @@ document.addEventListener('DOMContentLoaded', () => {
   color: #333;
   border-radius: 8px;
   overflow: hidden;
+  transition: max-width 0.3s;
 }
 
 .emailPreviewHeader {
@@ -1412,10 +1978,48 @@ document.addEventListener('DOMContentLoaded', () => {
   padding: 1rem;
   font-size: 0.875rem;
   border-bottom: 1px solid #ddd;
+  line-height: 1.6;
 }
 
 .emailPreviewBody {
   padding: 1.5rem;
+}
+
+.previewToggle {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.6);
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.previewToggle.active {
+  background: #f97316;
+  border-color: #f97316;
+  color: white;
+}
+
+/* ========== FILE DROP ZONE ========== */
+.fileDropZone {
+  border: 2px dashed rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.fileDropZone:hover,
+.fileDropZone.dragover {
+  border-color: #f97316;
+  background: rgba(249,115,22,0.05);
+}
+
+.dropZoneContent p {
+  margin: 0.5rem 0 0 0;
+  color: rgba(255,255,255,0.6);
 }
 
 /* ========== BUTTONS ========== */
@@ -1437,6 +2041,12 @@ pre {
   border-radius: 8px;
   overflow-x: auto;
   font-size: 0.875rem;
+}
+
+code {
+  background: rgba(0,0,0,0.3);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
 }
 
 /* ========== CHECKBOX STYLING ========== */
@@ -1479,6 +2089,10 @@ pre {
 
   .filterSelect {
     width: 100%;
+  }
+
+  .modalHeader {
+    flex-wrap: wrap;
   }
 }
 </style>
