@@ -8,15 +8,16 @@ export async function onRequestGet(context) {
     const appId = env.META_APP_ID;
     const redirectUri = `${url.origin}/api/social/oauth/meta/callback`;
 
-    // Required permissions for Facebook Pages and Instagram
+    if (!appId) {
+        return new Response('META_APP_ID nie je nastavené v Environment Variables', { status: 500 });
+    }
+
+    // Permissions for Facebook Pages (Development mode compatible)
+    // Note: For Instagram, you need to complete App Review first
     const scopes = [
+        'public_profile',
         'pages_show_list',
-        'pages_read_engagement',
-        'pages_manage_posts',
-        'instagram_basic',
-        'instagram_content_publish',
-        'instagram_manage_comments',
-        'instagram_manage_insights'
+        'pages_manage_posts'
     ].join(',');
 
     const authUrl = `https://www.facebook.com/v18.0/dialog/oauth?` +
