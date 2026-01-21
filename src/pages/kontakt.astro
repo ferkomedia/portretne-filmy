@@ -1,5 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+// Turnstile Site Key - nastav v Cloudflare Dashboard > Turnstile
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAA..."; // Nahraď svojím kľúčom
 ---
 <BaseLayout title="Kontakt | Portrétny film" description="Napíšte nám alebo zavolajte. Odpovieme do 24 hodín. Portrétne filmy a workshopy v Martine.">
 
@@ -51,6 +54,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <input type="hidden" id="hiddenCompanyDic" name="Firma - DIČ" value="" />
           <input type="hidden" id="hiddenCompanyIcdph" name="Firma - IČ DPH" value="" />
           <input type="hidden" id="hiddenCompanyAddress" name="Firma - Adresa" value="" />
+
+          <!-- HONEYPOT - skryté pole pre botov -->
+          <div class="hp-field" aria-hidden="true">
+            <label for="website">Nechajte prázdne</label>
+            <input type="text" id="website" name="website" autocomplete="off" tabindex="-1" />
+          </div>
 
           <div class="formFields">
             <div class="field">
@@ -113,12 +122,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             </div>
           </div>
 
+          <!-- CLOUDFLARE TURNSTILE -->
+          <div class="turnstileWrapper">
+            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="dark"></div>
+            <div id="turnstileError" class="turnstileError"></div>
+          </div>
+
           <div class="formActions">
             <label class="checkRow">
               <input type="checkbox" name="GDPR súhlas" required />
               <span>Súhlasím so spracovaním osobných údajov</span>
             </label>
-            <button class="btn btn--primary btn--large" type="submit">Odoslať správu</button>
+            <button class="btn btn--primary btn--large" type="submit" id="submitBtn">Odoslať správu</button>
           </div>
         </form>
       </div>
@@ -171,8 +186,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
   </section>
 
+  <!-- Cloudflare Turnstile Script -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // IČO lookup
       const icoInput = document.getElementById('ico');
       const status = document.getElementById('icoStatus');
       const companyFields = document.getElementById('companyFields');
@@ -226,6 +245,26 @@ import BaseLayout from "../layouts/BaseLayout.astro";
               });
           }, 600);
         }
+      });
+
+      // Form submission validation
+      const form = document.getElementById('kontaktForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const turnstileError = document.getElementById('turnstileError');
+
+      form.addEventListener('submit', function(e) {
+        // Check Turnstile response
+        const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
+        
+        if (!turnstileResponse || !turnstileResponse.value) {
+          e.preventDefault();
+          turnstileError.textContent = 'Prosím, dokončite overenie.';
+          return false;
+        }
+
+        turnstileError.textContent = '';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Odosielam...';
       });
     });
   </script>
@@ -393,6 +432,32 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     border-color: #f97316;
   }
 
+  /* HONEYPOT - skryté pole */
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Turnstile wrapper */
+  .turnstileWrapper {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .turnstileError {
+    color: #ef4444;
+    font-size: 0.85rem;
+    min-height: 1.2em;
+  }
+
   /* Auto Fields */
   .autoFields {
     margin-top: 1.5rem;
@@ -530,5 +595,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .btn--large {
     padding: 1rem 2rem;
     font-size: 1.05rem;
+  }
+
+  .btn--large:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 </style>

@@ -4,6 +4,9 @@ import terms from "../data/workshop-terms.json";
 
 const openTerms = (terms || []).filter(t => (t.status || "").toLowerCase() === "open");
 const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} €`;
+
+// Turnstile Site Key
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAA...";
 ---
 
 <BaseLayout title="Workshopy | Naučte sa to za jeden deň" description="Praktické jednodňové workshopy. Web, e-shop, Google reklama, AI nástroje. Odídete s hotovým výsledkom, nie s teóriou.">
@@ -245,6 +248,12 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
         <input type="hidden" id="hiddenCompanyIcdph" name="Firma - IČ DPH" value="" />
         <input type="hidden" id="hiddenCompanyAddress" name="Firma - Adresa" value="" />
 
+        <!-- HONEYPOT - skryté pole pre botov -->
+        <div class="hp-field" aria-hidden="true">
+          <label for="website">Nechajte prázdne</label>
+          <input type="text" id="website" name="website" autocomplete="off" tabindex="-1" />
+        </div>
+
         <div class="formGrid">
           <div class="field">
             <label for="wsName">Meno a priezvisko *</label>
@@ -319,6 +328,12 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
           </div>
         </div>
 
+        <!-- CLOUDFLARE TURNSTILE -->
+        <div class="turnstileWrapper">
+          <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="dark"></div>
+          <div id="turnstileError" class="turnstileError"></div>
+        </div>
+
         <!-- Cena a tlačidlo -->
         <div class="priceDisplay" id="priceDisplay" style="display:none;">
           <span>Cena:</span>
@@ -363,7 +378,10 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     </div>
   </div>
 
+  <!-- Cloudflare Turnstile Script -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="https://js.stripe.com/v3/"></script>
+  
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const stripe = Stripe('pk_live_51SIajzK7AvTQZ0XNgrY5daEJeZX4ew0fxpRaVwgahpvPAamiISdRB0SpwlPYtbrvnsJritP542yNLaZximzBZwZo007qtYg79p');
@@ -382,6 +400,8 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
       const submitBtn = document.getElementById('submitBtn');
       const priceDisplay = document.getElementById('priceDisplay');
       const selectedPriceEl = document.getElementById('selectedPrice');
+      const turnstileError = document.getElementById('turnstileError');
+      const honeypotField = document.getElementById('website');
 
       // Modal elements
       const modal = document.getElementById('paymentModal');
@@ -420,6 +440,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
         el.addEventListener('change', checkFormValidity);
         el.addEventListener('input', checkFormValidity);
       });
+
       // Domain check
       let domainTimeout;
       const domainInput = document.getElementById('wsDomain');
@@ -464,6 +485,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
           }, 800);
         });
       }
+
       // IČO lookup
       let icoTimeout;
       icoInput.addEventListener('input', function() {
@@ -518,9 +540,25 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
         }
       });
 
-      // Form submit - open payment modal
+      // Form submit - validate and open payment modal
       form.addEventListener('submit', async function(e) {
         e.preventDefault();
+
+        // HONEYPOT CHECK - ak je vyplnené, ticho ignorujeme (bot)
+        if (honeypotField && honeypotField.value.trim() !== '') {
+          console.log('Honeypot triggered');
+          // Ticho presmerujeme ako keby prešlo
+          window.location.href = '/dakujem-workshopy/';
+          return;
+        }
+
+        // TURNSTILE CHECK
+        const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
+        if (!turnstileResponse || !turnstileResponse.value) {
+          turnstileError.textContent = 'Prosím, dokončite overenie.';
+          return;
+        }
+        turnstileError.textContent = '';
 
         if (!currentPrice || currentPrice <= 0) {
           alert('Vyberte termín workshopu');
@@ -547,6 +585,9 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
         payNowBtn.disabled = true;
 
         try {
+          // Get Turnstile token
+          const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value || '';
+
           const response = await fetch('/api/create-payment-intent', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -561,7 +602,8 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
               companyDic: document.getElementById('hiddenCompanyDic').value || '',
               companyIcDph: document.getElementById('hiddenCompanyIcdph').value || '',
               companyAddress: document.getElementById('hiddenCompanyAddress').value || '',
-              note: noteInput.value || ''
+              note: noteInput.value || '',
+              turnstileToken: turnstileToken // Posielame token na backend validáciu
             })
           });
 
@@ -699,23 +741,7 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     50% { transform: translateX(-50%) translateY(10px); }
   }
 
-  @media (max-width: 640px) {
-    .heroFull {
-      min-height: calc(100vh - 64px);
-      padding: 2rem 1rem;
-    }
-    .heroFull h1 {
-      font-size: 1.75rem;
-    }
-    .heroLead {
-      font-size: 0.95rem;
-    }
-    .heroScroll {
-      bottom: 1rem;
-    }
-  }
-
-  /* Section */
+  /* Sections */
   .section {
     padding: 5rem 0;
   }
@@ -726,16 +752,15 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
   }
   .sectionHeader {
     text-align: center;
-    max-width: 600px;
-    margin: 0 auto 3rem;
+    margin-bottom: 3rem;
   }
   .sectionHeader h2 {
-    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
     margin-bottom: 0.75rem;
   }
   .sectionLead {
     color: rgba(255,255,255,0.7);
-    font-size: 1rem;
+    font-size: 1.05rem;
   }
 
   /* Comparison */
@@ -750,18 +775,18 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     .comparisonGrid { grid-template-columns: 1fr; }
   }
   .comparisonCol {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
     padding: 2rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
   }
   .comparisonCol.highlighted {
-    background: rgba(34,197,94,0.08);
-    border-color: rgba(34,197,94,0.3);
+    background: rgba(249,115,22,0.08);
+    border-color: rgba(249,115,22,0.3);
   }
   .comparisonCol h3 {
-    font-size: 1.25rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
     text-align: center;
   }
   .comparisonList {
@@ -770,103 +795,108 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     margin: 0;
   }
   .comparisonList li {
-    padding: 0.6rem 0 0.6rem 1.75rem;
+    padding: 0.5rem 0 0.5rem 1.75rem;
     position: relative;
-    font-size: 0.95rem;
     color: rgba(255,255,255,0.8);
   }
-  .comparisonList.negative li::before {
-    content: "";
+  .comparisonList li::before {
     position: absolute;
     left: 0;
-    top: 0.85rem;
-    width: 10px;
-    height: 2px;
-    background: rgba(255,255,255,0.3);
+    font-size: 1rem;
+  }
+  .comparisonList.negative li::before {
+    content: "✗";
+    color: #ef4444;
   }
   .comparisonList.positive li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.7rem;
-    width: 8px;
-    height: 12px;
-    border-right: 2px solid #22c55e;
-    border-bottom: 2px solid #22c55e;
-    transform: rotate(45deg);
+    content: "✓";
+    color: #22c55e;
   }
 
-  /* Workshop Grid */
+  /* Workshops */
   .workshopGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .workshopGrid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .workshopGrid { grid-template-columns: 1fr; }
   }
   .workshopCard {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: 12px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
   }
   .workshopCard h3 {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     margin-bottom: 0.75rem;
   }
   .workshopCard > p {
     color: rgba(255,255,255,0.7);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.6;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
   }
   .workshopResult {
-    background: rgba(34,197,94,0.1);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(34,197,94,0.08);
     border-radius: 8px;
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
   }
   .resultLabel {
     color: #22c55e;
     font-weight: 600;
-    margin-right: 0.5rem;
+    display: block;
+    margin-bottom: 0.25rem;
   }
   .workshopPrice {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #f97316;
+    margin-bottom: 1rem;
   }
   .workshopCardCustom {
     border-style: dashed;
-    display: flex;
-    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  .workshopCardCustom h3 {
+    margin-bottom: 0.5rem;
   }
   .workshopCardCustom p {
-    flex: 1;
+    margin-bottom: 1.5rem;
   }
 
   /* Terms */
   .noTermsBox {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 3rem;
     text-align: center;
+    padding: 3rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
     max-width: 500px;
     margin: 0 auto;
   }
   .noTermsBox p {
-    color: rgba(255,255,255,0.7);
     margin-bottom: 1.5rem;
+    color: rgba(255,255,255,0.7);
   }
   .termsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
   }
   .termCard {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 1.5rem;
   }
   .termDate {
@@ -876,18 +906,18 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     margin-bottom: 0.5rem;
   }
   .termCard h3 {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     margin-bottom: 0.75rem;
   }
   .termMeta {
     display: flex;
     gap: 1rem;
     font-size: 0.85rem;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255,255,255,0.6);
     margin-bottom: 1rem;
   }
   .termPrice {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: #22c55e;
     margin-bottom: 1rem;
@@ -896,30 +926,39 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
   /* Process */
   .processGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  @media (max-width: 800px) {
+    .processGrid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 500px) {
+    .processGrid { grid-template-columns: 1fr; }
   }
   .processStep {
     text-align: center;
   }
   .processNumber {
-    width: 44px;
-    height: 44px;
-    background: #f97316;
-    color: #fff;
+    width: 48px;
+    height: 48px;
+    background: rgba(249,115,22,0.15);
+    border: 2px solid #f97316;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 1.1rem;
     margin: 0 auto 1rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #f97316;
   }
   .processStep h4 {
     margin-bottom: 0.5rem;
   }
   .processStep p {
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.7);
     font-size: 0.9rem;
     line-height: 1.5;
   }
@@ -929,18 +968,20 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 3rem;
-    align-items: start;
+    max-width: 900px;
+    margin: 0 auto;
   }
   @media (max-width: 700px) {
-    .placeGrid { grid-template-columns: 1fr; gap: 2rem; }
+    .placeGrid { grid-template-columns: 1fr; }
   }
   .placeInfo h3 {
+    font-size: 1.25rem;
     margin-bottom: 1rem;
   }
   .placeInfo > p {
     color: rgba(255,255,255,0.7);
-    line-height: 1.6;
     margin-bottom: 1.5rem;
+    line-height: 1.6;
   }
   .placeList {
     list-style: none;
@@ -950,22 +991,17 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
   .placeList li {
     padding: 0.4rem 0 0.4rem 1.5rem;
     position: relative;
-    font-size: 0.95rem;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.8);
   }
   .placeList li::before {
-    content: "";
+    content: "✓";
     position: absolute;
     left: 0;
-    top: 0.75rem;
-    width: 6px;
-    height: 6px;
-    background: #22c55e;
-    border-radius: 50%;
+    color: #22c55e;
   }
   .placeNote {
     background: rgba(249,115,22,0.08);
-    border: 1px solid rgba(249,115,22,0.25);
+    border: 1px solid rgba(249,115,22,0.2);
     border-radius: 12px;
     padding: 1.5rem;
   }
@@ -1063,6 +1099,33 @@ const formatTerm = (t) => `${t.date} – ${t.title} (${t.city}) – ${t.price} �
     outline: none;
     border-color: #f97316;
   }
+
+  /* HONEYPOT - skryté pole */
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Turnstile wrapper */
+  .turnstileWrapper {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .turnstileError {
+    color: #ef4444;
+    font-size: 0.85rem;
+    min-height: 1.2em;
+  }
+
   .statusLine {
     font-size: 0.8rem;
     min-height: 1.2em;
