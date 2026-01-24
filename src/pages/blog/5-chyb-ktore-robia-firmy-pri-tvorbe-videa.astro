@@ -8,17 +8,20 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   type="article"
 >
 
-  <article class="article">
-    <header class="article-header">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
       <div class="article-meta">
         <span class="article-category">Video marketing</span>
         <span class="article-date">22. január 2026</span>
         <span class="article-time">5 min čítania</span>
       </div>
       <h1>5 chýb, ktoré robia firmy pri tvorbe videa</h1>
-      <p class="article-lead">Za posledných 10 rokov som videl stovky firemných videí. Niektoré fungovali výborne. Iné skončili v zabudnutí. Rozdiel väčšinou nebol v rozpočte, ale v prístupe.</p>
-    </header>
+      <p class="hero-lead">Za posledných 25 rokov som videl stovky firemných videí. Niektoré fungovali výborne. Iné skončili v zabudnutí. Rozdiel väčšinou nebol v rozpočte.</p>
+    </div>
+  </section>
 
+  <article class="article">
     <div class="article-content">
       <p>Tu je päť najčastejších chýb, ktoré stoja firmy peniaze, čas a príležitosti. A návod, ako sa im vyhnúť.</p>
 
@@ -29,14 +32,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       <p><strong>Riešenie:</strong> Jedno video, jedna správa. Chcete predstaviť firmu? Urobte jedno video. Chcete ukázať produkt? Urobte ďalšie. Chcete zdieľať príbeh zákazníka? Tretie video.</p>
 
-      <p>Kratšie videá fungujú lepšie. A môžete ich použiť presne tam, kde sú relevantné.</p>
-
       <h2>2. Podceňujú zvuk</h2>
       <p>Paradox: ľudia odpustia horšiu kvalitu obrazu, ale zlý zvuk ich okamžite odradí.</p>
 
       <p>Videl som krásne natočené videá, kde ste ledva rozumeli, čo hovoriaci hovorí. Šum, ozvena, príliš tichý hlas. Divák vypne do 10 sekúnd.</p>
-
-      <p><strong>Riešenie:</strong> Investujte do dobrého mikrofónu. Natáčajte v tichom prostredí. Pri postprodukcii venujte zvuku rovnakú pozornosť ako obrazu.</p>
 
       <blockquote>
         „Kvalita zvuku robí rozdiel medzi amatérskym a profesionálnym videom viac ako čokoľvek iné."
@@ -47,14 +46,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       <p>Ľudia to okamžite cítia. A prestávajú dôverovať.</p>
 
-      <p><strong>Riešenie:</strong> Nechajte ľudí hovoriť prirodzene. Áno, budú robiť chyby. Áno, budú sa zadrháať. Ale budú autentickí. A to je presne to, čo buduje dôveru.</p>
-
-      <p>Najlepšie momenty často vznikajú, keď si človek myslí, že kamera ešte nebeží.</p>
+      <p><strong>Riešenie:</strong> Nechajte ľudí hovoriť prirodzene. Áno, budú robiť chyby. Áno, budú sa zadrháať. Ale budú autentickí.</p>
 
       <h2>4. Nemajú jasný cieľ</h2>
       <p>„Chceme video." Dobre, ale prečo? Čo má video dosiahnuť?</p>
-
-      <p>Má priviesť návštevníkov na web? Presvedčiť ich, aby vyplnili formulár? Ukázať, že ste dôveryhodní? Každý cieľ vyžaduje iný typ videa.</p>
 
       <p><strong>Riešenie:</strong> Pred natáčaním si odpovedzte na tieto otázky:</p>
       <ul>
@@ -64,12 +59,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <li>Ako zmeriam, či video funguje?</li>
       </ul>
 
-      <p>Keď máte jasné odpovede, natáčanie aj strih sú oveľa jednoduchšie.</p>
-
       <h2>5. Video urobia a zabudnú naň</h2>
       <p>Firma investuje do videa, umiestni ho na web a... to je všetko. Žiadna propagácia, žiadne zdieľanie, žiadne meranie.</p>
-
-      <p>Video samé o sebe neprinesie zákazníkov. Musíte ho dostať k správnym ľuďom.</p>
 
       <p><strong>Riešenie:</strong> Vytvorte si plán distribúcie:</p>
       <ul>
@@ -77,17 +68,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <li>Pridajte do emailových podpisov</li>
         <li>Použite v emailových kampaniach</li>
         <li>Ukážte na prezentáciách a stretnutiach</li>
-        <li>Pridajte na landing page pri produkte/službe</li>
       </ul>
-
-      <p>Jedno dobré video môže pracovať roky – ale len ak ho ľudia vidia.</p>
-
-      <h2>Bonus: Čakajú príliš dlho</h2>
-      <p>„Keď budeme väčší, urobíme video." „Keď budeme mať nové priestory." „Keď budeme mať viac peňazí."</p>
-
-      <p>Medzitým konkurencia, ktorá má video, získava zákazníkov.</p>
-
-      <p>Pravda je, že nikdy nebude „správny čas". Najlepší čas na video bol pred rokom. Druhý najlepší čas je teraz.</p>
 
       <div class="article-cta">
         <h3>Nechcete robiť tieto chyby?</h3>
@@ -104,20 +85,35 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 </BaseLayout>
 
 <style>
-  .article {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 3rem 0 4rem;
+  .hero {
+    position: relative;
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 1.5rem;
+    overflow: hidden;
   }
 
-  .article-header {
-    margin-bottom: 2.5rem;
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top, rgba(249,115,22,0.15) 0%, transparent 60%);
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
   }
 
   .article-meta {
     display: flex;
     gap: 1rem;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
     margin-bottom: 1.25rem;
   }
@@ -139,19 +135,28 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     color: rgba(255, 255, 255, 0.5);
   }
 
-  .article-header h1 {
-    font-size: 2.5rem;
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
     line-height: 1.2;
     margin: 0 0 1.25rem 0;
     color: white;
   }
 
-  .article-lead {
-    font-size: 1.2rem;
+  .hero-lead {
+    font-size: clamp(1rem, 2vw, 1.2rem);
     line-height: 1.7;
     color: rgba(255, 255, 255, 0.8);
     margin: 0;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
   }
 
   .article-content {
@@ -193,10 +198,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     font-size: 1.15rem;
     font-style: italic;
     color: rgba(255, 255, 255, 0.9);
-  }
-
-  .article-content blockquote p {
-    margin: 0;
   }
 
   .article-cta {
@@ -255,16 +256,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   }
 
   @media (max-width: 600px) {
+    .hero {
+      min-height: 40vh;
+      padding: 3rem 1.5rem;
+    }
+
     .article {
-      padding: 2rem 0 3rem;
-    }
-
-    .article-header h1 {
-      font-size: 1.85rem;
-    }
-
-    .article-lead {
-      font-size: 1.05rem;
+      padding: 2rem 1rem 3rem;
     }
 
     .article-content {
