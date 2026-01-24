@@ -1,0 +1,100 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Blog | Portrétny film" description="Tipy, návody a novinky zo sveta video marketingu, webov a e-shopov.">
+
+  <section class="blog-hero">
+    <h1>Blog</h1>
+    <p class="blog-subtitle">Tipy, návody a novinky zo sveta video marketingu, webov a e-shopov.</p>
+  </section>
+
+  <section class="blog-content">
+    <div class="blog-empty">
+      <div class="blog-empty-icon">📝</div>
+      <h2>Čoskoro tu nájdeš užitočný obsah</h2>
+      <p>Pracujem na článkoch o video marketingu, tvorbe webov a e-shopov. Vráť sa čoskoro!</p>
+      <a href="/kontakt" class="blog-cta">Napíš mi, o čom by si chcel čítať →</a>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .blog-hero {
+    text-align: center;
+    padding: 4rem 0 2rem;
+  }
+
+  .blog-hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 1rem 0;
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .blog-subtitle {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .blog-content {
+    padding: 2rem 0 4rem;
+  }
+
+  .blog-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .blog-empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .blog-empty h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .blog-empty p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .blog-cta {
+    display: inline-block;
+    color: #f97316;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  .blog-cta:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .blog-hero h1 {
+      font-size: 2.25rem;
+    }
+
+    .blog-empty {
+      padding: 2.5rem 1.5rem;
+    }
+  }
+</style>
