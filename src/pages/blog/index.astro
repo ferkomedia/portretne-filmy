@@ -39,9 +39,13 @@ const articles = [
 
 <BaseLayout title="Blog | Portrétny film" description="Tipy, návody a novinky zo sveta video marketingu, webov a e-shopov. Praktické rady pre podnikateľov.">
 
-  <section class="blog-hero">
-    <h1>Blog</h1>
-    <p class="blog-subtitle">Praktické tipy pre podnikateľov, ktorí chcú rásť online.</p>
+  <!-- Hero - ROVNAKÝ AKO NA HOMEPAGE -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1>Blog</h1>
+      <p class="hero-lead">Praktické tipy pre podnikateľov, ktorí chcú rásť online. Bez teórie, len to, čo funguje.</p>
+    </div>
   </section>
 
   <section class="blog-grid">
@@ -72,26 +76,48 @@ const articles = [
 </BaseLayout>
 
 <style>
-  .blog-hero {
+  /* ===== HERO - ROVNAKÝ AKO NA HOMEPAGE ===== */
+  .hero {
+    position: relative;
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 4rem 0 3rem;
+    padding: 4rem 1.5rem;
+    overflow: hidden;
   }
 
-  .blog-hero h1 {
-    font-size: 3rem;
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(180, 80, 50, 0.4), transparent 70%),
+                radial-gradient(ellipse 60% 50% at 60% 30%, rgba(120, 40, 20, 0.3), transparent 60%);
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 800;
-    margin: 0 0 1rem 0;
-    background: linear-gradient(135deg, #f97316, #fb923c);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    line-height: 1.1;
+    margin: 0 0 1.5rem 0;
+    color: white;
   }
 
-  .blog-subtitle {
-    font-size: 1.15rem;
-    color: rgba(255, 255, 255, 0.7);
-    max-width: 500px;
-    margin: 0 auto;
+  .hero-lead {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   /* Blog Grid */
@@ -99,7 +125,7 @@ const articles = [
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
-    padding-bottom: 3rem;
+    padding: 3rem 0;
   }
 
   .blog-card {
@@ -247,8 +273,9 @@ const articles = [
       font-size: 1.35rem;
     }
 
-    .blog-hero h1 {
-      font-size: 2.25rem;
+    .hero {
+      min-height: 40vh;
+      padding: 3rem 1.5rem;
     }
   }
 </style>

@@ -8,17 +8,21 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   type="article"
 >
 
-  <article class="article">
-    <header class="article-header">
+  <!-- Hero - ROVNAKÝ AKO NA HOMEPAGE -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
       <div class="article-meta">
         <span class="article-category">Video marketing</span>
         <span class="article-date">24. január 2026</span>
         <span class="article-time">4 min čítania</span>
       </div>
       <h1>Prečo video predáva lepšie ako text</h1>
-      <p class="article-lead">Predstavte si, že máte 8 sekúnd. Toľko času vám dá priemerný návštevník webu, kým sa rozhodne, či zostane alebo odíde. Čo v tom čase stihnete povedať textom? A čo videom?</p>
-    </header>
+      <p class="hero-lead">Predstavte si, že máte 8 sekúnd. Toľko času vám dá priemerný návštevník webu, kým sa rozhodne, či zostane alebo odíde.</p>
+    </div>
+  </section>
 
+  <article class="article">
     <div class="article-content">
       <h2>Čísla, ktoré hovoria jasne</h2>
       <p>Keď som pred rokmi začínal s video produkciou, firmy sa pýtali: „Naozaj to potrebujeme?" Dnes sa pýtajú: „Prečo sme s tým nezačali skôr?"</p>
@@ -71,7 +75,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <p>Nemusíte hneď investovať do veľkej produkcie. Začnite jednoducho:</p>
 
       <ol>
-        <li><strong>Portrétny film</strong> – predstavte seba a svoju firmu</li>
+        <li><strong>Zavolajte nám</strong> – predstavte seba a svoju firmu</li>
         <li><strong>Zákaznícke referencie</strong> – nechajte hovoriť spokojných klientov</li>
         <li><strong>Proces práce</strong> – ukážte, ako pracujete</li>
       </ol>
@@ -93,20 +97,37 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 </BaseLayout>
 
 <style>
-  .article {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 3rem 0 4rem;
+  /* ===== HERO - ROVNAKÝ AKO NA HOMEPAGE ===== */
+  .hero {
+    position: relative;
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 1.5rem;
+    overflow: hidden;
   }
 
-  .article-header {
-    margin-bottom: 2.5rem;
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(180, 80, 50, 0.4), transparent 70%),
+                radial-gradient(ellipse 60% 50% at 60% 30%, rgba(120, 40, 20, 0.3), transparent 60%);
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
   }
 
   .article-meta {
     display: flex;
     gap: 1rem;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
     margin-bottom: 1.25rem;
   }
@@ -128,22 +149,31 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     color: rgba(255, 255, 255, 0.5);
   }
 
-  .article-header h1 {
-    font-size: 2.5rem;
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 800;
     line-height: 1.2;
     margin: 0 0 1.25rem 0;
     color: white;
   }
 
-  .article-lead {
-    font-size: 1.2rem;
+  .hero-lead {
+    font-size: clamp(1rem, 2vw, 1.2rem);
     line-height: 1.7;
     color: rgba(255, 255, 255, 0.8);
     margin: 0;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  /* Content */
+  /* ===== ARTICLE ===== */
+  .article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
   .article-content {
     color: rgba(255, 255, 255, 0.85);
     font-size: 1.05rem;
@@ -255,16 +285,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   }
 
   @media (max-width: 600px) {
+    .hero {
+      min-height: 40vh;
+      padding: 3rem 1.5rem;
+    }
+
     .article {
-      padding: 2rem 0 3rem;
-    }
-
-    .article-header h1 {
-      font-size: 1.85rem;
-    }
-
-    .article-lead {
-      font-size: 1.05rem;
+      padding: 2rem 1rem 3rem;
     }
 
     .article-content {
