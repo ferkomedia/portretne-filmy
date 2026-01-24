@@ -1,20 +1,71 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const articles = [
+  {
+    slug: "preco-video-predava-lepsie-ako-text",
+    title: "Prečo video predáva lepšie ako text",
+    excerpt: "Ľudský mozog spracuje obraz 60 000-krát rýchlejšie ako text. Pozrite sa, prečo firmy, ktoré používajú video, rastú rýchlejšie.",
+    date: "24. január 2026",
+    readTime: "4 min",
+    category: "Video marketing"
+  },
+  {
+    slug: "5-chyb-ktore-robia-firmy-pri-tvorbe-videa",
+    title: "5 chýb, ktoré robia firmy pri tvorbe videa",
+    excerpt: "Najčastejšie chyby, ktoré stoja firmy peniaze a čas. A ako sa im vyhnúť.",
+    date: "22. január 2026",
+    readTime: "5 min",
+    category: "Video marketing"
+  },
+  {
+    slug: "web-alebo-eshop-co-potrebujes",
+    title: "Web alebo e-shop? Čo naozaj potrebuješ",
+    excerpt: "Nie každý potrebuje e-shop a nie každý sa uspokojí s webom. Ako sa rozhodnúť správne.",
+    date: "20. január 2026",
+    readTime: "3 min",
+    category: "Weby a e-shopy"
+  },
+  {
+    slug: "ako-ziskat-prveho-zakaznika-online",
+    title: "Ako získať prvého zákazníka online",
+    excerpt: "Máš web, máš produkt, ale zákazníci nechodia. Čo robiť v prvých týždňoch po spustení.",
+    date: "18. január 2026",
+    readTime: "6 min",
+    category: "Marketing"
+  }
+];
 ---
 
-<BaseLayout title="Blog | Portrétny film" description="Tipy, návody a novinky zo sveta video marketingu, webov a e-shopov.">
+<BaseLayout title="Blog | Portrétny film" description="Tipy, návody a novinky zo sveta video marketingu, webov a e-shopov. Praktické rady pre podnikateľov.">
 
   <section class="blog-hero">
     <h1>Blog</h1>
-    <p class="blog-subtitle">Tipy, návody a novinky zo sveta video marketingu, webov a e-shopov.</p>
+    <p class="blog-subtitle">Praktické tipy pre podnikateľov, ktorí chcú rásť online.</p>
   </section>
 
-  <section class="blog-content">
-    <div class="blog-empty">
-      <div class="blog-empty-icon">📝</div>
-      <h2>Čoskoro tu nájdeš užitočný obsah</h2>
-      <p>Pracujem na článkoch o video marketingu, tvorbe webov a e-shopov. Vráť sa čoskoro!</p>
-      <a href="/kontakt" class="blog-cta">Napíš mi, o čom by si chcel čítať →</a>
+  <section class="blog-grid">
+    {articles.map((article, index) => (
+      <a href={`/blog/${article.slug}`} class={`blog-card ${index === 0 ? 'blog-card--featured' : ''}`}>
+        <div class="blog-card-meta">
+          <span class="blog-card-category">{article.category}</span>
+          <span class="blog-card-date">{article.date}</span>
+        </div>
+        <h2 class="blog-card-title">{article.title}</h2>
+        <p class="blog-card-excerpt">{article.excerpt}</p>
+        <div class="blog-card-footer">
+          <span class="blog-card-read">Čítať článok →</span>
+          <span class="blog-card-time">{article.readTime}</span>
+        </div>
+      </a>
+    ))}
+  </section>
+
+  <section class="blog-newsletter">
+    <div class="newsletter-box">
+      <h2>Chceš dostávať tipy do mailu?</h2>
+      <p>Raz mesačne posielam praktické rady o video marketingu a online podnikaní. Žiadny spam.</p>
+      <a href="/kontakt" class="newsletter-btn">Napíš mi a pridám ťa →</a>
     </div>
   </section>
 
@@ -23,7 +74,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 <style>
   .blog-hero {
     text-align: center;
-    padding: 4rem 0 2rem;
+    padding: 4rem 0 3rem;
   }
 
   .blog-hero h1 {
@@ -43,58 +94,161 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     margin: 0 auto;
   }
 
-  .blog-content {
+  /* Blog Grid */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding-bottom: 3rem;
+  }
+
+  .blog-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blog-card:hover {
+    border-color: rgba(249, 115, 22, 0.4);
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .blog-card--featured {
+    grid-column: span 2;
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.03));
+    border-color: rgba(249, 115, 22, 0.2);
+  }
+
+  .blog-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .blog-card-category {
+    background: #f97316;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .blog-card-date {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .blog-card-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.75rem 0;
+    line-height: 1.3;
+  }
+
+  .blog-card--featured .blog-card-title {
+    font-size: 1.6rem;
+  }
+
+  .blog-card-excerpt {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.6;
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .blog-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .blog-card-read {
+    color: #f97316;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .blog-card-time {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* Newsletter */
+  .blog-newsletter {
     padding: 2rem 0 4rem;
   }
 
-  .blog-empty {
-    text-align: center;
-    padding: 4rem 2rem;
+  .newsletter-box {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
-    max-width: 500px;
+    padding: 2.5rem;
+    text-align: center;
+    max-width: 550px;
     margin: 0 auto;
   }
 
-  .blog-empty-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-  }
-
-  .blog-empty h2 {
-    font-size: 1.25rem;
+  .newsletter-box h2 {
+    font-size: 1.35rem;
     font-weight: 700;
     color: white;
     margin: 0 0 0.75rem 0;
   }
 
-  .blog-empty p {
+  .newsletter-box p {
     color: rgba(255, 255, 255, 0.6);
     font-size: 0.95rem;
-    line-height: 1.6;
     margin: 0 0 1.5rem 0;
+    line-height: 1.6;
   }
 
-  .blog-cta {
+  .newsletter-btn {
     display: inline-block;
-    color: #f97316;
-    font-weight: 600;
+    background: #f97316;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
     text-decoration: none;
-    font-size: 0.95rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
   }
 
-  .blog-cta:hover {
-    text-decoration: underline;
+  .newsletter-btn:hover {
+    background: #ea580c;
+    transform: translateY(-2px);
   }
 
-  @media (max-width: 600px) {
-    .blog-hero h1 {
-      font-size: 2.25rem;
+  @media (max-width: 768px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
     }
 
-    .blog-empty {
-      padding: 2.5rem 1.5rem;
+    .blog-card--featured {
+      grid-column: span 1;
+    }
+
+    .blog-card--featured .blog-card-title {
+      font-size: 1.35rem;
+    }
+
+    .blog-hero h1 {
+      font-size: 2.25rem;
     }
   }
 </style>
