@@ -25,63 +25,95 @@ export async function onRequestGet(context) {
             linkedin: { connected: false }
         };
 
-        // Check Facebook
+        // ============================================
+        // CHECK FACEBOOK
+        // ============================================
+        let fbPageId = env.FB_PAGE_ID;
+        let fbPageToken = env.FB_PAGE_TOKEN;
+        let fbPageName = env.FB_PAGE_NAME;
+
         if (env.SOCIAL_TOKENS) {
-            const fbPageId = await env.SOCIAL_TOKENS.get('fb_page_id');
-            const fbPageName = await env.SOCIAL_TOKENS.get('fb_page_name');
-            const fbPageToken = await env.SOCIAL_TOKENS.get('fb_page_token');
+            if (!fbPageId) fbPageId = await env.SOCIAL_TOKENS.get('fb_page_id');
+            if (!fbPageToken) fbPageToken = await env.SOCIAL_TOKENS.get('fb_page_token');
+            if (!fbPageName) fbPageName = await env.SOCIAL_TOKENS.get('fb_page_name');
+        }
 
-            if (fbPageId && fbPageToken) {
-                accounts.facebook = {
-                    connected: true,
-                    pageId: fbPageId,
-                    pageName: fbPageName || 'Facebook Page'
-                };
+        if (fbPageId && fbPageToken) {
+            accounts.facebook = {
+                connected: true,
+                pageId: fbPageId,
+                pageName: fbPageName || 'Facebook Page'
+            };
 
-                // Optionally fetch followers count
-                try {
-                    const response = await fetch(
-                        `https://graph.facebook.com/v24.0/${fbPageId}?fields=followers_count&access_token=${fbPageToken}`
-                    );
-                    const data = await response.json();
-                    if (data.followers_count) {
-                        accounts.facebook.followers = data.followers_count;
-                    }
-                } catch (e) {
-                    console.error('Error fetching FB followers:', e);
+            // Optionally fetch followers count
+            try {
+                const response = await fetch(
+                    `https://graph.facebook.com/v24.0/${fbPageId}?fields=followers_count,fan_count&access_token=${fbPageToken}`
+                );
+                const data = await response.json();
+                if (data.followers_count || data.fan_count) {
+                    accounts.facebook.followers = data.followers_count || data.fan_count;
                 }
-            }
-
-            // Check Instagram
-            const igUserId = await env.SOCIAL_TOKENS.get('ig_user_id');
-            const igUsername = await env.SOCIAL_TOKENS.get('ig_username');
-
-            if (igUserId && igUsername) {
-                accounts.instagram = {
-                    connected: true,
-                    userId: igUserId,
-                    username: igUsername
-                };
-            }
-
-            // Check LinkedIn
-            const liAccessToken = await env.SOCIAL_TOKENS.get('li_access_token');
-            const liProfileName = await env.SOCIAL_TOKENS.get('li_profile_name');
-
-            if (liAccessToken) {
-                accounts.linkedin = {
-                    connected: true,
-                    profileName: liProfileName || 'LinkedIn Profile'
-                };
+            } catch (e) {
+                console.error('Error fetching FB followers:', e);
             }
         }
 
-        // Fallback to env vars
-        if (env.FB_PAGE_ID && env.FB_PAGE_TOKEN) {
-            accounts.facebook = {
+        // ============================================
+        // CHECK INSTAGRAM
+        // ============================================
+        let igUserId = env.IG_USER_ID;
+        let igUsername = env.IG_USERNAME;
+
+        if (env.SOCIAL_TOKENS) {
+            if (!igUserId) igUserId = await env.SOCIAL_TOKENS.get('ig_user_id');
+            if (!igUsername) igUsername = await env.SOCIAL_TOKENS.get('ig_username');
+        }
+
+        if (igUserId) {
+            accounts.instagram = {
                 connected: true,
-                pageId: env.FB_PAGE_ID,
-                pageName: env.FB_PAGE_NAME || 'Facebook Page'
+                userId: igUserId,
+                username: igUsername || 'Instagram Account'
+            };
+
+            // Try to get followers if we have token
+            if (fbPageToken) {
+                try {
+                    const response = await fetch(
+                        `https://graph.facebook.com/v24.0/${igUserId}?fields=followers_count,username&access_token=${fbPageToken}`
+                    );
+                    const data = await response.json();
+                    if (data.followers_count) {
+                        accounts.instagram.followers = data.followers_count;
+                    }
+                    if (data.username) {
+                        accounts.instagram.username = data.username;
+                    }
+                } catch (e) {
+                    console.error('Error fetching IG followers:', e);
+                }
+            }
+        }
+
+        // ============================================
+        // CHECK LINKEDIN
+        // ============================================
+        let liAccessToken = env.LI_ACCESS_TOKEN;
+        let liPersonUrn = env.LI_PERSON_URN;
+        let liProfileName = env.LI_PROFILE_NAME;
+
+        if (env.SOCIAL_TOKENS) {
+            if (!liAccessToken) liAccessToken = await env.SOCIAL_TOKENS.get('li_access_token');
+            if (!liPersonUrn) liPersonUrn = await env.SOCIAL_TOKENS.get('li_person_urn');
+            if (!liProfileName) liProfileName = await env.SOCIAL_TOKENS.get('li_profile_name');
+        }
+
+        if (liAccessToken && liPersonUrn) {
+            accounts.linkedin = {
+                connected: true,
+                personUrn: liPersonUrn,
+                profileName: liProfileName || 'LinkedIn Profile'
             };
         }
 
