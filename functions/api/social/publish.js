@@ -1,6 +1,6 @@
 // Social Media Publishing API
 // Endpoint: POST /api/social/publish
-// Supports: Facebook, Instagram, LinkedIn
+// Supports: Facebook Pages
 
 export async function onRequestPost(context) {
     const { request, env } = context;
@@ -39,7 +39,7 @@ export async function onRequestPost(context) {
         const results = {};
         const errors = [];
 
-        // If scheduled, save to KV for later processing by cron
+        // If scheduled, save to KV for later processing
         if (schedule === 'scheduled' && scheduledTime) {
             const postId = `post_${Date.now()}`;
             const scheduledPost = {
@@ -54,13 +54,6 @@ export async function onRequestPost(context) {
 
             if (env.SOCIAL_POSTS) {
                 await env.SOCIAL_POSTS.put(postId, JSON.stringify(scheduledPost));
-                
-                // Add to scheduled index
-                const indexKey = `scheduled:${scheduledTime.split('T')[0]}`;
-                const existing = await env.SOCIAL_POSTS.get(indexKey);
-                const index = existing ? JSON.parse(existing) : [];
-                index.push(postId);
-                await env.SOCIAL_POSTS.put(indexKey, JSON.stringify(index));
             }
 
             return new Response(
@@ -104,10 +97,11 @@ export async function onRequestPost(context) {
                         results.facebook = await publishToFacebook(env, content, mediaUrls);
                         break;
                     case 'instagram':
-                        results.instagram = await publishToInstagram(env, content, mediaUrls);
+                        // Instagram requires business account connected to Page
+                        results.instagram = { success: false, error: 'Instagram zatiaľ nie je implementovaný' };
                         break;
                     case 'linkedin':
-                        results.linkedin = await publishToLinkedIn(env, content, mediaUrls);
+                        results.linkedin = { success: false, error: 'LinkedIn zatiaľ nie je implementovaný' };
                         break;
                 }
             } catch (err) {
@@ -152,14 +146,25 @@ export async function onRequestPost(context) {
 // FACEBOOK PUBLISHING
 // ============================================
 async function publishToFacebook(env, content, mediaUrls) {
-    const pageId = env.FB_PAGE_ID;
-    const accessToken = env.FB_ACCESS_TOKEN;
+    // First try to get tokens from KV
+    let pageId = env.FB_PAGE_ID;
+    let accessToken = env.FB_PAGE_TOKEN;
 
-    if (!pageId || !accessToken) {
-        throw new Error('Facebook nie je nakonfigurovaný');
+    // If not in env, try KV
+    if (env.SOCIAL_TOKENS) {
+        if (!pageId) {
+            pageId = await env.SOCIAL_TOKENS.get('fb_page_id');
+        }
+        if (!accessToken) {
+            accessToken = await env.SOCIAL_TOKENS.get('fb_page_token');
+        }
     }
 
-    let endpoint = `https://graph.facebook.com/v18.0/${pageId}/feed`;
+    if (!pageId || !accessToken) {
+        throw new Error('Facebook nie je nakonfigurovaný. Prosím prepojte Facebook účet v nastaveniach.');
+    }
+
+    let endpoint = `https://graph.facebook.com/v24.0/${pageId}/feed`;
     const params = new URLSearchParams({
         message: content,
         access_token: accessToken
@@ -167,7 +172,7 @@ async function publishToFacebook(env, content, mediaUrls) {
 
     // If we have media, use photos endpoint instead
     if (mediaUrls && mediaUrls.length > 0) {
-        endpoint = `https://graph.facebook.com/v18.0/${pageId}/photos`;
+        endpoint = `https://graph.facebook.com/v24.0/${pageId}/photos`;
         params.append('url', mediaUrls[0]); // Facebook accepts URL to image
     }
 
@@ -184,120 +189,6 @@ async function publishToFacebook(env, content, mediaUrls) {
     }
 
     return { postId: data.id || data.post_id, success: true };
-}
-
-// ============================================
-// INSTAGRAM PUBLISHING
-// ============================================
-async function publishToInstagram(env, content, mediaUrls) {
-    const igUserId = env.IG_USER_ID;
-    const accessToken = env.FB_ACCESS_TOKEN; // Instagram uses Facebook token
-
-    if (!igUserId || !accessToken) {
-        throw new Error('Instagram nie je nakonfigurovaný');
-    }
-
-    // Instagram requires media
-    if (!mediaUrls || mediaUrls.length === 0) {
-        throw new Error('Instagram vyžaduje obrázok alebo video');
-    }
-
-    // Step 1: Create media container
-    const createResponse = await fetch(
-        `https://graph.facebook.com/v18.0/${igUserId}/media`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                image_url: mediaUrls[0],
-                caption: content,
-                access_token: accessToken
-            })
-        }
-    );
-
-    const createData = await createResponse.json();
-
-    if (createData.error) {
-        throw new Error(createData.error.message);
-    }
-
-    const containerId = createData.id;
-
-    // Step 2: Publish the container
-    const publishResponse = await fetch(
-        `https://graph.facebook.com/v18.0/${igUserId}/media_publish`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                creation_id: containerId,
-                access_token: accessToken
-            })
-        }
-    );
-
-    const publishData = await publishResponse.json();
-
-    if (publishData.error) {
-        throw new Error(publishData.error.message);
-    }
-
-    return { postId: publishData.id, success: true };
-}
-
-// ============================================
-// LINKEDIN PUBLISHING
-// ============================================
-async function publishToLinkedIn(env, content, mediaUrls) {
-    const personUrn = env.LI_PERSON_URN; // format: urn:li:person:xxxxx
-    const accessToken = env.LI_ACCESS_TOKEN;
-
-    if (!personUrn || !accessToken) {
-        throw new Error('LinkedIn nie je nakonfigurovaný');
-    }
-
-    const postBody = {
-        author: personUrn,
-        lifecycleState: 'PUBLISHED',
-        specificContent: {
-            'com.linkedin.ugc.ShareContent': {
-                shareCommentary: {
-                    text: content
-                },
-                shareMediaCategory: mediaUrls && mediaUrls.length > 0 ? 'IMAGE' : 'NONE'
-            }
-        },
-        visibility: {
-            'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'
-        }
-    };
-
-    // If we have media, we need to upload it first (simplified - using URL)
-    if (mediaUrls && mediaUrls.length > 0) {
-        postBody.specificContent['com.linkedin.ugc.ShareContent'].media = [{
-            status: 'READY',
-            originalUrl: mediaUrls[0]
-        }];
-    }
-
-    const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-            'X-Restli-Protocol-Version': '2.0.0'
-        },
-        body: JSON.stringify(postBody)
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'LinkedIn API error');
-    }
-
-    const postId = response.headers.get('X-RestLi-Id');
-    return { postId, success: true };
 }
 
 export async function onRequestOptions() {

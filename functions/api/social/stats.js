@@ -25,12 +25,19 @@ export async function onRequestGet(context) {
         let accounts = 0;
 
         // Count connected accounts
-        if (env.FB_ACCESS_TOKEN) accounts++;
-        if (env.LI_ACCESS_TOKEN) accounts++;
+        if (env.SOCIAL_TOKENS) {
+            const fbToken = await env.SOCIAL_TOKENS.get('fb_page_token');
+            if (fbToken) accounts++;
+            
+            const liToken = await env.SOCIAL_TOKENS.get('li_access_token');
+            if (liToken) accounts++;
+        }
+
+        // Fallback to env vars
+        if (env.FB_PAGE_TOKEN) accounts = Math.max(accounts, 1);
 
         // Get stats from KV
         if (env.SOCIAL_POSTS) {
-            // List all keys and count
             const list = await env.SOCIAL_POSTS.list();
             
             const now = new Date();

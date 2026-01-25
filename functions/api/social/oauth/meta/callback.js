@@ -1,5 +1,6 @@
-// Meta OAuth Callback (Facebook Pages)
+// Meta OAuth Callback (Facebook + Instagram)
 // Endpoint: GET /api/social/oauth/meta/callback
+// App: FerkoMedia Pages (ID: 1978184613573878)
 
 export async function onRequestGet(context) {
     const { request, env } = context;
@@ -12,17 +13,18 @@ export async function onRequestGet(context) {
     // If error from Meta
     if (error) {
         return new Response(
-            `<html>
+            `<!DOCTYPE html>
+            <html>
                 <head><title>OAuth Chyba</title></head>
-                <body style="font-family: system-ui; padding: 2rem; background: #1a1a1a; color: white; text-align: center;">
-                    <h1 style="color: #ef4444;">❌ Chyba pri prihlásení</h1>
+                <body style="font-family: system-ui; padding: 2rem; background: #1a1a1a; color: white;">
+                    <h1 style="color: #ef4444;">Chyba pri prihlásení</h1>
                     <p>${errorDescription || error}</p>
                     <a href="/sprava-fk2026/" style="color: #f97316;">Späť na správu</a>
                 </body>
             </html>`,
             {
                 status: 400,
-                headers: { 'Content-Type': 'text/html' }
+                headers: { 'Content-Type': 'text/html; charset=utf-8' }
             }
         );
     }
@@ -32,17 +34,17 @@ export async function onRequestGet(context) {
     }
 
     try {
-        const appId = env.META_APP_ID;
+        const appId = env.META_APP_ID || '1978184613573878';
         const appSecret = env.META_APP_SECRET;
         const redirectUri = `${url.origin}/api/social/oauth/meta/callback`;
 
-        if (!appId || !appSecret) {
-            throw new Error('Meta credentials nie sú nastavené');
+        if (!appSecret) {
+            throw new Error('META_APP_SECRET nie je nastavený v environment variables');
         }
 
         // Exchange code for access token
         const tokenResponse = await fetch(
-            `https://graph.facebook.com/v18.0/oauth/access_token?` +
+            `https://graph.facebook.com/v24.0/oauth/access_token?` +
             `client_id=${appId}&` +
             `client_secret=${appSecret}&` +
             `redirect_uri=${encodeURIComponent(redirectUri)}&` +
@@ -59,7 +61,7 @@ export async function onRequestGet(context) {
 
         // Exchange for long-lived token (60 days)
         const longTokenResponse = await fetch(
-            `https://graph.facebook.com/v18.0/oauth/access_token?` +
+            `https://graph.facebook.com/v24.0/oauth/access_token?` +
             `grant_type=fb_exchange_token&` +
             `client_id=${appId}&` +
             `client_secret=${appSecret}&` +
@@ -76,17 +78,32 @@ export async function onRequestGet(context) {
 
         // Get user info
         const userResponse = await fetch(
-            `https://graph.facebook.com/v18.0/me?fields=id,name&access_token=${userAccessToken}`
+            `https://graph.facebook.com/v24.0/me?fields=id,name&access_token=${userAccessToken}`
         );
         const userData = await userResponse.json();
 
         // Get user's pages
         const pagesResponse = await fetch(
-            `https://graph.facebook.com/v18.0/me/accounts?access_token=${userAccessToken}`
+            `https://graph.facebook.com/v24.0/me/accounts?fields=id,name,access_token&access_token=${userAccessToken}`
         );
         const pagesData = await pagesResponse.json();
 
         let pageInfo = null;
+        let pageAccessToken = null;
+
+        if (pagesData.data && pagesData.data.length > 0) {
+            // Find FerkoMedia Video Marketing page or use first one
+            const ferkoMediaPage = pagesData.data.find(p => 
+                p.name.toLowerCase().includes('ferkomedia') || 
+                p.id === '603164136202656'
+            ) || pagesData.data[0];
+
+            pageInfo = {
+                id: ferkoMediaPage.id,
+                name: ferkoMediaPage.name
+            };
+            pageAccessToken = ferkoMediaPage.access_token;
+        }
 
         // Store tokens in KV
         if (env.SOCIAL_TOKENS) {
@@ -94,21 +111,19 @@ export async function onRequestGet(context) {
             await env.SOCIAL_TOKENS.put('meta_user_id', userData.id);
             await env.SOCIAL_TOKENS.put('meta_user_name', userData.name);
             
-            if (pagesData.data && pagesData.data.length > 0) {
-                // Store first page's token (page tokens don't expire if user token is long-lived)
-                const page = pagesData.data[0];
-                await env.SOCIAL_TOKENS.put('fb_page_id', page.id);
-                await env.SOCIAL_TOKENS.put('fb_page_token', page.access_token);
-                await env.SOCIAL_TOKENS.put('fb_page_name', page.name);
-                pageInfo = page;
+            if (pageInfo && pageAccessToken) {
+                await env.SOCIAL_TOKENS.put('fb_page_id', pageInfo.id);
+                await env.SOCIAL_TOKENS.put('fb_page_token', pageAccessToken);
+                await env.SOCIAL_TOKENS.put('fb_page_name', pageInfo.name);
             }
         }
 
         // Return success page
         return new Response(
-            `<html>
+            `<!DOCTYPE html>
+            <html>
                 <head>
-                    <title>Facebook pripojené</title>
+                    <title>Meta pripojené</title>
                     <style>
                         body { 
                             font-family: system-ui; 
@@ -126,16 +141,6 @@ export async function onRequestGet(context) {
                             max-width: 400px;
                             text-align: left;
                         }
-                        .info p { margin: 0.5rem 0; }
-                        .warning {
-                            background: rgba(249,115,22,0.1);
-                            border: 1px solid #f97316;
-                            padding: 1rem;
-                            border-radius: 8px;
-                            margin: 1rem auto;
-                            max-width: 400px;
-                            color: #f97316;
-                        }
                         a { 
                             display: inline-block;
                             background: #f97316; 
@@ -145,36 +150,31 @@ export async function onRequestGet(context) {
                             text-decoration: none;
                             margin-top: 1rem;
                         }
+                        .success { color: #22c55e; }
+                        .warning { color: #f97316; }
                     </style>
                 </head>
                 <body>
-                    <h1>✅ Facebook účet prepojený!</h1>
+                    <h1>✅ Meta účet prepojený!</h1>
                     
                     <div class="info">
-                        <p><strong>Používateľ:</strong> ${userData.name}</p>
+                        <p><strong>Facebook používateľ:</strong> ${userData.name}</p>
                         ${pageInfo ? 
-                            `<p><strong>Stránka:</strong> ${pageInfo.name}</p>` : 
-                            ''
+                            `<p class="success"><strong>Facebook stránka:</strong> ${pageInfo.name}</p>
+                             <p><strong>Page ID:</strong> ${pageInfo.id}</p>` : 
+                            '<p class="warning">⚠️ Žiadna Facebook stránka nebola nájdená</p>'
                         }
                     </div>
-                    
-                    ${!pageInfo ? `
-                        <div class="warning">
-                            ⚠️ Nemáš žiadnu Facebook stránku.<br>
-                            Pre publikovanie potrebuješ Facebook Page.
-                        </div>
-                    ` : ''}
-                    
-                    <p style="font-size: 0.875rem; color: rgba(255,255,255,0.6);">
-                        📌 Instagram vyžaduje App Review.<br>
-                        Zatiaľ môžeš publikovať len na Facebook.
-                    </p>
                     
                     <a href="/sprava-fk2026/">Späť na správu</a>
                     
                     <script>
+                        // Notify parent window if in popup
                         if (window.opener) {
-                            window.opener.postMessage({ type: 'META_OAUTH_SUCCESS' }, '*');
+                            window.opener.postMessage({ 
+                                type: 'META_OAUTH_SUCCESS',
+                                page: ${pageInfo ? JSON.stringify(pageInfo) : 'null'}
+                            }, '*');
                             setTimeout(() => window.close(), 3000);
                         }
                     </script>
@@ -182,24 +182,25 @@ export async function onRequestGet(context) {
             </html>`,
             {
                 status: 200,
-                headers: { 'Content-Type': 'text/html' }
+                headers: { 'Content-Type': 'text/html; charset=utf-8' }
             }
         );
 
     } catch (error) {
         console.error('Meta OAuth error:', error);
         return new Response(
-            `<html>
+            `<!DOCTYPE html>
+            <html>
                 <head><title>OAuth Chyba</title></head>
-                <body style="font-family: system-ui; padding: 2rem; background: #1a1a1a; color: white; text-align: center;">
-                    <h1 style="color: #ef4444;">❌ Chyba pri prihlásení</h1>
+                <body style="font-family: system-ui; padding: 2rem; background: #1a1a1a; color: white;">
+                    <h1 style="color: #ef4444;">Chyba pri prihlásení</h1>
                     <p>${error.message}</p>
                     <a href="/sprava-fk2026/" style="color: #f97316;">Späť na správu</a>
                 </body>
             </html>`,
             {
                 status: 500,
-                headers: { 'Content-Type': 'text/html' }
+                headers: { 'Content-Type': 'text/html; charset=utf-8' }
             }
         );
     }
