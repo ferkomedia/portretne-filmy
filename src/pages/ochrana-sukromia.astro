@@ -1,0 +1,316 @@
+---
+// ochrana-sukromia.astro
+// Umiestnenie: src/pages/ochrana-sukromia.astro
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Ochrana súkromia | Portrétny film"
+  description="Informácie o spracovaní osobných údajov a používaní cookies na stránke portretnefilmy.sk"
+>
+
+<section class="privacy-hero">
+  <div class="container">
+    <h1>Ochrana súkromia</h1>
+    <p class="lead">Informácie o spracovaní osobných údajov a cookies</p>
+  </div>
+</section>
+
+<section class="privacy-content">
+  <div class="container">
+
+    <article class="privacy-section">
+      <h2>1. Prevádzkovateľ</h2>
+      <p>
+        Prevádzkovateľom tejto webovej stránky je:<br>
+        <strong>FerkoMedia video marketing</strong><br>
+        Červenej armády 1<br>
+        036 01 Martin<br>
+        IČO: 40090779<br>
+        Email: info@ferkomedia.sk
+      </p>
+    </article>
+
+    <article class="privacy-section">
+      <h2>2. Aké údaje zbierame</h2>
+
+      <h3>Kontaktný formulár</h3>
+      <p>Pri odoslaní kontaktného formulára zbierame:</p>
+      <ul>
+        <li>Meno a priezvisko</li>
+        <li>E-mailová adresa</li>
+        <li>Telefónne číslo (voliteľné)</li>
+        <li>IČO (voliteľné, pre faktúru)</li>
+        <li>Obsah správy</li>
+      </ul>
+      <p>Tieto údaje používame výlučne na odpoveď na vašu požiadavku a prípadnú následnú komunikáciu.</p>
+
+      <h3>Objednávka workshopu</h3>
+      <p>Pri registrácii na workshop zbierame dodatočne:</p>
+      <ul>
+        <li>Fakturačné údaje (ak požadujete faktúru)</li>
+        <li>Platobné informácie (spracované cez Stripe)</li>
+      </ul>
+    </article>
+
+    <article class="privacy-section">
+      <h2>3. Cookies</h2>
+
+      <h3>Čo sú cookies?</h3>
+      <p>
+        Cookies sú malé textové súbory, ktoré sa ukladajú vo vašom prehliadači
+        pri návšteve webových stránok. Pomáhajú nám zlepšiť váš zážitok a
+        analyzovať návštevnosť stránky.
+      </p>
+
+      <h3>Aké cookies používame</h3>
+
+      <div class="cookie-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Názov</th>
+              <th>Účel</th>
+              <th>Doba platnosti</th>
+              <th>Typ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>cookie-consent</code></td>
+              <td>Ukladá vašu voľbu ohľadom cookies</td>
+              <td>1 rok</td>
+              <td>Nevyhnutné</td>
+            </tr>
+            <tr>
+              <td><code>__stripe_mid</code></td>
+              <td>Stripe - detekcia podvodov pri platbách</td>
+              <td>1 rok</td>
+              <td>Nevyhnutné</td>
+            </tr>
+            <tr>
+              <td><code>__stripe_sid</code></td>
+              <td>Stripe - session ID pre platby</td>
+              <td>30 minút</td>
+              <td>Nevyhnutné</td>
+            </tr>
+            <tr>
+              <td><code>cf_clearance</code></td>
+              <td>Cloudflare - bezpečnostná ochrana</td>
+              <td>30 minút</td>
+              <td>Nevyhnutné</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Správa cookies</h3>
+      <p>
+        Svoj súhlas s cookies môžete kedykoľvek zmeniť alebo odvolať.
+        Cookies môžete tiež vymazať priamo v nastaveniach vášho prehliadača.
+      </p>
+      <button id="reset-cookies" class="btn-reset">Zmeniť nastavenia cookies</button>
+    </article>
+
+    <article class="privacy-section">
+      <h2>4. Doba uchovávania údajov</h2>
+      <p>
+        Vaše osobné údaje uchovávame len po dobu nevyhnutnú na splnenie účelu,
+        na ktorý boli získané:
+      </p>
+      <ul>
+        <li><strong>Kontaktné údaje:</strong> 2 roky od poslednej komunikácie</li>
+        <li><strong>Fakturačné údaje:</strong> 10 rokov (zákonná povinnosť)</li>
+        <li><strong>Cookies:</strong> podľa doby platnosti uvedenej vyššie</li>
+      </ul>
+    </article>
+
+    <article class="privacy-section">
+      <h2>5. Vaše práva</h2>
+      <p>Máte právo:</p>
+      <ul>
+        <li>Požiadať o prístup k vašim údajom</li>
+        <li>Požiadať o opravu nesprávnych údajov</li>
+        <li>Požiadať o vymazanie údajov</li>
+        <li>Namietať proti spracovaniu</li>
+        <li>Požiadať o prenos údajov</li>
+        <li>Podať sťažnosť na Úrad na ochranu osobných údajov SR</li>
+      </ul>
+      <p>
+        Pre uplatnenie vašich práv nás kontaktujte na
+        <a href="mailto:info@ferkomedia.sk">info@ferkomedia.sk</a>.
+      </p>
+    </article>
+
+    <article class="privacy-section">
+      <h2>6. Tretie strany</h2>
+      <p>Vaše údaje môžu byť zdieľané s:</p>
+      <ul>
+        <li><strong>Stripe</strong> - spracovanie platieb (USA, Privacy Shield)</li>
+        <li><strong>Cloudflare</strong> - bezpečnosť a CDN (USA, Privacy Shield)</li>
+        <li><strong>Resend</strong> - odosielanie emailov (USA)</li>
+      </ul>
+      <p>Všetci poskytovatelia dodržiavajú štandardy ochrany údajov kompatibilné s GDPR.</p>
+    </article>
+
+    <article class="privacy-section">
+      <h2>7. Zmeny</h2>
+      <p>
+        Tieto zásady môžeme príležitostne aktualizovať. O významných zmenách
+        vás budeme informovať na tejto stránke.
+      </p>
+      <p><em>Posledná aktualizácia: Január 2026</em></p>
+    </article>
+
+  </div>
+</section>
+
+</BaseLayout>
+
+<style>
+  .privacy-hero {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    padding: 4rem 1.5rem;
+    text-align: center;
+  }
+
+  .privacy-hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+
+  .privacy-hero .lead {
+    color: #999;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .privacy-content {
+    padding: 3rem 1.5rem;
+    background: #111;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .privacy-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #333;
+  }
+
+  .privacy-section:last-child {
+    border-bottom: none;
+  }
+
+  .privacy-section h2 {
+    color: #ff6b35;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .privacy-section h3 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .privacy-section p {
+    color: #ccc;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .privacy-section ul {
+    color: #ccc;
+    margin: 0.5rem 0 1rem 1.5rem;
+    line-height: 1.8;
+  }
+
+  .privacy-section li {
+    margin-bottom: 0.25rem;
+  }
+
+  .privacy-section a {
+    color: #ff6b35;
+  }
+
+  .privacy-section a:hover {
+    text-decoration: underline;
+  }
+
+  .cookie-table {
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border: 1px solid #333;
+  }
+
+  th {
+    background: #222;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  td {
+    color: #ccc;
+    background: #1a1a1a;
+  }
+
+  code {
+    background: #333;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    color: #ff6b35;
+  }
+
+  .btn-reset {
+    background: transparent;
+    border: 1px solid #ff6b35;
+    color: #ff6b35;
+    padding: 0.6rem 1.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    transition: all 0.2s;
+  }
+
+  .btn-reset:hover {
+    background: #ff6b35;
+    color: #fff;
+  }
+
+  @media (max-width: 600px) {
+    .privacy-hero h1 {
+      font-size: 2rem;
+    }
+
+    th, td {
+      padding: 0.5rem;
+      font-size: 0.8rem;
+    }
+  }
+</style>
+
+<script>
+  document.getElementById('reset-cookies')?.addEventListener('click', () => {
+    localStorage.removeItem('cookie-consent');
+    document.cookie = 'cookie-consent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    window.location.reload();
+  });
+</script>

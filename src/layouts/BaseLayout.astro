@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import CookieConsent from "../components/CookieConsent.astro";
 
 interface Props {
   title?: string;
@@ -186,10 +187,21 @@ const schemaOrg = {
       <div class="container">
         <div class="footerInner">
           <div>© {new Date().getFullYear()} FerkoMedia</div>
-          <div><a class="link" href="mailto:info@ferkomedia.sk">info@ferkomedia.sk</a></div>
+          <div class="footerLinks">
+            <a class="link" href="/vseobecne-obchodne-podmienky">VOP</a>
+            <span class="footerSep">|</span>
+            <a class="link" href="/reklamacny-poriadok">Reklamácie</a>
+            <span class="footerSep">|</span>
+            <a class="link" href="/ochrana-sukromia">Ochrana súkromia</a>
+            <span class="footerSep">|</span>
+            <a class="link" href="mailto:info@ferkomedia.sk">info@ferkomedia.sk</a>
+          </div>
         </div>
       </div>
     </footer>
+
+    <!-- Cookie Consent Banner -->
+    <CookieConsent />
 
     <script>
       (() => {
