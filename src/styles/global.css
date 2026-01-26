@@ -12,6 +12,8 @@
 html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none; /* Zabráni iOS bounce efektu */
+    -webkit-overscroll-behavior: none;
 }
 
 body {
@@ -63,10 +65,17 @@ p {
     left: 0;
     right: 0;
     z-index: 100;
+    height: 64px;
+    min-height: 64px;
     background: rgba(10, 10, 10, 0.92);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     transition: transform 0.3s ease;
     will-change: transform;
+    /* GPU acceleration pre stabilitu */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 @supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
@@ -173,7 +182,7 @@ p {
 }
 
 /* ===========================================
-   MOBILE DRAWER - OPRAVENÉ: .open namiesto .isOpen
+   MOBILE DRAWER
    =========================================== */
 
 .drawerBackdrop {
@@ -534,144 +543,103 @@ label {
 
 /* ===========================================
    HERO SECTIONS - UNIFIED STYLES
-   Rovnaký font-size na všetkých stránkach
+   Pokrýva všetky hero triedy na všetkých stránkach
    =========================================== */
 
-/* Hero section container */
-.heroFull {
-    min-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 6rem 1.5rem;
-    text-align: center;
-    background: linear-gradient(180deg, rgba(20, 20, 20, 0.8) 0%, rgba(10, 10, 10, 1) 100%);
-}
-
-.heroFull .heroContent {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-/* Desktop: 64px - rovnaký ako na /sluzby/ */
+/* DESKTOP: 64px - rovnaký ako na /sluzby/ */
 .heroFull h1,
+.heroLarge h1,
+.heroSection h1,
 .hero h1,
-section.heroFull h1 {
-    font-size: 64px;
-    font-weight: 700;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    text-align: center;
-    color: #fff;
-    margin: 0 0 1.5rem 0;
+section.heroFull h1,
+section.heroLarge h1,
+section.heroSection h1,
+[class*="hero"] h1 {
+    font-size: 64px !important;
+    font-weight: 700 !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.02em !important;
+    text-align: center !important;
+    color: #fff !important;
+    margin: 0 0 1.5rem 0 !important;
 }
 
 /* Hero lead/description text */
 .heroFull p,
-.heroFull .heroLead,
+.heroLarge p,
+.heroSection p,
 .hero p,
-.hero .heroLead {
-    font-size: 1.25rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.7);
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto 2rem auto;
-}
-
-/* Hero buttons container */
-.heroFull .heroCtas,
-.heroFull .heroButtons,
-.heroCtas,
-.heroButtons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-}
-
-/* Scroll indicator */
-.heroFull .scrollIndicator {
-    margin-top: 3rem;
-    color: rgba(255, 255, 255, 0.4);
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); }
-    60% { transform: translateY(-5px); }
+[class*="hero"] > p,
+[class*="hero"] .heroLead,
+.heroContent p {
+    font-size: 1.25rem !important;
+    line-height: 1.6 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-align: center !important;
 }
 
 /* TABLET: 768px - 1024px */
 @media (max-width: 1024px) {
     .heroFull h1,
+    .heroLarge h1,
+    .heroSection h1,
     .hero h1,
-    section.heroFull h1 {
-        font-size: 52px;
-    }
-
-    .heroFull {
-        min-height: 70vh;
-        padding: 5rem 1.5rem;
+    section.heroFull h1,
+    section.heroLarge h1,
+    section.heroSection h1,
+    [class*="hero"] h1 {
+        font-size: 52px !important;
     }
 }
 
-/* MOBILE: pod 768px */
+/* MOBILE: 481px - 768px */
 @media (max-width: 768px) {
     .heroFull h1,
+    .heroLarge h1,
+    .heroSection h1,
     .hero h1,
-    section.heroFull h1 {
-        font-size: 42px;
-        line-height: 1.15;
-        letter-spacing: -0.01em;
+    section.heroFull h1,
+    section.heroLarge h1,
+    section.heroSection h1,
+    [class*="hero"] h1 {
+        font-size: 38px !important;
+        line-height: 1.15 !important;
+        letter-spacing: -0.01em !important;
     }
 
     .heroFull p,
-    .heroFull .heroLead,
+    .heroLarge p,
+    .heroSection p,
     .hero p,
-    .hero .heroLead {
-        font-size: 1.1rem;
-    }
-
-    .heroFull {
-        min-height: 70vh;
-        padding: 4rem 1.25rem;
-    }
-
-    .heroFull .heroCtas,
-    .heroFull .heroButtons,
-    .heroCtas,
-    .heroButtons {
-        flex-direction: column;
-        width: 100%;
-        max-width: 320px;
-        margin-left: auto;
-        margin-right: auto;
+    [class*="hero"] > p,
+    [class*="hero"] .heroLead,
+    .heroContent p {
+        font-size: 1.05rem !important;
     }
 }
 
 /* SMALL MOBILE: pod 480px */
 @media (max-width: 480px) {
     .heroFull h1,
+    .heroLarge h1,
+    .heroSection h1,
     .hero h1,
-    section.heroFull h1 {
-        font-size: 36px;
-        line-height: 1.2;
+    section.heroFull h1,
+    section.heroLarge h1,
+    section.heroSection h1,
+    [class*="hero"] h1 {
+        font-size: 32px !important;
+        line-height: 1.2 !important;
     }
 
     .heroFull p,
-    .heroFull .heroLead,
+    .heroLarge p,
+    .heroSection p,
     .hero p,
-    .hero .heroLead {
-        font-size: 1rem;
-    }
-
-    .heroFull {
-        min-height: auto;
-        padding: 3rem 1rem;
+    [class*="hero"] > p,
+    [class*="hero"] .heroLead,
+    .heroContent p {
+        font-size: 1rem !important;
     }
 }
 
@@ -688,18 +656,18 @@ section.heroFull h1 {
 
 .legal-hero h1,
 .privacy-hero h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    line-height: 1.2;
-    color: #fff;
-    margin-bottom: 0.5rem;
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    color: #fff !important;
+    margin-bottom: 0.5rem !important;
 }
 
 .legal-hero .lead,
 .privacy-hero .lead {
-    font-size: 1.1rem;
-    color: #999;
-    margin: 0;
+    font-size: 1.1rem !important;
+    color: #999 !important;
+    margin: 0 !important;
 }
 
 @media (max-width: 768px) {
@@ -710,21 +678,18 @@ section.heroFull h1 {
 
     .legal-hero h1,
     .privacy-hero h1 {
-        font-size: 2rem;
+        font-size: 2rem !important;
     }
 }
 
 @media (max-width: 480px) {
     .legal-hero h1,
     .privacy-hero h1 {
-        font-size: 1.75rem;
+        font-size: 1.75rem !important;
     }
 
     .legal-hero .lead,
     .privacy-hero .lead {
-        font-size: 1rem;
+        font-size: 1rem !important;
     }
-}
-.heroFull h1 {
-    font-size: 64px !important;
 }
