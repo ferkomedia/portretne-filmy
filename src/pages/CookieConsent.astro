@@ -1,0 +1,248 @@
+---
+// CookieConsent.astro
+// Jednoduchý GDPR-compliant cookie consent banner
+// Umiestnenie: src/components/CookieConsent.astro
+---
+
+<div id="cookie-consent" class="cookie-banner" style="display: none;">
+  <div class="cookie-content">
+    <div class="cookie-text">
+      <p>
+        Táto stránka používa cookies na zlepšenie vášho zážitku.
+        <a href="/ochrana-sukromia" class="cookie-link">Zistiť viac</a>
+      </p>
+    </div>
+    <div class="cookie-buttons">
+      <button id="cookie-reject" class="cookie-btn cookie-btn-reject">Odmietnuť</button>
+      <button id="cookie-accept" class="cookie-btn cookie-btn-accept">Prijať všetky</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    padding: 1rem 1.5rem;
+    z-index: 9999;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .cookie-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .cookie-text {
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .cookie-text p {
+    margin: 0;
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .cookie-link {
+    color: #ff6b35;
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+
+  .cookie-link:hover {
+    color: #ff8c5a;
+  }
+
+  .cookie-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .cookie-btn {
+    padding: 0.6rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .cookie-btn-reject {
+    background: transparent;
+    color: #999;
+    border: 1px solid #444;
+  }
+
+  .cookie-btn-reject:hover {
+    background: #333;
+    color: #fff;
+    border-color: #555;
+  }
+
+  .cookie-btn-accept {
+    background: #ff6b35;
+    color: #fff;
+  }
+
+  .cookie-btn-accept:hover {
+    background: #ff8c5a;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 600px) {
+    .cookie-banner {
+      padding: 1rem;
+    }
+
+    .cookie-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .cookie-buttons {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .cookie-btn {
+      flex: 1;
+      max-width: 150px;
+    }
+  }
+
+  /* Animation */
+  .cookie-banner.show {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  // Cookie Consent Logic
+  const COOKIE_CONSENT_KEY = 'cookie-consent';
+  const CONSENT_EXPIRY_DAYS = 365;
+
+  function getConsent(): string | null {
+    return localStorage.getItem(COOKIE_CONSENT_KEY);
+  }
+
+  function setConsent(value: 'accepted' | 'rejected'): void {
+    localStorage.setItem(COOKIE_CONSENT_KEY, value);
+
+    // Tiež nastavíme cookie pre server-side check
+    const expires = new Date();
+    expires.setDate(expires.getDate() + CONSENT_EXPIRY_DAYS);
+    document.cookie = `${COOKIE_CONSENT_KEY}=${value}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+  }
+
+  function hideBanner(): void {
+    const banner = document.getElementById('cookie-consent');
+    if (banner) {
+      banner.style.display = 'none';
+    }
+  }
+
+  function showBanner(): void {
+    const banner = document.getElementById('cookie-consent');
+    if (banner) {
+      banner.style.display = 'block';
+      banner.classList.add('show');
+    }
+  }
+
+  function handleAccept(): void {
+    setConsent('accepted');
+    hideBanner();
+
+    // Tu môžeš inicializovať analytics, tracking, atď.
+    enableAnalytics();
+  }
+
+  function handleReject(): void {
+    setConsent('rejected');
+    hideBanner();
+
+    // Vymaž existujúce tracking cookies ak existujú
+    disableAnalytics();
+  }
+
+  function enableAnalytics(): void {
+    // Príklad: Google Analytics
+    // if (typeof gtag !== 'undefined') {
+    //   gtag('consent', 'update', {
+    //     'analytics_storage': 'granted'
+    //   });
+    // }
+
+    // Príklad: Facebook Pixel
+    // if (typeof fbq !== 'undefined') {
+    //   fbq('consent', 'grant');
+    // }
+
+    console.log('Analytics enabled');
+  }
+
+  function disableAnalytics(): void {
+    // Vymaž Google Analytics cookies
+    const cookiesToDelete = ['_ga', '_gid', '_gat', '_fbp', '_fbc'];
+    cookiesToDelete.forEach(name => {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`;
+    });
+
+    console.log('Analytics disabled');
+  }
+
+  // Inicializácia
+  function init(): void {
+    const consent = getConsent();
+
+    if (!consent) {
+      // Žiadny súhlas - zobraz banner
+      showBanner();
+    } else if (consent === 'accepted') {
+      // Už prijal - aktivuj analytics
+      enableAnalytics();
+    }
+    // Ak rejected - nič nerob
+  }
+
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    init();
+
+    document.getElementById('cookie-accept')?.addEventListener('click', handleAccept);
+    document.getElementById('cookie-reject')?.addEventListener('click', handleReject);
+  });
+
+  // Pre Astro View Transitions
+  document.addEventListener('astro:page-load', () => {
+    init();
+
+    document.getElementById('cookie-accept')?.addEventListener('click', handleAccept);
+    document.getElementById('cookie-reject')?.addEventListener('click', handleReject);
+  });
+</script>

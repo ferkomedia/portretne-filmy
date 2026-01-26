@@ -434,10 +434,25 @@ select:focus-visible {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.footerLinks {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.footerSep {
+    color: rgba(255, 255, 255, 0.3);
+}
+
 @media (max-width: 480px) {
     .footerInner {
         flex-direction: column;
         text-align: center;
+    }
+
+    .footerLinks {
+        justify-content: center;
     }
 }
 
@@ -515,4 +530,198 @@ label {
     border-top-color: currentColor;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
+}
+
+/* ===========================================
+   HERO SECTIONS - UNIFIED STYLES
+   Rovnaký font-size na všetkých stránkach
+   =========================================== */
+
+/* Hero section container */
+.heroFull {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6rem 1.5rem;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(20, 20, 20, 0.8) 0%, rgba(10, 10, 10, 1) 100%);
+}
+
+.heroFull .heroContent {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Desktop: 64px - rovnaký ako na /sluzby/ */
+.heroFull h1,
+.hero h1,
+section.heroFull h1 {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: #fff;
+    margin: 0 0 1.5rem 0;
+}
+
+/* Hero lead/description text */
+.heroFull p,
+.heroFull .heroLead,
+.hero p,
+.hero .heroLead {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+}
+
+/* Hero buttons container */
+.heroFull .heroCtas,
+.heroFull .heroButtons,
+.heroCtas,
+.heroButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+/* Scroll indicator */
+.heroFull .scrollIndicator {
+    margin-top: 3rem;
+    color: rgba(255, 255, 255, 0.4);
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* TABLET: 768px - 1024px */
+@media (max-width: 1024px) {
+    .heroFull h1,
+    .hero h1,
+    section.heroFull h1 {
+        font-size: 52px;
+    }
+
+    .heroFull {
+        min-height: 70vh;
+        padding: 5rem 1.5rem;
+    }
+}
+
+/* MOBILE: pod 768px */
+@media (max-width: 768px) {
+    .heroFull h1,
+    .hero h1,
+    section.heroFull h1 {
+        font-size: 42px;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+    }
+
+    .heroFull p,
+    .heroFull .heroLead,
+    .hero p,
+    .hero .heroLead {
+        font-size: 1.1rem;
+    }
+
+    .heroFull {
+        min-height: 70vh;
+        padding: 4rem 1.25rem;
+    }
+
+    .heroFull .heroCtas,
+    .heroFull .heroButtons,
+    .heroCtas,
+    .heroButtons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* SMALL MOBILE: pod 480px */
+@media (max-width: 480px) {
+    .heroFull h1,
+    .hero h1,
+    section.heroFull h1 {
+        font-size: 36px;
+        line-height: 1.2;
+    }
+
+    .heroFull p,
+    .heroFull .heroLead,
+    .hero p,
+    .hero .heroLead {
+        font-size: 1rem;
+    }
+
+    .heroFull {
+        min-height: auto;
+        padding: 3rem 1rem;
+    }
+}
+
+/* ===========================================
+   LEGAL PAGES HERO (VOP, Reklamácie, Privacy)
+   =========================================== */
+
+.legal-hero,
+.privacy-hero {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    padding: 4rem 1.5rem;
+    text-align: center;
+}
+
+.legal-hero h1,
+.privacy-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.legal-hero .lead,
+.privacy-hero .lead {
+    font-size: 1.1rem;
+    color: #999;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .legal-hero,
+    .privacy-hero {
+        padding: 3rem 1.25rem;
+    }
+
+    .legal-hero h1,
+    .privacy-hero h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .legal-hero h1,
+    .privacy-hero h1 {
+        font-size: 1.75rem;
+    }
+
+    .legal-hero .lead,
+    .privacy-hero .lead {
+        font-size: 1rem;
+    }
 }
