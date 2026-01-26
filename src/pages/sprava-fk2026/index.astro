@@ -527,7 +527,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <!-- Left: Editor -->
           <div class="composerEditor">
             <h3>Nový príspevok</h3>
-            
+
             <div class="field">
               <label>Vyberte platformy</label>
               <div class="platformSelector">
@@ -595,7 +595,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               <button class="previewTab" data-preview="instagram">Instagram</button>
               <button class="previewTab" data-preview="linkedin">LinkedIn</button>
             </div>
-            
+
             <div class="previewContent" id="previewFacebook">
               <div class="fbPreview">
                 <div class="fbHeader">
@@ -689,7 +689,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <!-- ACCOUNTS SUBTAB -->
       <div class="subTabContent" id="subtab-s-accounts">
         <h3>Prepojené účty</h3>
-        
+
         <div class="accountsGrid">
           <div class="accountCard" id="accountFacebook">
             <div class="accountHeader">
@@ -2093,10 +2093,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#socialSubTabs .subTab').forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.dataset.subtab;
-      
+
       document.querySelectorAll('#socialSubTabs .subTab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('#tab-social .subTabContent').forEach(c => c.classList.remove('active'));
-      
+
       tab.classList.add('active');
       document.getElementById(`subtab-${target}`)?.classList.add('active');
     });
@@ -2105,12 +2105,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Post content textarea - char counter
   const postContent = document.getElementById('postContent');
   const charCount = document.getElementById('charCount');
-  
+
   if (postContent) {
     postContent.addEventListener('input', () => {
       const count = postContent.value.length;
       charCount.textContent = count;
-      
+
       // Update previews
       const previewText = postContent.value || 'Váš text sa zobrazí tu...';
       document.getElementById('fbPreviewText').textContent = previewText;
@@ -2122,7 +2122,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Schedule toggle
   const postSchedule = document.getElementById('postSchedule');
   const scheduleDateField = document.getElementById('scheduleDateField');
-  
+
   if (postSchedule) {
     postSchedule.addEventListener('change', () => {
       scheduleDateField.style.display = postSchedule.value === 'scheduled' ? 'block' : 'none';
@@ -2133,10 +2133,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.previewTab').forEach(tab => {
     tab.addEventListener('click', () => {
       const target = tab.dataset.preview;
-      
+
       document.querySelectorAll('.previewTab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.previewContent').forEach(c => c.style.display = 'none');
-      
+
       tab.classList.add('active');
       document.getElementById(`preview${target.charAt(0).toUpperCase() + target.slice(1)}`).style.display = 'block';
     });
@@ -2187,7 +2187,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderMediaPreviews() {
     if (!mediaPreviewGrid) return;
-    
+
     mediaPreviewGrid.innerHTML = uploadedMedia.map((media, index) => `
       <div class="mediaPreviewItem">
         <img src="${media.dataUrl}" alt="Media ${index + 1}" />
@@ -2215,7 +2215,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Publish post
   const publishPostBtn = document.getElementById('publishPostBtn');
-  
+
   if (publishPostBtn) {
     publishPostBtn.addEventListener('click', async () => {
       const platforms = [];
@@ -2288,8 +2288,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
-    
-    document.getElementById('currentMonth').textContent = 
+
+    document.getElementById('currentMonth').textContent =
       currentCalendarDate.toLocaleDateString('sk-SK', { month: 'long', year: 'numeric' });
 
     const firstDay = new Date(year, month, 1);
@@ -2355,7 +2355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'X-Admin-Key': adminPassword }
       });
       const data = await response.json();
-      
+
       if (data.ok) {
         document.getElementById('socialStatScheduled').textContent = data.scheduled || 0;
         document.getElementById('socialStatPublished').textContent = data.published || 0;
