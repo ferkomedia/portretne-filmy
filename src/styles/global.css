@@ -725,3 +725,6 @@ section.heroFull h1 {
         font-size: 1rem;
     }
 }
+.heroFull h1 {
+    font-size: 64px !important;
+}
