@@ -8,7 +8,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <section class="heroSection">
       <div class="heroContent">
         <h1>Správa FerkoMedia</h1>
-        <p class="heroLead">Faktúry, workshopy, email marketing, sociálne siete</p>
+        <p class="heroLead">Faktúry, workshopy, email marketing</p>
       </div>
     </section>
 
@@ -18,7 +18,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <button class="adminTab active" data-tab="invoices">Faktúry</button>
         <button class="adminTab" data-tab="workshops">Workshopy</button>
         <button class="adminTab" data-tab="email">Email Marketing</button>
-        <button class="adminTab" data-tab="social">Sociálne siete</button>
       </div>
 
       <!-- FAKTÚRY TAB -->
@@ -186,6 +185,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <button class="subTab" data-subtab="templates">Šablóny</button>
         <button class="subTab" data-subtab="tags">Tagy</button>
         <button class="subTab" data-subtab="automation">Automatizácia</button>
+        <button class="subTab" data-subtab="analytics">📊 Analytika</button>
       </div>
 
       <!-- CONTACTS SUBTAB -->
@@ -488,302 +488,144 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- SOCIÁLNE SIETE TAB -->
-    <div class="tabContent" id="tab-social">
-      <!-- Stats -->
-      <div class="statsGrid">
-        <div class="statCard">
-          <span class="statValue" id="socialStatScheduled">-</span>
-          <span class="statLabel">Naplánovaných</span>
-        </div>
-        <div class="statCard">
-          <span class="statValue" id="socialStatPublished">-</span>
-          <span class="statLabel">Publikovaných</span>
-        </div>
-        <div class="statCard">
-          <span class="statValue" id="socialStatAccounts">-</span>
-          <span class="statLabel">Prepojených účtov</span>
-        </div>
-        <div class="statCard">
-          <span class="statValue" id="socialStatThisWeek">-</span>
-          <span class="statLabel">Tento týždeň</span>
-        </div>
-      </div>
-
-      <!-- Sub-tabs -->
-      <div class="subTabs" id="socialSubTabs">
-        <button class="subTab active" data-subtab="s-composer">Vytvoriť príspevok</button>
-        <button class="subTab" data-subtab="s-calendar">Kalendár</button>
-        <button class="subTab" data-subtab="s-queue">Naplánované</button>
-        <button class="subTab" data-subtab="s-accounts">Účty</button>
-        <button class="subTab" data-subtab="s-analytics">Analytika</button>
-      </div>
-
-      <!-- COMPOSER SUBTAB -->
-      <div class="subTabContent active" id="subtab-s-composer">
-        <div class="composerGrid">
-          <!-- Left: Editor -->
-          <div class="composerEditor">
-            <h3>Nový príspevok</h3>
-
-            <div class="field">
-              <label>Vyberte platformy</label>
-              <div class="platformSelector">
-                <label class="platformCheck">
-                  <input type="checkbox" id="platformFB" value="facebook" />
-                  <span class="platformIcon">📘</span>
-                  <span>Facebook</span>
-                </label>
-                <label class="platformCheck">
-                  <input type="checkbox" id="platformIG" value="instagram" />
-                  <span class="platformIcon">📸</span>
-                  <span>Instagram</span>
-                </label>
-                <label class="platformCheck">
-                  <input type="checkbox" id="platformLI" value="linkedin" />
-                  <span class="platformIcon">💼</span>
-                  <span>LinkedIn</span>
-                </label>
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="postContent">Text príspevku</label>
-              <textarea id="postContent" rows="6" placeholder="Napíšte text príspevku..."></textarea>
-              <div class="charCounter">
-                <span id="charCount">0</span> / <span id="charLimit">2200</span> znakov
-              </div>
-            </div>
-
-            <div class="field">
-              <label>Médiá</label>
-              <div class="mediaUploadZone" id="mediaDropZone">
-                <input type="file" id="mediaInput" accept="image/*,video/*" multiple style="display:none;" />
-                <span style="font-size:2rem;">🖼️</span>
-                <p>Pretiahni obrázky/videá sem<br>alebo <strong style="color:#f97316; cursor:pointer;" onclick="document.getElementById('mediaInput').click()">vyber súbory</strong></p>
-              </div>
-              <div id="mediaPreviewGrid" class="mediaPreviewGrid"></div>
-            </div>
-
-            <div class="field">
-              <label for="postSchedule">Publikovanie</label>
-              <select id="postSchedule">
-                <option value="now">Publikovať ihneď</option>
-                <option value="scheduled">Naplánovať</option>
-                <option value="draft">Uložiť ako draft</option>
-              </select>
-            </div>
-
-            <div class="field" id="scheduleDateField" style="display:none;">
-              <label for="scheduleDateTime">Dátum a čas</label>
-              <input id="scheduleDateTime" type="datetime-local" />
-            </div>
-
-            <div class="formActions">
-              <button class="btn btn--ghost" id="saveDraftBtn">Uložiť draft</button>
-              <button class="btn btn--primary" id="publishPostBtn">Publikovať</button>
-            </div>
-          </div>
-
-          <!-- Right: Preview -->
-          <div class="composerPreview">
-            <h3>Náhľad</h3>
-            <div class="previewTabs">
-              <button class="previewTab active" data-preview="facebook">Facebook</button>
-              <button class="previewTab" data-preview="instagram">Instagram</button>
-              <button class="previewTab" data-preview="linkedin">LinkedIn</button>
-            </div>
-
-            <div class="previewContent" id="previewFacebook">
-              <div class="fbPreview">
-                <div class="fbHeader">
-                  <div class="fbAvatar"></div>
-                  <div>
-                    <strong>FerkoMedia</strong>
-                    <span class="fbTime">Práve teraz</span>
-                  </div>
-                </div>
-                <div class="fbText" id="fbPreviewText">Váš text sa zobrazí tu...</div>
-                <div class="fbMedia" id="fbPreviewMedia"></div>
-                <div class="fbActions">
-                  <span>👍 Páči sa mi</span>
-                  <span>💬 Komentovať</span>
-                  <span>↗️ Zdieľať</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="previewContent" id="previewInstagram" style="display:none;">
-              <div class="igPreview">
-                <div class="igHeader">
-                  <div class="igAvatar"></div>
-                  <strong>ferkomedia</strong>
-                </div>
-                <div class="igMedia" id="igPreviewMedia">
-                  <div class="igMediaPlaceholder">📷</div>
-                </div>
-                <div class="igActions">
-                  <span>❤️</span>
-                  <span>💬</span>
-                  <span>📤</span>
-                </div>
-                <div class="igText"><strong>ferkomedia</strong> <span id="igPreviewText"></span></div>
-              </div>
-            </div>
-
-            <div class="previewContent" id="previewLinkedin" style="display:none;">
-              <div class="liPreview">
-                <div class="liHeader">
-                  <div class="liAvatar"></div>
-                  <div>
-                    <strong>FerkoMedia</strong>
-                    <span class="liSubtitle">Video marketing</span>
-                  </div>
-                </div>
-                <div class="liText" id="liPreviewText">Váš text sa zobrazí tu...</div>
-                <div class="liMedia" id="liPreviewMedia"></div>
-                <div class="liActions">
-                  <span>👍 Páči sa mi</span>
-                  <span>💬 Komentovať</span>
-                  <span>🔄 Zdieľať</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CALENDAR SUBTAB -->
-      <div class="subTabContent" id="subtab-s-calendar">
-        <div class="calendarHeader">
-          <button class="btn btn--ghost" id="prevMonth">← Predchádzajúci</button>
-          <h3 id="currentMonth">Január 2026</h3>
-          <button class="btn btn--ghost" id="nextMonth">Nasledujúci →</button>
-        </div>
-        <div class="calendarGrid" id="calendarGrid"></div>
-        <div class="calendarLegend">
-          <span><span class="legendDot legendDot--fb"></span> Facebook</span>
-          <span><span class="legendDot legendDot--ig"></span> Instagram</span>
-          <span><span class="legendDot legendDot--li"></span> LinkedIn</span>
-        </div>
-      </div>
-
-      <!-- QUEUE SUBTAB -->
-      <div class="subTabContent" id="subtab-s-queue">
-        <div class="queueControls">
-          <select id="queueFilter" class="filterSelect">
-            <option value="">Všetky platformy</option>
-            <option value="facebook">Facebook</option>
-            <option value="instagram">Instagram</option>
-            <option value="linkedin">LinkedIn</option>
-          </select>
-          <button class="btn btn--primary" id="loadQueue">Načítať naplánované</button>
-        </div>
-        <div class="queueList" id="queueList">
-          <div class="emptyState">Klikni na "Načítať naplánované"</div>
-        </div>
-      </div>
-
-      <!-- ACCOUNTS SUBTAB -->
-      <div class="subTabContent" id="subtab-s-accounts">
-        <h3>Prepojené účty</h3>
-
-        <div class="accountsGrid">
-          <div class="accountCard" id="accountFacebook">
-            <div class="accountHeader">
-              <span class="accountIcon">📘</span>
-              <div>
-                <h4>Facebook</h4>
-                <span class="accountStatus" id="fbStatus">Neprepojené</span>
-              </div>
-            </div>
-            <div class="accountInfo" id="fbAccountInfo" style="display:none;">
-              <p><strong>Stránka:</strong> <span id="fbPageName">-</span></p>
-              <p><strong>Followers:</strong> <span id="fbFollowers">-</span></p>
-            </div>
-            <button class="btn btn--primary" id="connectFB">Prepojiť Facebook</button>
-          </div>
-
-          <div class="accountCard" id="accountInstagram">
-            <div class="accountHeader">
-              <span class="accountIcon">📸</span>
-              <div>
-                <h4>Instagram</h4>
-                <span class="accountStatus" id="igStatus">Neprepojené</span>
-              </div>
-            </div>
-            <div class="accountInfo" id="igAccountInfo" style="display:none;">
-              <p><strong>Účet:</strong> <span id="igUsername">-</span></p>
-              <p><strong>Followers:</strong> <span id="igFollowers">-</span></p>
-            </div>
-            <button class="btn btn--primary" id="connectIG">Prepojiť Instagram</button>
-          </div>
-
-          <div class="accountCard" id="accountLinkedin">
-            <div class="accountHeader">
-              <span class="accountIcon">💼</span>
-              <div>
-                <h4>LinkedIn</h4>
-                <span class="accountStatus" id="liStatus">Neprepojené</span>
-              </div>
-            </div>
-            <div class="accountInfo" id="liAccountInfo" style="display:none;">
-              <p><strong>Profil:</strong> <span id="liProfileName">-</span></p>
-              <p><strong>Connections:</strong> <span id="liConnections">-</span></p>
-            </div>
-            <button class="btn btn--primary" id="connectLI">Prepojiť LinkedIn</button>
-          </div>
-        </div>
-
-        <div class="helpBox" style="margin-top:2rem;">
-          <h4>🔑 Ako prepojiť účty?</h4>
-          <ol style="color:rgba(255,255,255,0.7); padding-left:1.5rem;">
-            <li>Klikni na "Prepojiť" pri danej platforme</li>
-            <li>Prihlásiš sa do svojho účtu</li>
-            <li>Autorizuješ aplikáciu FerkoMedia</li>
-            <li>Hotovo! Môžeš začať plánovať príspevky.</li>
-          </ol>
-        </div>
-      </div>
 
       <!-- ANALYTICS SUBTAB -->
-      <div class="subTabContent" id="subtab-s-analytics">
-        <div class="analyticsControls">
-          <select id="analyticsRange" class="filterSelect">
-            <option value="7">Posledných 7 dní</option>
-            <option value="30" selected>Posledných 30 dní</option>
-            <option value="90">Posledných 90 dní</option>
-          </select>
-          <button class="btn btn--primary" id="loadAnalytics">Načítať štatistiky</button>
-        </div>
+      <div class="subTabContent" id="subtab-analytics">
+        <h3 style="margin-bottom: 1.5rem;">📊 Email Analytika</h3>
 
+        <!-- Overview Stats -->
         <div class="analyticsGrid">
           <div class="analyticsCard">
-            <h4>📊 Celkový dosah</h4>
-            <div class="analyticsValue" id="totalReach">-</div>
-            <div class="analyticsChange positive" id="reachChange">-</div>
+            <div class="analyticsIcon" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">📧</div>
+            <div class="analyticsData">
+              <span class="analyticsValue" id="analyticsSent">-</span>
+              <span class="analyticsLabel">Odoslaných</span>
+            </div>
           </div>
           <div class="analyticsCard">
-            <h4>❤️ Engagement</h4>
-            <div class="analyticsValue" id="totalEngagement">-</div>
-            <div class="analyticsChange positive" id="engagementChange">-</div>
+            <div class="analyticsIcon" style="background: rgba(59, 130, 246, 0.2); color: #3b82f6;">✓</div>
+            <div class="analyticsData">
+              <span class="analyticsValue" id="analyticsDelivered">-</span>
+              <span class="analyticsLabel">Doručených</span>
+            </div>
           </div>
           <div class="analyticsCard">
-            <h4>📝 Príspevkov</h4>
-            <div class="analyticsValue" id="totalPosts">-</div>
-            <div class="analyticsChange" id="postsChange">-</div>
+            <div class="analyticsIcon" style="background: rgba(249, 115, 22, 0.2); color: #f97316;">👁️</div>
+            <div class="analyticsData">
+              <span class="analyticsValue" id="analyticsOpened">-</span>
+              <span class="analyticsLabel">Otvorených</span>
+            </div>
           </div>
           <div class="analyticsCard">
-            <h4>👥 Nových followerov</h4>
-            <div class="analyticsValue" id="newFollowers">-</div>
-            <div class="analyticsChange positive" id="followersChange">-</div>
+            <div class="analyticsIcon" style="background: rgba(168, 85, 247, 0.2); color: #a855f7;">🖱️</div>
+            <div class="analyticsData">
+              <span class="analyticsValue" id="analyticsClicked">-</span>
+              <span class="analyticsLabel">Kliknutí</span>
+            </div>
           </div>
         </div>
 
-        <div class="analyticsChart" id="analyticsChart">
-          <p class="emptyState">Graf sa zobrazí po načítaní štatistík</p>
+        <!-- Rates -->
+        <div class="ratesGrid">
+          <div class="rateCard">
+            <div class="rateHeader">
+              <span class="rateTitle">Delivery Rate</span>
+              <span class="rateValue" id="rateDelivery">--%</span>
+            </div>
+            <div class="rateBar">
+              <div class="rateBarFill" id="rateDeliveryBar" style="width: 0%; background: #22c55e;"></div>
+            </div>
+          </div>
+          <div class="rateCard">
+            <div class="rateHeader">
+              <span class="rateTitle">Open Rate</span>
+              <span class="rateValue" id="rateOpen">--%</span>
+            </div>
+            <div class="rateBar">
+              <div class="rateBarFill" id="rateOpenBar" style="width: 0%; background: #f97316;"></div>
+            </div>
+          </div>
+          <div class="rateCard">
+            <div class="rateHeader">
+              <span class="rateTitle">Click Rate</span>
+              <span class="rateValue" id="rateClick">--%</span>
+            </div>
+            <div class="rateBar">
+              <div class="rateBarFill" id="rateClickBar" style="width: 0%; background: #a855f7;"></div>
+            </div>
+          </div>
+          <div class="rateCard">
+            <div class="rateHeader">
+              <span class="rateTitle">Bounce Rate</span>
+              <span class="rateValue" id="rateBounce">--%</span>
+            </div>
+            <div class="rateBar">
+              <div class="rateBarFill" id="rateBounceBar" style="width: 0%; background: #ef4444;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campaign Performance -->
+        <div class="analyticsSection">
+          <h4>📈 Výkon kampaní</h4>
+          <button class="btn btn--primary btn--small" id="loadAnalytics" style="margin-bottom: 1rem;">Načítať analytiku</button>
+
+          <div class="tableWrapper">
+            <table class="invoiceTable" id="campaignAnalyticsTable">
+              <thead>
+                <tr>
+                  <th>Kampaň</th>
+                  <th>Dátum</th>
+                  <th>Odoslané</th>
+                  <th>Doručené</th>
+                  <th>Otvorené</th>
+                  <th>Kliknuté</th>
+                  <th>Open Rate</th>
+                  <th>Click Rate</th>
+                </tr>
+              </thead>
+              <tbody id="campaignAnalyticsBody">
+                <tr>
+                  <td colspan="8" class="emptyState">Klikni na "Načítať analytiku"</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="analyticsSection">
+          <h4>🕐 Posledná aktivita</h4>
+          <div id="recentActivityList" class="activityList">
+            <p class="emptyState">Žiadna aktivita</p>
+          </div>
+        </div>
+
+        <!-- Health Indicators -->
+        <div class="analyticsSection">
+          <h4>🏥 Zdravie email marketingu</h4>
+          <div class="healthGrid">
+            <div class="healthCard" id="healthDelivery">
+              <span class="healthIcon">✓</span>
+              <span class="healthTitle">Doručiteľnosť</span>
+              <span class="healthStatus">--</span>
+            </div>
+            <div class="healthCard" id="healthBounce">
+              <span class="healthIcon">⚠️</span>
+              <span class="healthTitle">Bounce Rate</span>
+              <span class="healthStatus">--</span>
+            </div>
+            <div class="healthCard" id="healthComplaint">
+              <span class="healthIcon">🛡️</span>
+              <span class="healthTitle">Sťažnosti</span>
+              <span class="healthStatus">--</span>
+            </div>
+            <div class="healthCard" id="healthEngagement">
+              <span class="healthIcon">💪</span>
+              <span class="healthTitle">Engagement</span>
+              <span class="healthStatus">--</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2082,295 +1924,129 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // =====================
+  // EMAIL ANALYTICS
+  // =====================
+  document.getElementById('loadAnalytics')?.addEventListener('click', loadAnalytics);
+
+  // Load analytics when switching to analytics tab
+  document.querySelectorAll('.subTab').forEach(tab => {
+    const originalHandler = tab.onclick;
+    tab.addEventListener('click', () => {
+      if (tab.dataset.subtab === 'analytics') {
+        loadAnalytics();
+      }
+    });
+  });
+
+  async function loadAnalytics() {
+    try {
+      const res = await fetch('/api/email/analytics', {
+        headers: { Authorization: `Bearer ${adminPassword}` }
+      });
+      const data = await res.json();
+
+      if (!data.ok) {
+        console.error('Analytics error:', data.error);
+        return;
+      }
+
+      const { analytics } = data;
+
+      // Update overview stats
+      document.getElementById('analyticsSent').textContent = analytics.overview.totalSent.toLocaleString();
+      document.getElementById('analyticsDelivered').textContent = analytics.overview.totalDelivered.toLocaleString();
+      document.getElementById('analyticsOpened').textContent = analytics.overview.totalOpened.toLocaleString();
+      document.getElementById('analyticsClicked').textContent = analytics.overview.totalClicked.toLocaleString();
+
+      // Update rates
+      document.getElementById('rateDelivery').textContent = `${analytics.rates.deliveryRate}%`;
+      document.getElementById('rateDeliveryBar').style.width = `${analytics.rates.deliveryRate}%`;
+
+      document.getElementById('rateOpen').textContent = `${analytics.rates.openRate}%`;
+      document.getElementById('rateOpenBar').style.width = `${analytics.rates.openRate}%`;
+
+      document.getElementById('rateClick').textContent = `${analytics.rates.clickRate}%`;
+      document.getElementById('rateClickBar').style.width = `${analytics.rates.clickRate}%`;
+
+      document.getElementById('rateBounce').textContent = `${analytics.rates.bounceRate}%`;
+      document.getElementById('rateBounceBar').style.width = `${Math.min(analytics.rates.bounceRate * 10, 100)}%`;
+
+      // Update campaign table
+      const tbody = document.getElementById('campaignAnalyticsBody');
+      if (analytics.campaigns && analytics.campaigns.length > 0) {
+        tbody.innerHTML = analytics.campaigns.map(c => {
+          const openRate = c.delivered > 0 ? Math.round((c.opened / c.delivered) * 100) : 0;
+          const clickRate = c.delivered > 0 ? Math.round((c.clicked / c.delivered) * 100) : 0;
+          return `
+            <tr>
+              <td><strong>${c.name || 'Bez názvu'}</strong></td>
+              <td>${c.sentAt ? new Date(c.sentAt).toLocaleDateString('sk-SK') : '-'}</td>
+              <td>${c.recipients || 0}</td>
+              <td>${c.delivered || 0}</td>
+              <td>${c.opened || 0}</td>
+              <td>${c.clicked || 0}</td>
+              <td><span class="badge ${openRate >= 20 ? 'badge--success' : ''}">${openRate}%</span></td>
+              <td><span class="badge ${clickRate >= 3 ? 'badge--success' : ''}">${clickRate}%</span></td>
+            </tr>
+          `;
+        }).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="8" class="emptyState">Žiadne kampane</td></tr>';
+      }
+
+      // Update recent activity
+      const activityList = document.getElementById('recentActivityList');
+      if (analytics.recentActivity && analytics.recentActivity.length > 0) {
+        activityList.innerHTML = analytics.recentActivity.map(a => {
+          const icons = { sent: '📤', delivered: '✓', opened: '👁️', clicked: '🖱️', bounced: '❌' };
+          return `
+            <div class="activityItem">
+              <div class="activityIcon ${a.type}">${icons[a.type] || '📧'}</div>
+              <div class="activityDetails">
+                <span class="activityEmail">${a.email || 'Neznámy'}</span>
+                <span class="activityType">${a.type}</span>
+              </div>
+              <span class="activityTime">${a.timestamp ? new Date(a.timestamp).toLocaleString('sk-SK') : ''}</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        activityList.innerHTML = '<p class="emptyState">Žiadna aktivita</p>';
+      }
+
+      // Update health indicators
+      updateHealthIndicator('healthDelivery', analytics.rates.deliveryRate, 95, 90);
+      updateHealthIndicator('healthBounce', 100 - analytics.rates.bounceRate, 98, 95);
+      updateHealthIndicator('healthComplaint', analytics.rates.complaintRate < 0.1 ? 100 : (analytics.rates.complaintRate < 0.5 ? 80 : 50), 90, 70);
+      updateHealthIndicator('healthEngagement', analytics.rates.openRate, 20, 10);
+
+    } catch (error) {
+      console.error('Error loading analytics:', error);
+    }
+  }
+
+  function updateHealthIndicator(elementId, value, goodThreshold, warningThreshold) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    el.classList.remove('good', 'warning', 'bad');
+    const statusEl = el.querySelector('.healthStatus');
+
+    if (value >= goodThreshold) {
+      el.classList.add('good');
+      if (statusEl) statusEl.textContent = 'Výborné';
+    } else if (value >= warningThreshold) {
+      el.classList.add('warning');
+      if (statusEl) statusEl.textContent = 'OK';
+    } else {
+      el.classList.add('bad');
+      if (statusEl) statusEl.textContent = 'Vyžaduje pozornosť';
+    }
+  }
+
   // Load initial stats
   loadEmailStats();
-
-  // =====================
-  // SOCIAL MEDIA MODULE
-  // =====================
-
-  // Social Sub-tabs
-  document.querySelectorAll('#socialSubTabs .subTab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.subtab;
-
-      document.querySelectorAll('#socialSubTabs .subTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('#tab-social .subTabContent').forEach(c => c.classList.remove('active'));
-
-      tab.classList.add('active');
-      document.getElementById(`subtab-${target}`)?.classList.add('active');
-    });
-  });
-
-  // Post content textarea - char counter
-  const postContent = document.getElementById('postContent');
-  const charCount = document.getElementById('charCount');
-
-  if (postContent) {
-    postContent.addEventListener('input', () => {
-      const count = postContent.value.length;
-      charCount.textContent = count;
-
-      // Update previews
-      const previewText = postContent.value || 'Váš text sa zobrazí tu...';
-      document.getElementById('fbPreviewText').textContent = previewText;
-      document.getElementById('igPreviewText').textContent = postContent.value || '';
-      document.getElementById('liPreviewText').textContent = previewText;
-    });
-  }
-
-  // Schedule toggle
-  const postSchedule = document.getElementById('postSchedule');
-  const scheduleDateField = document.getElementById('scheduleDateField');
-
-  if (postSchedule) {
-    postSchedule.addEventListener('change', () => {
-      scheduleDateField.style.display = postSchedule.value === 'scheduled' ? 'block' : 'none';
-    });
-  }
-
-  // Preview tabs
-  document.querySelectorAll('.previewTab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.preview;
-
-      document.querySelectorAll('.previewTab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.previewContent').forEach(c => c.style.display = 'none');
-
-      tab.classList.add('active');
-      document.getElementById(`preview${target.charAt(0).toUpperCase() + target.slice(1)}`).style.display = 'block';
-    });
-  });
-
-  // Media upload
-  const mediaInput = document.getElementById('mediaInput');
-  const mediaDropZone = document.getElementById('mediaDropZone');
-  const mediaPreviewGrid = document.getElementById('mediaPreviewGrid');
-  let uploadedMedia = [];
-
-  if (mediaDropZone) {
-    mediaDropZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      mediaDropZone.classList.add('dragover');
-    });
-
-    mediaDropZone.addEventListener('dragleave', () => {
-      mediaDropZone.classList.remove('dragover');
-    });
-
-    mediaDropZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      mediaDropZone.classList.remove('dragover');
-      handleMediaFiles(e.dataTransfer.files);
-    });
-
-    mediaInput?.addEventListener('change', () => {
-      handleMediaFiles(mediaInput.files);
-    });
-  }
-
-  function handleMediaFiles(files) {
-    Array.from(files).forEach(file => {
-      if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          uploadedMedia.push({
-            file: file,
-            dataUrl: e.target.result
-          });
-          renderMediaPreviews();
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  function renderMediaPreviews() {
-    if (!mediaPreviewGrid) return;
-
-    mediaPreviewGrid.innerHTML = uploadedMedia.map((media, index) => `
-      <div class="mediaPreviewItem">
-        <img src="${media.dataUrl}" alt="Media ${index + 1}" />
-        <button class="removeMedia" onclick="removeMedia(${index})">×</button>
-      </div>
-    `).join('');
-
-    // Update platform previews
-    if (uploadedMedia.length > 0) {
-      const firstMedia = uploadedMedia[0].dataUrl;
-      document.getElementById('fbPreviewMedia').innerHTML = `<img src="${firstMedia}" />`;
-      document.getElementById('igPreviewMedia').innerHTML = `<img src="${firstMedia}" />`;
-      document.getElementById('liPreviewMedia').innerHTML = `<img src="${firstMedia}" />`;
-    } else {
-      document.getElementById('fbPreviewMedia').innerHTML = '';
-      document.getElementById('igPreviewMedia').innerHTML = '<div class="igMediaPlaceholder">📷</div>';
-      document.getElementById('liPreviewMedia').innerHTML = '';
-    }
-  }
-
-  window.removeMedia = function(index) {
-    uploadedMedia.splice(index, 1);
-    renderMediaPreviews();
-  };
-
-  // Publish post
-  const publishPostBtn = document.getElementById('publishPostBtn');
-
-  if (publishPostBtn) {
-    publishPostBtn.addEventListener('click', async () => {
-      const platforms = [];
-      if (document.getElementById('platformFB')?.checked) platforms.push('facebook');
-      if (document.getElementById('platformIG')?.checked) platforms.push('instagram');
-      if (document.getElementById('platformLI')?.checked) platforms.push('linkedin');
-
-      if (platforms.length === 0) {
-        alert('Vyber aspoň jednu platformu');
-        return;
-      }
-
-      const content = postContent?.value?.trim() || '';
-      if (!content) {
-        alert('Napíš text príspevku');
-        return;
-      }
-
-      const schedule = postSchedule?.value || 'now';
-      const scheduledTime = schedule === 'scheduled' ? document.getElementById('scheduleDateTime')?.value : null;
-
-      publishPostBtn.disabled = true;
-      publishPostBtn.textContent = 'Publikujem...';
-
-      try {
-        const response = await fetch('/api/social/publish', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Admin-Key': adminPassword
-          },
-          body: JSON.stringify({
-            platforms,
-            content,
-            schedule,
-            scheduledTime
-          })
-        });
-
-        const data = await response.json();
-
-        if (data.ok) {
-          alert(schedule === 'scheduled' ? 'Príspevok naplánovaný!' : 'Príspevok publikovaný!');
-          postContent.value = '';
-          charCount.textContent = '0';
-          uploadedMedia = [];
-          renderMediaPreviews();
-          document.getElementById('fbPreviewText').textContent = 'Váš text sa zobrazí tu...';
-          document.getElementById('igPreviewText').textContent = '';
-          document.getElementById('liPreviewText').textContent = 'Váš text sa zobrazí tu...';
-          loadSocialStats();
-        } else {
-          alert('Chyba: ' + (data.error || 'Neznáma chyba'));
-        }
-      } catch (err) {
-        alert('Chyba: ' + err.message);
-      } finally {
-        publishPostBtn.disabled = false;
-        publishPostBtn.textContent = 'Publikovať';
-      }
-    });
-  }
-
-  // Calendar
-  let currentCalendarDate = new Date();
-
-  function renderCalendar() {
-    const grid = document.getElementById('calendarGrid');
-    if (!grid) return;
-
-    const year = currentCalendarDate.getFullYear();
-    const month = currentCalendarDate.getMonth();
-
-    document.getElementById('currentMonth').textContent =
-      currentCalendarDate.toLocaleDateString('sk-SK', { month: 'long', year: 'numeric' });
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDay = firstDay.getDay() || 7;
-
-    const days = ['Po', 'Ut', 'St', 'Št', 'Pi', 'So', 'Ne'];
-    let html = days.map(d => `<div class="calendarDay calendarDayHeader">${d}</div>`).join('');
-
-    for (let i = 1; i < startDay; i++) {
-      html += '<div class="calendarDay"></div>';
-    }
-
-    const today = new Date();
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-      const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-      html += `<div class="calendarDay${isToday ? ' today' : ''}" data-date="${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}">
-        <div class="calendarDayNumber">${day}</div>
-      </div>`;
-    }
-
-    grid.innerHTML = html;
-  }
-
-  document.getElementById('prevMonth')?.addEventListener('click', () => {
-    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-    renderCalendar();
-  });
-
-  document.getElementById('nextMonth')?.addEventListener('click', () => {
-    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-    renderCalendar();
-  });
-
-  // Initialize calendar
-  renderCalendar();
-
-  // Connect accounts (OAuth)
-  document.getElementById('connectFB')?.addEventListener('click', () => {
-    window.open('/api/social/oauth/meta', 'MetaOAuth', 'width=600,height=700');
-  });
-
-  document.getElementById('connectIG')?.addEventListener('click', () => {
-    window.open('/api/social/oauth/meta', 'MetaOAuth', 'width=600,height=700');
-  });
-
-  document.getElementById('connectLI')?.addEventListener('click', () => {
-    window.open('/api/social/oauth/linkedin', 'LinkedInOAuth', 'width=600,height=700');
-  });
-
-  // Listen for OAuth success
-  window.addEventListener('message', (event) => {
-    if (event.data.type === 'META_OAUTH_SUCCESS' || event.data.type === 'LINKEDIN_OAUTH_SUCCESS') {
-      loadSocialStats();
-      location.reload();
-    }
-  });
-
-  // Load social stats
-  async function loadSocialStats() {
-    try {
-      const response = await fetch('/api/social/stats', {
-        headers: { 'X-Admin-Key': adminPassword }
-      });
-      const data = await response.json();
-
-      if (data.ok) {
-        document.getElementById('socialStatScheduled').textContent = data.scheduled || 0;
-        document.getElementById('socialStatPublished').textContent = data.published || 0;
-        document.getElementById('socialStatAccounts').textContent = data.accounts || 0;
-        document.getElementById('socialStatThisWeek').textContent = data.thisWeek || 0;
-      }
-    } catch (err) {
-      console.error('Error loading social stats:', err);
-    }
-  }
-
-  // Load stats when social tab is activated
-  document.querySelector('[data-tab="social"]')?.addEventListener('click', () => {
-    loadSocialStats();
-  });
 });
 </script>
 
@@ -3155,451 +2831,7 @@ code {
   }
 }
 
-/* ========== SOCIAL MEDIA ========== */
-.composerGrid {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 2rem;
-}
-
-@media (max-width: 1000px) {
-  .composerGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.composerEditor {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.composerPreview {
-  position: sticky;
-  top: 1rem;
-}
-
-.platformSelector {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.platformCheck {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.platformCheck:has(input:checked) {
-  background: rgba(249,115,22,0.15);
-  border-color: #f97316;
-}
-
-.platformIcon {
-  font-size: 1.25rem;
-}
-
-.charCounter {
-  text-align: right;
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.5);
-  margin-top: 0.25rem;
-}
-
-.mediaUploadZone {
-  border: 2px dashed rgba(255,255,255,0.2);
-  border-radius: 12px;
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.mediaUploadZone:hover,
-.mediaUploadZone.dragover {
-  border-color: #f97316;
-  background: rgba(249,115,22,0.05);
-}
-
-.mediaPreviewGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.mediaPreviewItem {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.mediaPreviewItem img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mediaPreviewItem .removeMedia {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: rgba(0,0,0,0.7);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-}
-
-/* Preview Tabs */
-.previewTabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.previewTab {
-  padding: 0.5rem 1rem;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 6px;
-  color: rgba(255,255,255,0.7);
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.previewTab.active {
-  background: #f97316;
-  border-color: #f97316;
-  color: white;
-}
-
-/* Facebook Preview */
-.fbPreview {
-  background: white;
-  color: #1c1e21;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.fbHeader {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 12px;
-}
-
-.fbAvatar {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #f97316, #fb923c);
-  border-radius: 50%;
-}
-
-.fbTime {
-  display: block;
-  font-size: 12px;
-  color: #65676b;
-}
-
-.fbText {
-  padding: 0 12px 12px;
-  font-size: 15px;
-  line-height: 1.4;
-}
-
-.fbMedia {
-  background: #f0f2f5;
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #65676b;
-}
-
-.fbMedia img {
-  width: 100%;
-  height: auto;
-}
-
-.fbActions {
-  display: flex;
-  justify-content: space-around;
-  padding: 8px;
-  border-top: 1px solid #e4e6eb;
-  font-size: 14px;
-  color: #65676b;
-}
-
-/* Instagram Preview */
-.igPreview {
-  background: white;
-  color: #262626;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.igHeader {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 12px;
-}
-
-.igAvatar {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #f97316, #fb923c);
-  border-radius: 50%;
-}
-
-.igMedia {
-  aspect-ratio: 1;
-  background: #fafafa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.igMedia img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.igMediaPlaceholder {
-  font-size: 3rem;
-  color: #dbdbdb;
-}
-
-.igActions {
-  display: flex;
-  gap: 1rem;
-  padding: 12px;
-  font-size: 1.25rem;
-}
-
-.igText {
-  padding: 0 12px 12px;
-  font-size: 14px;
-}
-
-/* LinkedIn Preview */
-.liPreview {
-  background: white;
-  color: #000000e6;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.liHeader {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 12px;
-}
-
-.liAvatar {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #f97316, #fb923c);
-  border-radius: 50%;
-}
-
-.liSubtitle {
-  display: block;
-  font-size: 12px;
-  color: #00000099;
-}
-
-.liText {
-  padding: 0 12px 12px;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.liMedia {
-  background: #f3f2ef;
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.liMedia img {
-  width: 100%;
-  height: auto;
-}
-
-.liActions {
-  display: flex;
-  justify-content: space-around;
-  padding: 8px;
-  border-top: 1px solid #e0e0e0;
-  font-size: 14px;
-  color: #00000099;
-}
-
-/* Calendar */
-.calendarHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.calendarGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.calendarDay {
-  background: rgba(0,0,0,0.3);
-  min-height: 100px;
-  padding: 0.5rem;
-}
-
-.calendarDayHeader {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 0.25rem;
-}
-
-.calendarDayNumber {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.calendarDay.today {
-  background: rgba(249,115,22,0.15);
-}
-
-.calendarPost {
-  font-size: 0.7rem;
-  padding: 2px 4px;
-  border-radius: 4px;
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.calendarPost.facebook { background: #1877f2; }
-.calendarPost.instagram { background: #e4405f; }
-.calendarPost.linkedin { background: #0a66c2; }
-
-.calendarLegend {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  color: rgba(255,255,255,0.7);
-}
-
-.legendDot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: 0.5rem;
-}
-
-.legendDot--fb { background: #1877f2; }
-.legendDot--ig { background: #e4405f; }
-.legendDot--li { background: #0a66c2; }
-
-/* Queue */
-.queueControls {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.queueList {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.queueItem {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 1rem;
-  padding: 1rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  align-items: center;
-}
-
-/* Accounts */
-.accountsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.accountCard {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.accountHeader {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.accountIcon {
-  font-size: 2rem;
-}
-
-.accountStatus {
-  font-size: 0.75rem;
-  color: #ef4444;
-}
-
-.accountStatus.connected {
-  color: #22c55e;
-}
-
-.accountInfo {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: rgba(255,255,255,0.05);
-  border-radius: 8px;
-}
-
-.accountInfo p {
-  margin: 0.25rem 0;
-  font-size: 0.875rem;
-}
-
-/* Analytics */
-.analyticsControls {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
+/* ========== ANALYTICS ========== */
 .analyticsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -3607,62 +2839,207 @@ code {
   margin-bottom: 2rem;
 }
 
-@media (max-width: 900px) {
-  .analyticsGrid {
+.analyticsCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.analyticsIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.analyticsData {
+  display: flex;
+  flex-direction: column;
+}
+
+.analyticsValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+}
+
+.analyticsLabel {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.6);
+}
+
+/* Rates */
+.ratesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.rateCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.rateHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.rateTitle {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.rateValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+.rateBar {
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rateBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Sections */
+.analyticsSection {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.analyticsSection h4 {
+  margin: 0 0 1rem 0;
+  color: white;
+  font-size: 1rem;
+}
+
+/* Activity List */
+.activityList {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+.activityIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.activityIcon.sent { background: rgba(59, 130, 246, 0.2); }
+.activityIcon.delivered { background: rgba(34, 197, 94, 0.2); }
+.activityIcon.opened { background: rgba(249, 115, 22, 0.2); }
+.activityIcon.clicked { background: rgba(168, 85, 247, 0.2); }
+.activityIcon.bounced { background: rgba(239, 68, 68, 0.2); }
+
+.activityDetails {
+  flex: 1;
+}
+
+.activityEmail {
+  font-weight: 500;
+  color: white;
+}
+
+.activityType {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.activityTime {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+}
+
+/* Health Grid */
+.healthGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.healthCard {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.healthCard.good { border-color: rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.05); }
+.healthCard.warning { border-color: rgba(249, 115, 22, 0.3); background: rgba(249, 115, 22, 0.05); }
+.healthCard.bad { border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); }
+
+.healthIcon {
+  font-size: 1.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.healthTitle {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  display: block;
+}
+
+.healthStatus {
+  font-weight: 600;
+  color: white;
+  font-size: 0.875rem;
+}
+
+/* Responsive Analytics */
+@media (max-width: 1024px) {
+  .analyticsGrid,
+  .ratesGrid,
+  .healthGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.analyticsCard {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.analyticsCard h4 {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.875rem;
-  color: rgba(255,255,255,0.7);
-}
-
-.analyticsValue {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f97316;
-}
-
-.analyticsChange {
-  font-size: 0.75rem;
-  margin-top: 0.25rem;
-}
-
-.analyticsChange.positive {
-  color: #22c55e;
-}
-
-.analyticsChange.negative {
-  color: #ef4444;
-}
-
-.analyticsChart {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 2rem;
-  min-height: 300px;
-}
-
-.helpBox {
-  background: rgba(249,115,22,0.1);
-  border: 1px solid rgba(249,115,22,0.3);
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.helpBox h4 {
-  margin: 0 0 1rem 0;
-  color: #f97316;
+@media (max-width: 640px) {
+  .analyticsGrid,
+  .ratesGrid,
+  .healthGrid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
